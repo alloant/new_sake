@@ -8,6 +8,7 @@ from sqlmodel import Session
 
 from app.core.database import get_db
 from app.core.auth import auth, get_payload_from_cookie, get_current_user_from_cookie
+
 from app.crud import get_user_by_email
 
 from app.models.user import Role
@@ -65,8 +66,7 @@ async def home_search(request: Request, section: str | None = "board", panel: st
     data = dict(form)
     search = data.get("all_search")
     
-    return RedirectResponse(url=f"/?section={section}&panel={panel}&search={search}", status_code=status.HTTP_303_SEE_OTHER)
-    
+    #return RedirectResponse(url=f"/?section={section}&panel={panel}&search={search}", status_code=status.HTTP_303_SEE_OTHER)
     return templates.TemplateResponse("index.html", {"request": request, "sidebar": sidebar, "section": section, "panel": panel, "search": search})
 
 

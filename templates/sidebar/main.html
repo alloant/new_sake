@@ -1,19 +1,16 @@
-  <div class="sidebar-top">
-    <div class="sidebar-section">
-      {% include 'sidebar/section.html' %}
-    </div>
+<div  class="sidebar-top" 
+      hx-get="/sidebar-top"
+      hx-trigger="global_search_changed from:body">
+  {% include 'sidebar/sidebar-top.html' %}
+</div>
 
-    <div id="sidebar-panel">
-      {% include 'sidebar/panel.html' %}
-    </div>
-  </div>
 
-  <div class="sidebar-bottom p-0">
-    <a href="/logout" class="box is-shadowless is-radiusless is-flex is-justify-content-space-between">
-      <span>
-        <i class="iconify" data-icon="mdi-account-circle"></i>
-        {{ sidebar.user_alias }}
-      </span>
-      <i class="iconify" data-icon="mdi-logout"></i>
-    </a>
-  </div>
+<div class="sidebar-bottom p-0">
+  <a href="/logout" class="box is-shadowless is-radiusless is-flex is-justify-content-space-between">
+    <span>
+      <i class="iconify" data-icon="mdi-account-circle"></i>
+      {{ sidebar.user_alias }}
+    </span>
+    <i class="iconify" data-icon="mdi-logout"></i>
+  </a>
+</div>
