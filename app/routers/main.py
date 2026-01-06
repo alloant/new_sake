@@ -7,7 +7,7 @@ from authx import TokenPayload
 from sqlmodel import Session
 
 from app.core.database import get_db
-from app.core.auth import auth, get_payload_from_cookie
+from app.core.auth import auth, get_payload_from_cookie, get_current_user_from_cookie
 from app.crud import get_user_by_email
 
 from app.models.user import Role
@@ -41,7 +41,7 @@ router = APIRouter()
 templates = AppTemplates(directory="templates")
 
 @router.get("/", name="homepage")
-async def home(request: Request, section: str | None = "board", panel: str | None = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
+async def home(request: Request, section: str | None = "board", panel: str | None = None, search: str = "", db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
     if not panel:
         match section:
             case 'board':
@@ -53,7 +53,22 @@ async def home(request: Request, section: str | None = "board", panel: str | Non
 
     sidebar = get_sidebar(payload,section,panel)
 
-    return templates.TemplateResponse("index.html", {"request": request, "sidebar": sidebar, "section": section, "panel": panel})
+    return templates.TemplateResponse("index.html", {"request": request, "sidebar": sidebar, "section": section, "panel": panel, "search": search})
+
+# Here is only for all_search. It will always have a section and panel
+@router.post("/", name="homepage_search")
+async def home_search(request: Request, section: str | None = "board", panel: str | None = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
+    sidebar = get_sidebar(payload,section,panel)
+    current_user = get_user_by_email(payload.sub, db)
+    
+    form = await request.form()
+    data = dict(form)
+    search = data.get("all_search")
+    
+    return RedirectResponse(url=f"/?section={section}&panel={panel}&search={search}", status_code=status.HTTP_303_SEE_OTHER)
+    
+    return templates.TemplateResponse("index.html", {"request": request, "sidebar": sidebar, "section": section, "panel": panel, "search": search})
+
 
 ## Settings/profile part
 @router.get("/settings", name="settings")
@@ -70,8 +85,8 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
     
     form = await request.form()
     data = dict(form)
-    
-    scopes = ['sccr']
+    print(data)
+    scopes = []
     settings = {}
     for setting in data:
         kind, key = setting.split('_', 1)
@@ -79,12 +94,16 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
             if key == 'role':
                 current_user.role = Role(data[setting])
 
-        if kind == 'register':
+        elif kind == 'register':
             if data[setting]:
                 scopes.append(f'{key}:{data[setting]}')
 
-        if kind == 'setting':
+        elif kind == 'setting':
             settings[key] = int(data[setting]) if data[setting].isdigit() else data[setting]
+
+        elif kind == 'perm':
+            if data[setting] == 'on':
+                scopes.append(key)
 
     current_user.scopes = scopes
     current_user.settings = settings
@@ -95,11 +114,10 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
     user_payload = {
         "uid": current_user.id,
         "alias": current_user.actor.alias,
-        "data": {"role": data['user_role']},
-        "scopes": scopes
+        "data": {"role": data['user_role']}
     }
     
-    access_token = auth.create_access_token(current_user.email,data=user_payload)
+    access_token = auth.create_access_token(current_user.email,data=user_payload,scopes=scopes)
     response = RedirectResponse(url="/settings", status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(
         key="access_token",
@@ -111,5 +129,3 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
     )
     auth.set_access_cookies(access_token, response)
     return response
-
-    return templates.TemplateResponse("settings.html", {"request": request, "sidebar": sidebar,"user": current_user,"settings": get_settings_form(current_user)})

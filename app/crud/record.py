@@ -3,11 +3,9 @@ from sqlalchemy import and_, or_
 from sqlalchemy.orm import joinedload
 
 from app.core.database import engine
-
+from app.crud.register import get_register_by_alias, get_user_registers
 from app.models.record import Record
 from app.models.record_user import RecordUser
-
-from app.crud.register import get_register_by_alias
 
 def get_record(record_id: int, db: Session = None) -> Record | None:
     if not db:
@@ -23,11 +21,13 @@ def get_num_records(db: Session = None, search: str = None) -> list[Record]:
 
     return db.exec(select(func.count(Record.id))).one()
 
-def get_filter(section, panel):
+def get_filter(user,section, panel):
     fn = []
     if section == 'register':
         if panel == 'all':
-            pass
+            user_registers = get_user_registers(user.scopes)
+            fn_registers = [Record.register_id == get_register_by_alias(register).id for register in user_registers if user_registers[register]]
+            fn.append(or_(*fn_registers))
         elif panel == 'unread':
             pass
         else:
@@ -35,7 +35,6 @@ def get_filter(section, panel):
             register = get_register_by_alias(register_alias)
 
             fn.append(Record.register_id==register.id)
-            print(register_alias,register,register.id)
 
             if flow == 'in':
                 fn.append(Record.flow=='inbound')
@@ -52,7 +51,7 @@ def get_records(db: Session = None, user = None, section = None, panel = None, s
     if not db:
         db = Session(engine)
 
-    fn = get_filter(section, panel)
+    fn = get_filter(user,section, panel)
     
     fn.append( or_(RecordUser.user_id == user.id,RecordUser.user_id.is_(None)) )
     if search:

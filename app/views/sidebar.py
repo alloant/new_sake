@@ -159,6 +159,13 @@ def get_panel(user_perms,section,panel):
 def get_panel_register(user_perms,panel):
     registers = get_registers()
     menu = []
+    items = []
+    items.append(MenuItem(id=f"all",title="All",link=f"/?section=register&panel=all",icon="mdi-web"))
+    items[-1].active = "is-active" if "all" == panel else ""
+    items.append(MenuItem(id=f"unread",title="Unread",link=f"/?section=register&panel=unread",icon="mdi-message-badge"))
+    items[-1].active = "is-active" if "unread" == panel else ""
+    menu.append(MenuGroup(title="All registers", items=items))
+
     for register in registers:
         if has_permission(user_perms,[register.alias]):
             items = []

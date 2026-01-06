@@ -25,6 +25,29 @@
             </div>
         </div>
       </div>
+      
+      <div class="card mb-5">
+        <header class="card-header">
+          <p class="card-header-title">Role</p>
+        </header>
+        <div class="card-content">
+            <div class="field">
+                <div class="control">
+                  <div class="checkboxes">
+                    <label class="checkbox">
+                    <input type="checkbox" name="perm_admin" {{ 'checked' if 'admin' in settings['scopes'] else '' }} autocomplete="off" />
+                      admin
+                    </label>
+                    <label class="checkbox">
+                      <input type="checkbox" name="perm_sccr" {{ 'checked' if 'sccr' in settings['scopes'] else '' }} autocomplete="off" />
+                      sccr
+                    </label>
+
+                  </div>
+                </div>
+            </div>
+        </div>
+      </div>
 
       <div class="card mb-5">
         <header class="card-header">

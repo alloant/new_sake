@@ -1,5 +1,5 @@
 [project]
-name = "sake-new"
+name = "new-sake"
 version = "0.1.0"
 description = ""
 authors = [
@@ -20,6 +20,8 @@ dependencies = [
     "jinja2 (>=3.1.6,<4.0.0)"
 ]
 
+[tool.poetry]
+package-mode = false
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

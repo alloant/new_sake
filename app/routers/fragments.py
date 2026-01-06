@@ -31,11 +31,11 @@ def sidebar_fragment(request: Request, section: str | None = "board", panel: str
 
 # RECORDS
 @router.get("/records", response_class=HTMLResponse)
-async def records(request: Request, page: int = None, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
+async def records(request: Request, search:str = None, page: int = None, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
     current_user = get_user_by_email(payload.sub, db)
     #update_user(current_user,'settings',{'kind': 'cr'},db)
     
-    template, rst = await records_view(page, section, panel, db, current_user)
+    template, rst = await records_view(page, search, section, panel, db, current_user)
    
     return templates.TemplateResponse(template,{'request': request, 'last_search': None, 'section': section, 'panel': panel} | rst)
 
@@ -45,6 +45,7 @@ async def records_table(request: Request, page: int = None, last_search = None, 
     form = await request.form()
     data = dict(form)
     search = last_search if last_search else data.get("search")
+    search = data.get("all_search") if data.get("all_search") else search
     
     template, rst = await records_table_view(page, search, section, panel, db, current_user)
     return templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel} | rst)

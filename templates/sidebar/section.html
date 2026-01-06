@@ -1,7 +1,7 @@
 <!-- Here logo -->
 <div class="item is-flex is-justify-content-space-between p-1" style="width: 100%;">
   <img class="logo" src="{{ url_for('static', path='icons/sake_long.svg') }}" alt="logo" />
-  <a  class="button has-tooltip-arrow has-tooltip-right flex-shrink"
+  <a  class="button has-tooltip-arrow has-tooltip-left flex-shrink"
       data-tooltip="Settings"
       href="settings">
       <span class="iconify" data-icon="mdi-cog"></span>
@@ -9,8 +9,12 @@
 </div>
 
 <!-- Here universal search bar -->
-<div class="item p-1" style="width: 100%;">
-  <input class="input" type="text" placeholder="Search..." />
+<div class="item control has-icons-left mx-1" style="width: 100%;">
+  <input class="input is-mediumish is-rounded" type="search" placeholder="Search" name="all_search" id="all_search"
+        hx-post="?section=register&panel=all"
+        hx-trigger="input changed delay:500ms, search"
+        hx-target="body"/>
+  <span class="icon is-small is-left"><i class="iconify" data-icon="mdi-magnify"></i></span>
 </div>
 
 <!-- Buttons for sections -->

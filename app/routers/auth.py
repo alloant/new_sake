@@ -33,10 +33,9 @@ def login(email: Annotated[str, Form()], password: Annotated[str, Form()]):
         "uid": user.id,
         "alias": user.actor.alias,
         "data": {"role": user.role.value},
-        "scopes": user.scopes
     }
     
-    access_token = auth.create_access_token(email,data=user_payload)
+    access_token = auth.create_access_token(email,data=user_payload, scopes=user.scopes)
     response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(
         key="access_token",

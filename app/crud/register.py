@@ -24,3 +24,23 @@ def create_register(alias: str, full_name: str, db: Session = None) -> Register:
     db_register = Register(alias=alias, full_name=full_name)
     db.add(db_register); db.commit(); db.refresh(db_register)
     return db_register
+
+def has_permission(user_perms, required_perms):
+    if not required_perms:
+        return True
+
+    for u_perm in user_perms:
+        for r_perm in required_perms:
+            if u_perm == r_perm or u_perm.startswith(f"{r_perm}:"):
+                return u_perm
+
+    return ''
+
+def get_user_registers(user_perms):
+    registers = get_registers()
+    available = {}
+    for register in registers:
+        available[register.alias] = has_permission(user_perms,[register.alias])
+
+    return available
+

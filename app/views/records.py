@@ -24,9 +24,9 @@ def pagination(num_pages: int, page: int):
 def get_title(section,panel):
     return panel.replace('-',' ').title()
 
-async def records_view(page: int = None, section: str = None, panel: str = None, db = None, current_user = None):
+async def records_view(page: int = None, search: str = None, section: str = None, panel: str = None, db = None, current_user = None):
     limit_records = current_user.get_setting('limit_records')
-    records, num_records = get_records(db=db,user=current_user,section=section,panel=panel,limit=limit_records,offset=page)
+    records, num_records = get_records(db=db,user=current_user,section=section,panel=panel,search=search,limit=limit_records,offset=page)
     num_pages = math.ceil(num_records / limit_records)
 
     return "record/main.html", {"records": records, "pagination": pagination(num_pages,page), "title": get_title(section,panel), 'num_records': num_records}
