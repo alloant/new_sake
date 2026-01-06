@@ -1,0 +1,76 @@
+{% extends "base_without_sidebar.html" %}
+
+{% block content %}
+<section class="hero is-fullheight">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-one-third-desktop is-half-tablet">
+          <div class="box has-text-centered">
+            <div class="">
+              <img src="{{ url_for('static', path='icons/sake_long.svg') }}"/>
+              <p class="title">New user</p> 
+              <form id="registrationForm" action="/register" method="POST" enctype="multipart/form-data">
+                <div class="field">
+                  <input class="input is-medium is-rounded" type="email" placeholder="hello@example.com" name="email" required />
+                </div>
+
+                <div class="field">
+                  <input class="input is-medium is-rounded" type="text" id="full_name" name="full_name" placeholder="Enter full name" required>
+                </div>
+                <div class="field">
+                  <input class="input is-medium is-rounded" type="password" id="password" name="password" placeholder="Enter Password" required>
+                </div>
+                <div class="field">
+                  <input class="input is-medium is-rounded" type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required>
+                </div>
+                <span id="passwordError" class="is-danger"></span>
+                <br>
+                <button type="submit" class="button is-block is-fullwidth is-link is-medium is-rounded" id="submitBtn">Submit</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.getElementById('registrationForm').addEventListener('input', function () {
+      validateForm();
+  });
+
+  function validateForm() {
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const submitBtn = document.getElementById('submitBtn');
+      const errorElement = document.getElementById('passwordError');
+
+      let isValid = true;
+
+      if (!username || !password || !confirmPassword) {
+          isValid = false;
+      }
+
+      if (password !== confirmPassword) {
+          errorElement.textContent = 'Passwords do not match';
+          errorElement.classList.remove('has-text-success');
+          errorElement.classList.add('has-text-danger');
+          isValid = false;
+      } else {
+          errorElement.textContent = 'Passwords match';
+          errorElement.classList.remove('has-text-danger');
+          errorElement.classList.add('has-text-success');
+      }
+
+      if (isValid) {
+          submitBtn.classList.add('enabled');
+          submitBtn.disabled = false;
+      } else {
+          submitBtn.classList.remove('enabled');
+          submitBtn.disabled = true;
+      }
+  }
+</script>
+{% endblock %}

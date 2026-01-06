@@ -1,0 +1,35 @@
+{% include 'record/pagination_small.html' %}
+<table class="table is-striped is-narrow is-fullwidth mx-4">
+  <thead>
+    <tr>
+      <th><abbr title="Status">#</abbr></th>
+      <th><abbr title="Protocol">Pro</abbr></th>
+      <th><abbr title="Department">Dep</abbr></th>
+      
+      <th>Tags</th>
+      <th class="is-full">Title</th>
+      <th><abbr title="Assigned to"></abbr></th>
+      <th><abbr title="Actions"></abbr></th>
+      <th>Files</th>
+      <th>Date</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for record, status in records %}
+    <tr>
+      <th><span class="iconify" data-icon="mdi-alert-octagram"></span></th>
+      <td>{{ record.protocol }}</td>
+      <td><span class="tag is-danger">sm</span></td>
+
+      <td><span class="tag">sm</span>
+      <span class="tag">Ind</span></td>
+      <td><span class="is-4 {{ is_false(status,'is_read','has-text-weight-bold') }}">{{ record.title }}</span></td>
+      <td><span class="tag">jb</span>
+      <span class="tag">antonio</span></td>
+      <td><span class="iconify" data-icon="mdi-dots-vertical"></span></td>
+      <td><span>patata.odoc</span></td>
+      <td><span>25-12-20</span></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>

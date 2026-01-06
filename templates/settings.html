@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <h1 class="title has-text-centered">Edit User: {{ user.full_name }}</h1>
+    
+    <form action="/settings?user_id={{ user.id }}" method="POST">
+      <div class="card mb-5">
+        <header class="card-header">
+          <p class="card-header-title">Role</p>
+        </header>
+        <div class="card-content">
+            <div class="field is-horizontal">
+                <label class="label mr-1" style="white-space: nowrap;">Role:</label>
+                <div class="control">
+                    <div class="select">
+                        <select name="user_role">
+                            <option value="dr" {{ 'selected' if settings['role'] == 'dr' }}>Director cr</option>
+                            <option value="of" {{ 'selected' if settings['role'] == 'of' }}>Official cr</option>
+                            <option value="cl" {{ 'selected' if settings['role'] == 'cl' }}>Member cl</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+
+      <div class="card mb-5">
+        <header class="card-header">
+          <p class="card-header-title">Registers</p>
+        </header>
+        <div class="card-content">
+          <div class="columns is-multiline">
+
+            {% for reg in settings['registers'] %}
+            <div class="column">
+                <div class="field is-horizontal is-align-items-center">
+                    <label class="label mr-1" style="white-space: nowrap;">{{ reg }}:</label>
+                    <div class="control">
+                        <div class="select">
+                            <select name="register_{{reg}}">
+                                <option></option>
+                                <option value="owner" {{ 'selected' if settings['registers'][reg].endswith('owner') }}>Owner</option>
+                                <option value="editor" {{ 'selected' if settings['registers'][reg].endswith('editor') }}>Editor</option>
+                                <option value="viewer" {{ 'selected' if settings['registers'][reg].endswith('viewer') }}>Viewer</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-5">
+        <header class="card-header">
+          <p class="card-header-title">User Settings</p>
+        </header>
+        <div class="card-content">
+          {% for key, value in user.settings.items() %}
+          <div class="field is-horizontal">
+            <div class="field-label is-normal">
+              <label class="label">{{ key|capitalize }}</label>
+            </div>
+            <div class="field-body">
+              <div class="field">
+                <p class="control is-expanded">
+                  <input class="input" type="text" name="setting_{{ key }}" value="{{ value }}">
+                </p>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="field is-grouped is-grouped-right">
+        <p class="control">
+          <a href="/settings" class="button is-light">Cancel</a>
+        </p>
+        <p class="control">
+          <button type="submit" class="button is-primary">
+            <span class="iconify mr-1" data-icon="mdi-content-save"></span>
+            Save User Changes
+          </button>
+        </p>
+      </div>
+
+    </form>
+  </div>
+</section>
+
+{% endblock %}

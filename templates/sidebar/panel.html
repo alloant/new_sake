@@ -1,0 +1,18 @@
+<aside class="menu p-2">
+{% for group in sidebar['panel'] %}
+  <p class="menu-label has-text-weight-bold mb-0">{{group['title']}}</p>
+  <ul class="menu-list">
+
+  {% for item in group.items %}
+    <li>
+      <a  class="menu-link {{ item.active }}" 
+          href="{{ item.link }}">
+        <span class="iconify" data-icon="mdi-{{ item.icon }}"></span>
+        {{ item.title }}
+      </a>
+    </li>
+  {% endfor %}
+
+  </ul>
+{% endfor %}
+</aside>

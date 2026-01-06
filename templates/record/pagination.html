@@ -1,0 +1,43 @@
+<nav class="pagination is-small is-centered" role="navigation" aria-label="pagination">
+  <ul class="pagination-list">
+    {% if pagination['page'] > 1 %}
+      {% if search %}
+      <li><a hx-post="/records/table?last_search={{search}}&page=1&section={{section}}&panel={{panel}}" hx-target="#main-table" class="pagination-link" aria-label="Goto page 1">1</a></li>
+      {% else %}
+        <li><a hx-post="/records/table?page=1&section={{section}}&panel={{panel}}" hx-target="#main-table" class="pagination-link" aria-label="Goto page 1">1</a></li>
+      {% endif %}
+    {% endif %}
+    
+    {% if pagination['page'] > 3 %}
+    <li><span class="pagination-ellipsis">&hellip;</span></li>
+    {% endif %}
+
+    {% if pagination['prev'] and pagination['page'] > 2 %}
+      {% if search %}
+        <li><a hx-post="/records/table?last_search={{search}}&page={{pagination['prev']}}&section={{section}}&panel={{panel}}" hx-target="#main-table" class="pagination-link" aria-label="Goto page {{pagination['prev']}}">{{pagination['prev']}}</a></li>
+      {% else %}
+        <li><a hx-post="/records/table?page={{pagination['prev']}}&section={{section}}&panel={{panel}}" hx-target="#main-table" class="pagination-link" aria-label="Goto page {{pagination['prev']}}">{{pagination['prev']}}</a></li>
+      {% endif %}
+    {% endif %}
+
+    <li><a class="pagination-link is-current" aria-label="Page {{pagination['page']}}" aria-current="page">{{pagination['page']}}</a></li>
+    
+    {% if pagination['next'] %}
+      {% if search %}
+        <li><a hx-post="/records/table?last_search={{search}}&page={{pagination['next']}}&section={{section}}&panel={{panel}}" hx-target="#main-table" class="pagination-link" aria-label="Goto page {{pagination['next']}}">{{pagination['next']}}</a></li>
+      {% else %}
+        <li><a hx-post="/records/table?page={{pagination['next']}}&section={{section}}&panel={{panel}}" hx-target="#main-table" class="pagination-link" aria-label="Goto page {{pagination['next']}}">{{pagination['next']}}</a></li>
+      {% endif %}
+      {% if pagination['num_pages'] > pagination['next'] %}
+        {% if pagination['num_pages'] > pagination['next'] + 1 %}
+          <li><span class="pagination-ellipsis">&hellip;</span></li>
+        {% endif %}
+        {% if search %}
+          <li><a hx-post="/records/table?last_search={{search}}&page={{pagination['num_pages']}}&section={{section}}&panel={{panel}}" hx-target="#main-table" class="pagination-link" aria-label="Goto page {{pagination['num_pages']}}">{{pagination['num_pages']}}</a></li>
+        {% else %}
+          <li><a hx-post="/records/table?page={{pagination['num_pages']}}&section={{section}}&panel={{panel}}" hx-target="#main-table" class="pagination-link" aria-label="Goto page {{pagination['num_pages']}}">{{pagination['num_pages']}}</a></li>
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  </ul>
+</nav>

@@ -1,0 +1,49 @@
+{% extends "base_without_sidebar.html" %}
+
+{% block content %}
+<section class="hero is-fullheight">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-one-third-desktop is-half-tablet">
+          <div class="box has-text-centered">
+            <div class="">
+              <img src="{{ url_for('static', path='icons/sake_long.svg') }}"/>
+              <p class="title">Login</p> 
+              <form action="/login" method="POST" enctype="multipart/form-data">
+                <div class="field">
+                  <div class="control">
+                    <input class="input is-medium is-rounded" type="email" placeholder="hello@example.com" name="email" required />
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="control">
+                    <input class="input is-medium is-rounded" type="password" placeholder="**********" name="password" required />
+                  </div>
+                </div>
+                <br />
+                <button class="button is-block is-fullwidth is-link is-medium is-rounded" type="submit">
+                  Login
+                </button>
+              </form>
+              <br>
+              <nav class="level">
+                <div class="level-item has-text-centered">
+                  <div>
+                    <a href="#">Forgot Password?</a>
+                  </div>
+                </div>
+                <div class="level-item has-text-centered">
+                  <div>
+                    <a href="/register">New account</a>
+                  </div>
+                </div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
