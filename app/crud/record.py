@@ -40,6 +40,17 @@ def get_filter(user,section, panel):
                 fn.append(Record.flow=='inbound')
             else:
                 fn.append(Record.flow=='outbound')
+    elif section == 'board':
+        if panel == 'inbox':
+            pass
+        elif panel == 'inbox-snooze':
+            pass
+        elif panel == 'inbox-archived':
+            pass
+        elif panel == 'outbox-drafts':
+            fn.append(Record.sender_id == user.id)
+        elif panel == 'outbox-sent':
+            fn.append(Record.sender_id == user.id)
 
 
     return fn
@@ -58,7 +69,12 @@ def get_records(db: Session = None, user = None, section = None, panel = None, s
         fn.append(Record.title.like(f"%{search}%"))
     
     num_stmt = select(func.count(Record.id)).join(RecordUser, isouter=True).where(*fn)
-    stmt = select(Record, RecordUser).join(RecordUser, isouter=True).where(*fn).options(joinedload(Record.sender),joinedload(Record.register)).limit(limit).offset(offset) # I put the joinload to always get the register and sender because I am going to use it.
+
+    if section == 'board':
+        stmt = select(Record, RecordUser).join(RecordUser, RecordUser.user_id==user.id).where(*fn).options(joinedload(Record.sender),joinedload(Record.register)).limit(limit).offset(offset)
+    elif section == 'register':
+        stmt = select(Record, RecordUser).join(RecordUser, isouter=True).where(*fn).options(joinedload(Record.sender),joinedload(Record.register)).limit(limit).offset(offset)
+    
     return db.exec(stmt).all(), db.exec(num_stmt).one()
 
 

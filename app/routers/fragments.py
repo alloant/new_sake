@@ -8,7 +8,7 @@ from sqlmodel import Session
 
 from authx import TokenPayload
 
-from app.core.auth import auth, get_current_user_from_cookie
+from app.core.auth import auth, get_current_user_from_cookie, get_payload_from_cookie
 from app.core.database import get_db
 from app.core.htmx import add_hx_trigger_header_on_success
 
@@ -32,8 +32,7 @@ def sidebar_fragment(request: Request, section: str | None = "board", panel: str
     return templates.TemplateResponse("sidebar/main.html", {"request": request, "sidebar": sidebar, "section": section, "panel": panel})
 
 @router.get("/sidebar-top", response_class=HTMLResponse)
-def sidebar_top_fragment(request: Request, new_sidebar = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
-    print('Updating sidebar-top',new_sidebar)
+def sidebar_top_fragment(request: Request, new_sidebar = None, myData = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
     #current_user = get_user_by_email(payload.sub, db)
     section = 'register'
     panel = 'all'
@@ -46,7 +45,6 @@ def sidebar_top_fragment(request: Request, new_sidebar = None, db: Session = Dep
 async def records(request: Request, search:str = None, page: int = None, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
     current_user = get_user_by_email(payload.sub, db)
     #update_user(current_user,'settings',{'kind': 'cr'},db)
-    
     template, rst = await records_view(page, search, section, panel, db, current_user)
    
     return templates.TemplateResponse(template,{'request': request, 'last_search': None, 'section': section, 'panel': panel} | rst)
@@ -59,27 +57,27 @@ async def records_table(request: Request, page: int = None, last_search = None, 
     search = last_search if last_search else data.get("search")
     
     template, rst = await records_table_view(page, search, section, panel, db, current_user)
+    
     return templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel} | rst)
 
 
 @router.post("/global_search", response_class=HTMLResponse)
-#@add_hx_trigger_header_on_success('global_search_changed')
-async def records_global_search(request: Request, db: Session = Depends(get_db), current_user: str = Depends(get_current_user_from_cookie)):
+async def records_global_search(request: Request, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
     form = await request.form()
     data = dict(form)
     search = data.get("all_search")
+    print('GLOBAL SEARCH')
+    current_user = get_user_by_email(payload.sub, db)
     
     page = 1
-    section = 'register'
-    panel = 'all'
     
-    template, rst = await records_table_view(page, search, section, panel, db, current_user)
-    response = templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel} | rst)
-
-    payload_trigger = {
-        "global_search_changed": "patata"
-    }
-    response.headers['HX-Trigger'] = json.dumps(payload_trigger)
+    template, rst = await records_table_view(page, search, 'register', 'all', db, current_user)
+    if section != 'register' or panel != 'all':
+        template = "record/table_sidebar.html"
+        sidebar = get_sidebar(payload,'register','all')
+    else:
+        sidebar = None
+    response = templates.TemplateResponse(template, {'request': request, 'section': 'register', 'panel': 'all', 'sidebar': sidebar} | rst)
 
     return response
 

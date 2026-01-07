@@ -1,0 +1,12 @@
+
+<!-- Buttons for sections -->
+<div class="item grid is-col-min-2 is-row-gap-1 is-gap-1 p-2" style="width: 100%;">
+  {% for sec in sidebar['sections'] %}
+    <button  class="button has-tooltip-arrow has-tooltip-top {{ sec.active }}"
+        data-tooltip="{{ sec.title }}"
+        hx-get="{{ sec.link }}"
+        hx-target="#sidebar">
+          <span class="iconify" data-icon="{{ sec.icon }}"></span>
+    </button>
+  {% endfor %}
+</div>
