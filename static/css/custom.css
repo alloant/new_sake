@@ -20,6 +20,10 @@ html, body {
   height: 100%;
 }
 
+.position-relative { position: relative; }
+.position-absolute { position: absolute; }
+.translate-center { left:50%; top:50%; transform: translate(-50%,-50%); }
+
 .logo {
   height: 2em;
   vertical-align: bottom; /* align with text baseline */
@@ -28,9 +32,7 @@ html, body {
 
 /* custom size between small and medium */
 .input.is-mediumish {
-  font-size: 0.95rem;      /* adjust */
-  padding: 0.45rem 0.75rem;/* adjust */
-  height: 2.05rem;         /* optional: match visual size */
+  font-size: 0.85rem;      /* adjust */
   border-radius: 4px;      /* match Bulma if desired */
 }
 
@@ -55,11 +57,16 @@ nav.pagination a {
   color: var(--sidebar-color);
 }
 
-nav.pagination,
-dev.hero-settings,
-div.hero-search {
+.top-level { 
   color: var(--sidebar-color);
   background-color: var(--sidebar-background);
+}
+
+nav.pagination,
+dev.hero-settings,
+div.hero-search, {
+  color: var(--sidebar-color);
+  background: var(--sidebar-background);
 }
 
 .menu .menu-link {

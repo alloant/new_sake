@@ -19,7 +19,7 @@
 
 </head>
 <body>
-    <div id="body" class="columns is-gapless is-mobile">
+    <div id="body" class="columns is-gapless is-mobile" style="position: relative;">
         <aside class="column is-narrow">
             <div id="sidebar" class="sidebar is-flex is-flex-direction-column is-justify-content-space-between">
                 {% include 'sidebar/main.html' %}
@@ -30,6 +30,7 @@
                 {% block content %}{% endblock %}
             </div>
         </main>
+        <progress id="progress-indicator" class="progress htmx-indicator is-small" max="90" style="position: absolute; bottom:0%"></progress>
     </div>
 
     <footer>

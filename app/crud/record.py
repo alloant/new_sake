@@ -51,6 +51,24 @@ def get_filter(user,section, panel):
             fn.append(Record.sender_id == user.id)
         elif panel == 'outbox-sent':
             fn.append(Record.sender_id == user.id)
+        elif panel.startswith('incoming-proposals'):
+            fn.append(Record.flow=='internal_cr')
+            if panel == 'incoming-proposals-to-sign':
+                pass
+            elif panel == 'incoming-proposals-signed':
+                pass
+        elif panel.startswith('outcoming-proposals'):
+            fn.append(Record.flow=='internal_cr')
+            if panel == 'outcoming-proposals-drafts':
+                pass
+            elif panel == 'outcoming-proposals-circulating':
+                pass
+            elif panel == 'outcoming-proposals-done':
+                pass
+            elif panel == 'outcoming-proposals-snooze':
+                pass
+            elif panel == 'outcoming-proposals-archived':
+                pass
 
 
     return fn
@@ -58,7 +76,8 @@ def get_filter(user,section, panel):
 def get_records(db: Session = None, user = None, section = None, panel = None, search: str = None, limit: int = None, offset: int = None) -> list[Record]:
     if not user:
         return []
-
+    #print(f'Getting {section}-{panel} records for {user.full_name}')
+    
     if not db:
         db = Session(engine)
 
@@ -71,7 +90,10 @@ def get_records(db: Session = None, user = None, section = None, panel = None, s
     num_stmt = select(func.count(Record.id)).join(RecordUser, isouter=True).where(*fn)
 
     if section == 'board':
-        stmt = select(Record, RecordUser).join(RecordUser, RecordUser.user_id==user.id).where(*fn).options(joinedload(Record.sender),joinedload(Record.register)).limit(limit).offset(offset)
+        if panel.startswith('inbox') or panel.startswith('incoming'):
+            stmt = select(Record, RecordUser).join(RecordUser).where(*fn, RecordUser.user_id==user.id).options(joinedload(Record.sender),joinedload(Record.register)).limit(limit).offset(offset)
+        elif panel.startswith('outbox') or panel.startswith('outcoming'):
+            stmt = select(Record, RecordUser).join(RecordUser, isouter=True).where(*fn).options(joinedload(Record.sender),joinedload(Record.register)).limit(limit).offset(offset)
     elif section == 'register':
         stmt = select(Record, RecordUser).join(RecordUser, isouter=True).where(*fn).options(joinedload(Record.sender),joinedload(Record.register)).limit(limit).offset(offset)
     

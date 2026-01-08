@@ -1,0 +1,21 @@
+<div id="table-search" class="hero hero-search is-small has-text-centered">
+  <div class="hero-body p-2">
+    <div class="field">
+      <div class="control has-icons-left">
+        <input class="input is-mediumish is-rounded" type="search" placeholder="Search" name="search" id="search" {{ 'value=search' if search else ''}}
+          hx-post="/records/table?section={{section}}&panel={{panel}}"
+          hx-trigger="input changed delay:500ms, search"
+          hx-indicator="#progress-indicator"
+          hx-target="#main-table"/>
+        <span class="icon is-small is-left"><i class="iconify" data-icon="mdi-magnify"></i></span>
+      </div>
+    {% include 'record/pagination_small.html' %}
+    </div>
+  </div>
+</div>
+
+
+<div id="main-table" class="table-container mx-2">
+  {% include 'record/table.html' %}
+</div>
+

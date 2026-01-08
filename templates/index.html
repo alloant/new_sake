@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div hx-get="/records?section={{section}}&panel={{panel}}&search={{search}}" hx-trigger="load">
+    <div hx-get="/records?section={{section}}&panel={{panel}}&search={{search}}" hx-trigger="load" hx-indicator="#progress-indicator">
     </div>
 {% endblock %}
