@@ -25,7 +25,6 @@ def is_false(obj,condition,text):
     if obj:
         if not get_attr(obj,condition):
             return ""
-    
     return text
 
 
@@ -53,21 +52,24 @@ async def home(request: Request, section: str | None = "board", panel: str | Non
                 panel = 'mail'
 
     sidebar = get_sidebar(payload,section,panel)
-
-    return templates.TemplateResponse("index.html", {"request": request, "sidebar": sidebar, "section": section, "panel": panel, "search": search})
+    current_user = get_user_by_email(payload.sub, db)
+    theme = current_user.get_setting('theme') 
+    print(theme)
+    return templates.TemplateResponse("index.html", {"request": request, "theme": theme, "sidebar": sidebar, "section": section, "panel": panel, "search": search})
 
 # Here is only for all_search. It will always have a section and panel
 @router.post("/", name="homepage_search")
 async def home_search(request: Request, section: str | None = "board", panel: str | None = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
     sidebar = get_sidebar(payload,section,panel)
     current_user = get_user_by_email(payload.sub, db)
+    theme = current_user.get_setting('theme') 
     
     form = await request.form()
     data = dict(form)
     search = data.get("all_search")
     
     #return RedirectResponse(url=f"/?section={section}&panel={panel}&search={search}", status_code=status.HTTP_303_SEE_OTHER)
-    return templates.TemplateResponse("index.html", {"request": request, "sidebar": sidebar, "section": section, "panel": panel, "search": search})
+    return templates.TemplateResponse("index.html", {"request": request, "theme": theme, "sidebar": sidebar, "section": section, "panel": panel, "search": search})
 
 
 ## Settings/profile part
@@ -75,17 +77,18 @@ async def home_search(request: Request, section: str | None = "board", panel: st
 async def settings(request: Request, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
     sidebar = get_sidebar(payload,'settings','')
     current_user = get_user_by_email(payload.sub, db)
-    
-    return templates.TemplateResponse("settings.html", {"request": request, "sidebar": sidebar,"user": current_user,"settings": get_settings_form(current_user)})
+    theme = current_user.get_setting('theme') 
+    return templates.TemplateResponse("settings.html", {"request": request, "theme": theme, "sidebar": sidebar,"user": current_user,"settings": get_settings_form(current_user)})
 
 @router.post("/settings", name="settings")
 async def settings_post(request: Request, db: Session = Depends(get_db), payload = Depends(get_payload_from_cookie)):
     sidebar = get_sidebar(payload,'settings','')
     current_user = get_user_by_email(payload.sub, db)
+    theme = current_user.get_setting('theme') 
     
     form = await request.form()
     data = dict(form)
-    print(data)
+    
     scopes = []
     settings = {}
     for setting in data:
@@ -98,7 +101,7 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
             if data[setting]:
                 scopes.append(f'{key}:{data[setting]}')
 
-        elif kind == 'setting':
+        elif kind == 'setting': 
             settings[key] = int(data[setting]) if data[setting].isdigit() else data[setting]
 
         elif kind == 'perm':

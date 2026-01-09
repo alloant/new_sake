@@ -42,7 +42,7 @@ async def auth_exception_handler(request: Request, exc: Exception):
 def on_startup():
     # This creates all tables when the app first starts
     init_db()
-    #transfer_registers()
+    ##transfer_registers()
     #transfer_actors()
     #transfer_users()
     #transfer_contacts()

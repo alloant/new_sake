@@ -30,6 +30,17 @@ html, body {
   display: inline-block;
 }
 
+.sender {
+  font-size: 0.65rem;
+  background-color: transparent;
+  border: 1px dashed var(--sidebar-background-hover);
+}
+
+.table td,
+.table th {
+  vertical-align: middle;
+  text-align: center; /* horizontal centering */
+}
 /* custom size between small and medium */
 .input.is-mediumish {
   font-size: 0.85rem;      /* adjust */

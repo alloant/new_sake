@@ -22,12 +22,17 @@
 
       <td><span class="tag">sm</span>
       <span class="tag">Ind</span></td>
-      <td><span class="is-4 {{ is_false(status,'is_read','has-text-weight-bold') }}">{{ record.title }}</span></td>
+      <td>
+        <span class="is-4 {{ is_false(status,'is_read','has-text-weight-bold') }}">{{ record.title }}</span>
+        {% if record.sender.kind == 'user' %}
+        <span class="tag sender ml-1">{{ record.sender.alias }}</span>
+        {% endif %}
+      </td>
       <td><span class="tag">jb</span>
       <span class="tag">antonio</span></td>
       <td><span class="iconify" data-icon="mdi-dots-vertical"></span></td>
       <td><span>patata.odoc</span></td>
-      <td><span>25-12-20</span></td>
+      <td><span>{{ record.date }}</span></td>
     </tr>
   {% endfor %}
   </tbody>

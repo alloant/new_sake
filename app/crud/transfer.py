@@ -28,7 +28,8 @@ def transfer_actors():
     actors = []
     for row in rows:
         if not row['alias'] in actors:
-            kind = 'self' if row['category'] == 'me' else row['category']
+            kind = 'contact' if row['category'] == 'me' else row['category']
+            kind = 'user' if row['category'] in ['dr','of','cl'] else kind
             print(row['alias'],kind)
             db_actor = Actor(alias=row['alias'],kind=kind)
             actors.append(row['alias'])
@@ -120,7 +121,7 @@ def transfer_notes():
             else:
                 flow = 'inbound'
         print(title)
-        db_record = Record(title=title,register_id=register_id,sequence=sequence,year=year,flow=flow,sender_id=actor.id)
+        db_record = Record(title=title,register_id=register_id,sequence=sequence,year=year,flow=flow,sender_id=actor.id, created_at=row['n_date'], updated_at=row['n_date'])
 
         db.add(db_record)
 

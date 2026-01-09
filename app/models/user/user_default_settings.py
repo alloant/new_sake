@@ -6,4 +6,6 @@ class UserSettings(object):
         match setting:
             case 'limit_records':
                 return 20
+            case 'theme':
+                return 'light'
 

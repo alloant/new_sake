@@ -1,5 +1,5 @@
 from sqlmodel import Session, select, func
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, or_, desc
 from sqlalchemy.orm import joinedload
 
 from app.core.database import engine
@@ -91,11 +91,11 @@ def get_records(db: Session = None, user = None, section = None, panel = None, s
 
     if section == 'board':
         if panel.startswith('inbox') or panel.startswith('incoming'):
-            stmt = select(Record, RecordUser).join(RecordUser).where(*fn, RecordUser.user_id==user.id).options(joinedload(Record.sender),joinedload(Record.register)).limit(limit).offset(offset)
+            stmt = select(Record, RecordUser).join(RecordUser).where(*fn, RecordUser.user_id==user.id).options(joinedload(Record.sender),joinedload(Record.register)).limit(limit).offset(offset).order_by(desc(Record.updated_at))
         elif panel.startswith('outbox') or panel.startswith('outcoming'):
-            stmt = select(Record, RecordUser).join(RecordUser, isouter=True).where(*fn).options(joinedload(Record.sender),joinedload(Record.register)).limit(limit).offset(offset)
+            stmt = select(Record, RecordUser).join(RecordUser, isouter=True).where(*fn).options(joinedload(Record.sender),joinedload(Record.register)).limit(limit).offset(offset).order_by(desc(Record.updated_at))
     elif section == 'register':
-        stmt = select(Record, RecordUser).join(RecordUser, isouter=True).where(*fn).options(joinedload(Record.sender),joinedload(Record.register)).limit(limit).offset(offset)
+        stmt = select(Record, RecordUser).join(RecordUser, isouter=True).where(*fn).options(joinedload(Record.sender),joinedload(Record.register)).limit(limit).offset(offset).order_by(desc(Record.updated_at))
     
     return db.exec(stmt).all(), db.exec(num_stmt).one()
 
