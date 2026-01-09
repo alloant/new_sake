@@ -54,7 +54,7 @@ async def home(request: Request, section: str | None = "board", panel: str | Non
     sidebar = get_sidebar(payload,section,panel)
     current_user = get_user_by_email(payload.sub, db)
     theme = current_user.get_setting('theme') 
-    print(theme)
+    
     return templates.TemplateResponse("index.html", {"request": request, "theme": theme, "sidebar": sidebar, "section": section, "panel": panel, "search": search})
 
 # Here is only for all_search. It will always have a section and panel

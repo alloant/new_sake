@@ -12,8 +12,8 @@ from app.core.auth import auth, get_current_user_from_cookie, get_payload_from_c
 from app.core.database import get_db
 from app.core.htmx import add_hx_trigger_header_on_success
 
-from app.crud import get_user_by_email, get_records, get_register_by_alias, update_user
-from app.views.records import records_view, records_table_view
+from app.crud import get_record, get_user_by_email, get_records, get_register_by_alias, update_user
+from app.views.records import records_view, records_table_view, action_view
 from app.views.sidebar import get_sidebar
 
 # Initialize the router and templates
@@ -60,6 +60,13 @@ async def records_table(request: Request, page: int = None, last_search = None, 
     template = "record/table_pagination.html"
     
     return templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel} | rst)
+
+@router.get("/action", response_class=HTMLResponse)
+async def action(request: Request, record_id: int, action: str, section: str = None, panel: str = None, db: Session = Depends(get_db), current_user: str = Depends(get_current_user_from_cookie)):
+    record = get_record(record_id)
+    template, rst = await action_view(record, action, db, current_user)
+    
+    return templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel, 'current_user': current_user} | rst)
 
 
 @router.post("/global_search", response_class=HTMLResponse)

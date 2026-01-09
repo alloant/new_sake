@@ -1,0 +1,49 @@
+<th>
+  <span class="iconify" data-icon="mdi-alert-octagram"></span>
+</th>
+
+<td style="white-space: nowrap;">
+  {{ record.protocol }}
+</td>
+
+<td>
+  <span class="tag is-danger">sm</span>
+</td>
+
+<td>
+  <span class="tag">sm</span>
+  <span class="tag">Ind</span>
+</td>
+
+<td class="">
+  <span class="is-4 {{ is_false(status,'is_read','has-text-weight-bold') }}">{{ record.title }}</span>
+  {% if record.sender.kind == 'user' %}
+  <span class="tag sender ml-1">{{ record.sender.alias }}</span>
+  {% endif %}
+</td>
+
+<td>
+  <span class="tag">jb</span>
+  <span class="tag">antonio</span>
+</td>
+
+<td>
+  <span class="">patata.odoc</span>
+</td>
+
+<td class="has-text-right" style="position: relative;">
+  <span class="">{{ record.date }}</span>
+  <div class="action-buttons is-flex is-align-items-center" style="position: absolute; top: 0%; right: 0; background-color: var(--bulma-table-row-hover-background-color)">
+    <div class="pl-6 pr-2 buttons is-grouped" style="white-space: nowrap; display: inline-block">
+      {% for actiongroup in record.get_actions(current_user.scopes,section,panel) %}
+        <span class="px-1">
+          {% for action in actiongroup.items %}
+        <button class="px-1 is-small has-tooltip-arrow" data-tooltip="{{ action.title }}" hx-get="{{action.hxget}}&record_id={{ record.id }}&section={{section}}&panel={{panel}}" hx-target="#row-{{record.id}}">
+              <i class="iconify" data-icon="{{ action.icon }}"></i>
+            </button>
+          {% endfor %}
+        </span>
+      {% endfor %}
+    </div>
+  </div>
+</td>

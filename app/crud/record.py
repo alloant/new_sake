@@ -76,7 +76,6 @@ def get_filter(user,section, panel):
 def get_records(db: Session = None, user = None, section = None, panel = None, search: str = None, limit: int = None, offset: int = None) -> list[Record]:
     if not user:
         return []
-    #print(f'Getting {section}-{panel} records for {user.full_name}')
     
     if not db:
         db = Session(engine)
