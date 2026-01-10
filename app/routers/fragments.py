@@ -62,9 +62,8 @@ async def records_table(request: Request, page: int = None, last_search = None, 
     return templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel} | rst)
 
 @router.get("/action", response_class=HTMLResponse)
-async def action(request: Request, record_id: int, action: str, section: str = None, panel: str = None, db: Session = Depends(get_db), current_user: str = Depends(get_current_user_from_cookie)):
-    record = get_record(record_id)
-    template, rst = await action_view(record, action, db, current_user)
+async def action(request: Request, record_id: int, recorduser_id: str, action: str, section: str = None, panel: str = None, db: Session = Depends(get_db), current_user: str = Depends(get_current_user_from_cookie)):
+    template, rst = await action_view(record_id, recorduser_id, action, db, current_user)
     
     return templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel, 'current_user': current_user} | rst)
 

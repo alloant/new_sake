@@ -1,5 +1,5 @@
 import math
-from app.crud import get_records
+from app.crud import get_record, get_records, get_record_user, get_record_user_by_id
 
 def pagination(num_records: int, page: int, limit_records: int):
     num_pages = math.ceil(num_records / limit_records)
@@ -38,5 +38,18 @@ async def records_table_view(page: int = None, search = None, section: str = Non
 
     return "record/table.html", {"records": records, "pagination": pagination(num_records,page,limit_records), "title": get_title(section,panel), 'num_records': num_records, "current_user": current_user}
 
-async def action_view(record, action, db, current_user):
-    return "record/table_row.html", {"record": record}
+async def action_view(record_id,status_id, action, db, current_user):
+    record = get_record(record_id)
+    if status_id:
+        status = get_record_user_by_id(record_user_id = status_id, db = db)
+    else:
+        status = get_record_user(record_id = record_id, user_id = current_user.id, db = db)
+
+    if action == "mark_read":
+        status.read_status = "read"
+    elif action == "mark_unread":
+        status.read_status = "unread"
+
+    db.add(status); db.commit(); db.refresh(status)
+
+    return "record/table_row.html", {"record": record, "status": status}

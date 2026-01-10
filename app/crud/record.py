@@ -7,6 +7,29 @@ from app.crud.register import get_register_by_alias, get_user_registers
 from app.models.record import Record
 from app.models.record_user import RecordUser
 
+def get_record_user(record_id: int, user_id: int, db: Session = None) -> RecordUser:
+    if not db:
+        db = Session(engine)
+
+    smnt = select(RecordUser).where(
+    RecordUser.user_id == user_id,
+    RecordUser.record_id == record_id)
+
+    status = db.exec(smnt).first()
+
+    if not status:
+        status = RecordUser(user_id=user_id, record_id=record_id)
+        db.add(status)
+        db.commit()
+        db.refresh(status)
+
+    return status
+
+def get_record_user_by_id(record_user_id: int, db: Session = None) -> Record | None:
+    if not db:
+        db = Session(engine)
+    return db.get(RecordUser, record_user_id)
+
 def get_record(record_id: int, db: Session = None) -> Record | None:
     if not db:
         db = Session(engine)

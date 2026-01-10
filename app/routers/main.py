@@ -15,15 +15,15 @@ from app.models.user import Role
 from app.views.sidebar import get_sections, get_panel, get_sidebar
 from app.views.settings import get_settings_form
 
-def is_true(obj,condition,text):
+def is_true(obj,condition,text=""):
     if obj:
-        if get_attr(obj,condition):
-            return text
+        if getattr(obj,condition):
+            return text if text else getattr(obj,condition)
     return ""
 
-def is_false(obj,condition,text):
+def is_false(obj,condition,text=""):
     if obj:
-        if not get_attr(obj,condition):
+        if not getattr(obj,condition):
             return ""
     return text
 
