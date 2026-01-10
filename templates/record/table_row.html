@@ -33,17 +33,7 @@
 
 <td class="has-text-right" style="position: relative;">
   <span class="">{{ record.date }}</span>
-  <div class="action-buttons is-flex is-align-items-center" style="position: absolute; top: 0%; right: 0; background-color: var(--bulma-table-row-hover-background-color)">
-    <div class="pl-6 pr-2 buttons is-grouped" style="white-space: nowrap; display: inline-block">
-      {% for actiongroup in record.get_actions(current_user.scopes,section,panel) %}
-        <span class="px-1">
-          {% for action in actiongroup.items %}
-        <button class="px-1 is-small has-tooltip-arrow" data-tooltip="{{ action.title }}" hx-get="{{action.hxget}}&record_id={{ record.id }}&recorduser_id={{ is_true(status,'id') }}&section={{section}}&panel={{panel}}" hx-target="#row-{{record.id}}">
-              <i class="iconify" data-icon="{{ action.icon }}"></i>
-            </button>
-          {% endfor %}
-        </span>
-      {% endfor %}
-    </div>
+  <div class="action-buttons is-flex is-align-items-center pl-6 pr-2">
+    {% include 'record/table_row_actions.html' %}
   </div>
 </td>

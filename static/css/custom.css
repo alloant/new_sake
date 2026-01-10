@@ -48,6 +48,12 @@ html, body {
   opacity: 1;
   height: 100%;
   transition: opacity 0.2s ease-in-out;
+  position: absolute;
+  white-space: nowrap;
+  display: inline-block;
+  top: 0%;
+  right: 0;
+  background-color: var(--bulma-table-row-hover-background-color);
 }
 
 /* 2. Show them when the row (tr) is hovered */
