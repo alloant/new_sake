@@ -64,34 +64,46 @@ def get_filter(user,section, panel):
             else:
                 fn.append(Record.flow=='outbound')
     elif section == 'board':
-        if panel == 'inbox':
-            pass
-        elif panel == 'inbox-snooze':
-            pass
-        elif panel == 'inbox-archived':
-            pass
-        elif panel == 'outbox-drafts':
+        if panel.startswith('inbox'):
+            fn.append(Record.flow=='inbound')
+            fn.append(RecordUser.target > 0)
+            if panel == 'inbox':
+                fn.append(Record.state == 'active')
+            if panel == 'inbox-snooze':
+                fn.append(Record.state == 'snooze')
+            elif panel == 'inbox-archived':
+                fn.append(Record.state == 'archived')
+        elif panel.startswith('outbox'):
+            fn.append(Record.flow=='outbound')
             fn.append(Record.sender_id == user.id)
-        elif panel == 'outbox-sent':
-            fn.append(Record.sender_id == user.id)
+            if panel == 'outbox-drafts':
+                fn.append(Record.stage == 'draft')
+            elif panel == 'outbox-sent':
+                print('outbox-sent')
+                fn.append(Record.stage == 'sent')
         elif panel.startswith('incoming-proposals'):
             fn.append(Record.flow=='internal_cr')
+            fn.append(RecordUser.target > 0)
             if panel == 'incoming-proposals-to-sign':
-                pass
+                fn.append(Record.stage == 'pending')
             elif panel == 'incoming-proposals-signed':
-                pass
+                fn.append(RecordUser.target_action != 'pending')
         elif panel.startswith('outcoming-proposals'):
             fn.append(Record.flow=='internal_cr')
+            fn.append(Record.sender_id == user.id)
             if panel == 'outcoming-proposals-drafts':
-                pass
+                fn.append(Record.stage == 'sketch')
+                fn.append(Record.state == 'active')
             elif panel == 'outcoming-proposals-circulating':
-                pass
+                fn.append(Record.stage == 'shared')
+                fn.append(Record.state == 'active')
             elif panel == 'outcoming-proposals-done':
-                pass
+                fn.append(Record.stage == 'closed')
+                fn.append(Record.state == 'active')
             elif panel == 'outcoming-proposals-snooze':
-                pass
+                fn.append(Record.state == 'snooze')
             elif panel == 'outcoming-proposals-archived':
-                pass
+                fn.append(Record.state == 'archived')
 
 
     return fn
@@ -121,6 +133,13 @@ def get_records(db: Session = None, user = None, section = None, panel = None, s
     
     return db.exec(stmt).all(), db.exec(num_stmt).one()
 
+def get_all_records(db: Session = None) -> list[Record]:
+    if not db:
+        db = Session(engine)
+
+    stmt = select(Record)
+
+    return db.exec(stmt).all()
 
 def get_records_for_user(sender_id: int, db: Session = None) -> list[Record]:
     if not db:

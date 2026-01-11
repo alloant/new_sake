@@ -26,6 +26,12 @@ def get_user_by_email(email: str, db: Session = None) -> User | None:
         db = Session(engine)
     return db.exec(select(User).where(User.email == email)).first()
 
+def get_user_by_actor_id(actor_id: int, db: Session = None) -> User | None:
+    if not db:
+        db = Session(engine)
+
+    return db.exec(select(User).where(User.actor_id == actor_id)).first()
+
 def get_users(db: Session = None) -> list[User]:
     if not db:
         db = Session(engine)

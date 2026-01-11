@@ -6,8 +6,9 @@
   <span style="white-space: nowrap;">
     {{ record.protocol }}
   </span>
-  <span class="tag">sm</span>
-  <span class="tag">Ind</span>
+  {% for tag in record.tags %}
+    <span class="tag">{{ tag.title }}</span>
+  {% endfor %}
 
 </td>
 
@@ -17,14 +18,13 @@
 
 <td class="">
   <span class="is-4 {{ (status.read_status_html if status else 'has-text-weight-bold') if record.flow == 'inbound' else '' }}">{{ record.title }}</span>
-  {% if record.sender.kind == 'user' %}
+  {% if record.flow == 'outbound' %}
     <span class="tag sender ml-1">{{ record.sender.alias }}</span>
+  {% else %}
+    {% for target in record.targets %}
+      <span class="tag sender ml-1">{{ target.user.actor.alias }}</span>
+    {% endfor %}
   {% endif %}
-</td>
-
-<td>
-  <span class="tag">jb</span>
-  <span class="tag">antonio</span>
 </td>
 
 <td>

@@ -14,7 +14,7 @@ from app.routers import router
 
 from app.models import Register, Record, Actor, User, RecordUser
 
-from app.crud.transfer import transfer_notes, transfer_users, transfer_actors, transfer_registers, transfer_contacts, transfer_ctrs
+from app.crud.transfer import transfer_notes, transfer_users, transfer_actors, transfer_registers, transfer_contacts, transfer_ctrs, transfer_note_user, transfer_tags, transfer_record_tag
 
 # Initialize FastAPI
 app = FastAPI(title="Sake")
@@ -42,12 +42,16 @@ async def auth_exception_handler(request: Request, exc: Exception):
 def on_startup():
     # This creates all tables when the app first starts
     init_db()
-    ##transfer_registers()
-    #transfer_actors()
-    #transfer_users()
-    #transfer_contacts()
-    #transfer_ctrs()
-    #transfer_notes()
+    if False:
+        transfer_registers()
+        transfer_actors()
+        transfer_users()
+        transfer_contacts()
+        transfer_ctrs()
+        transfer_notes()
+        transfer_note_user()
+        transfer_tags()
+        transfer_record_tag()
 
 # Mount Static Files
 app.mount("/static", StaticFiles(directory="static"), name="static")
