@@ -3,37 +3,51 @@
 </th>
 
 <td>
-  <span style="white-space: nowrap;">
-    {{ record.protocol }}
-  </span>
-  {% for tag in record.tags %}
-    <span class="tag">{{ tag.title }}</span>
-  {% endfor %}
-
-</td>
-
-<td>
   <span class="tag is-danger">sm</span>
 </td>
 
-<td class="">
-  <span class="is-4 {{ (status.read_status_html if status else 'has-text-weight-bold') if record.flow == 'inbound' else '' }}">{{ record.title }}</span>
-  {% if record.flow == 'outbound' %}
-    <span class="tag sender ml-1">{{ record.sender.alias }}</span>
-  {% else %}
-    {% for target in record.targets %}
-      <span class="tag sender ml-1">{{ target.user.actor.alias }}</span>
-    {% endfor %}
-  {% endif %}
+<td class="has-text-left p-0 m-0" style="position: relative;">
+  <span class="behind-buttons" style="white-space: nowrap;">
+    {{ record.protocol }}
+  </span>
+
+  <!-- Hidden part -->
+  <div class="hidden-row is-flex is-align-items-center justify-content-left pr-6">
+    <span class="mr-2" style="white-space: nowrap;">
+      {{ record.protocol }}
+    </span>
+
+    <!-- targets or sender -->
+    {% if record.flow == 'outbound' %}
+      <span class="tag sender ml-1">{{ record.sender.alias }}</span>
+    {% else %}
+      {% for target in record.targets %}
+        <span class="tag sender ml-1">{{ target.user.actor.alias }}</span>
+      {% endfor %}
+    {% endif %}
+
+    <!-- Files -->
+    <span class="pl-6">
+      <span class="button is-rounded is-small py-1 px-2">patata.odoc</span>
+      <span class="button is-rounded is-small py-1 px-2">patata_a1.odoc</span>
+    </span>
+  </div>
 </td>
 
 <td>
-  <span class="">patata.odoc</span>
+  <span class="behind-buttons is-4 {{ (status.read_status_html if status else 'has-text-weight-bold') if record.flow == 'inbound' else '' }}">
+    {{ record.title }}
+  </span>
+  <span class="behind-buttons">
+  {% for tag in record.tags %}
+    <span class="tag">{{ tag.title }}</span>
+  {% endfor %}
+  </span>
 </td>
 
 <td class="has-text-right" style="position: relative;">
-  <span class="">{{ record.date }}</span>
-  <div class="action-buttons is-flex is-align-items-center pl-6 pr-2">
+  <span class="behing-buttons">{{ record.date }}</span>
+  <div class="action-buttons is-flex is-align-items-center px-6">
     {% include 'record/table_row_actions.html' %}
   </div>
 </td>

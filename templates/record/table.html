@@ -2,19 +2,18 @@
   <thead>
     <tr>
       <th><abbr title="Status">#</abbr></th>
-      <th><abbr title="Protocol">Pro</abbr></th>
       <th><abbr title="Department">Dep</abbr></th>
+      <th><abbr title="Protocol">Pro</abbr></th>
       
       <th class="is-full">Title</th>
-      <th>Files</th>
       <th class="has-text-right">Date</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody class="" style="width: 100%;">
   {% for record, status in records %}
-  <tr id="row-{{record.id}}" class="hover-row">
+   <tr id="row-{{record.id}}" class="hover-row" style="width: 100%;">
     {% include 'record/table_row.html' %}
-  </tr>
+   </tr>
   {% endfor %}
   </tbody>
 </table>

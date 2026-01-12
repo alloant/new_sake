@@ -1,5 +1,5 @@
 {% for actiongroup in record.get_actions(status,current_user,section,panel) %}
-  <span class="px-1">
+  <span class="px-2">
     {% for action in actiongroup.items %}
       <button class="px-1 is-small has-tooltip-arrow" data-tooltip="{{ action.title }}"
               hx-get="{{action.hxget}}&record_id={{ record.id }}&recorduser_id={{ is_true(status,'id') }}&section={{section}}&panel={{panel}}"

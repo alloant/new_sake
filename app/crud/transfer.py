@@ -2,7 +2,7 @@ from sqlmodel import Session
 
 from app.core.database import engine, get_old_data
 
-from app.models import User, Actor, Record, RecordUser, Register, Contact, Ctr
+from app.models import User, Actor, Record, RecordUser, Register, Contact, Ctr, Dept
 from app.models.record.record import Tag, RecordTag
 
 from app.crud.actor import get_actor_by_alias, get_actors
@@ -41,6 +41,17 @@ def transfer_registers():
         print(reg)
         db_register = Register(id=reg['id'],alias=reg['alias'],full_name=reg['full_name'],active=reg['active'],protocol=reg['protocol'])
         db.add(db_register)
+
+    db.commit()
+
+def transfer_depts():
+    db = Session(engine)
+
+    departments = [{'vcr':{'full_name': '', 'color': ''}},{'vc':{'full_name': '', 'color': ''}},{'df':{'full_name': '', 'color': ''}},{'dg':{'full_name': '', 'color': ''}},{'scr':{'full_name': '', 'color': ''}},{'vsm':{'full_name': '', 'color': ''}},{'vsr':{'full_name': '', 'color': ''}},{'vsg':{'full_name': '', 'color': ''}},{'ar':{'full_name': '', 'color': ''}},{'aop':{'full_name': '', 'color': ''}}]:
+    for dept in deparments:
+        print(dept)
+        db_dept = Dept(alias=dept,full_name=deparments[dept]['full_name'],color=deparments[dept]['color'])
+        db.add(db_dept)
 
     db.commit()
 
