@@ -9,12 +9,9 @@ SessionLocal = sessionmaker(bind=engine, class_=Session, expire_on_commit=False)
 def init_db():
     SQLModel.metadata.create_all(engine)
 
-def get_session():
+def get_db():
     with SessionLocal() as session:
         yield session
-
-def get_db():
-    yield from get_session()
 
 ## This part is just to copy old data to the new db
 import pymysql.cursors

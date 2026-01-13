@@ -25,6 +25,13 @@ def get_record_user(record_id: int, user_id: int, db: Session = None) -> RecordU
 
     return status
 
+def get_record_by_params(param: str, value, db: Session = None) -> Record | None:
+    if not db:
+        db = Session(engine)
+
+    smnt = select(Record).where(Record.params[param] == value)
+    return db.exec(smnt).one()
+
 def get_record_user_by_id(record_user_id: int, db: Session = None) -> Record | None:
     if not db:
         db = Session(engine)

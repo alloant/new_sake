@@ -51,6 +51,7 @@ class Record(SQLModel, RecordMethod, table=True):
     sequence: int = Field(description="Sequential number (nn)")
     year: int = Field(description="Year (yy)")
     sender_id: int | None = Field(default=None, foreign_key="actor.id", description="Actor sending/producing the note")
+    dept_id: int | None = Field(default=None, foreign_key="dept.id", description="Department in charge of the record")
     params: dict[str,str] = Field(sa_column=Column(JSON, nullable=False), default_factory=dict)
     
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -59,5 +60,7 @@ class Record(SQLModel, RecordMethod, table=True):
     tags: list["Tag"] = Relationship(back_populates="records", link_model=RecordTag)
     users: list["RecordUser"] = Relationship(back_populates="record")
     sender: "Actor" = Relationship(back_populates="records")
+    dept: "Dept" = Relationship(back_populates="records")
     register: "Register" = Relationship(back_populates="records")
+    files: list["File"] = Relationship(back_populates="record")
 

@@ -6,3 +6,4 @@ from .register import Register
 from .contact import Contact
 from .ctr import Ctr
 from .dept import Dept
+from .file import File

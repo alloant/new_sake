@@ -2,13 +2,15 @@ from sqlmodel import Session
 
 from app.core.database import engine, get_old_data
 
-from app.models import User, Actor, Record, RecordUser, Register, Contact, Ctr, Dept
+from app.models import User, Actor, Record, RecordUser, Register, Contact, Ctr, Dept, File
 from app.models.record.record import Tag, RecordTag
 
 from app.crud.actor import get_actor_by_alias, get_actors
 from app.crud.register import get_register_by_alias
-from app.crud.record import create_record, get_all_records
+from app.crud.record import create_record, get_all_records, get_record_by_params
 from app.crud.user import create_user, get_users, get_user_by_id, get_user_by_actor_id
+from app.crud.dept import get_dept_by_alias, get_dept_by_actor_id
+
 
 def transfer_registers_old():
     db = Session(engine)
@@ -45,15 +47,80 @@ def transfer_registers():
     db.commit()
 
 def transfer_depts():
+    print('Transfer depts')
     db = Session(engine)
 
-    departments = [{'vcr':{'full_name': '', 'color': ''}},{'vc':{'full_name': '', 'color': ''}},{'df':{'full_name': '', 'color': ''}},{'dg':{'full_name': '', 'color': ''}},{'scr':{'full_name': '', 'color': ''}},{'vsm':{'full_name': '', 'color': ''}},{'vsr':{'full_name': '', 'color': ''}},{'vsg':{'full_name': '', 'color': ''}},{'ar':{'full_name': '', 'color': ''}},{'aop':{'full_name': '', 'color': ''}}]:
-    for dept in deparments:
+    departments = {
+        'vcr':{'full_name': 'Regional vicar', 'color': '#111111'},
+        'vc':{'full_name': 'Vicars', 'color': '#222222'},
+        'df':{'full_name': 'Defensor', 'color': '#333333'},
+        'dg':{'full_name': 'Delegate', 'color': '#444444'},
+        'scr':{'full_name': 'Secretary', 'color': '#555555'},
+        'vsm':{'full_name': 'St Michael', 'color': '#666666'},
+        'vsr':{'full_name': 'St Raphael', 'color': '#777777'},
+        'vsg':{'full_name': 'St Gabriel', 'color': '#888888'},
+        'ar':{'full_name': 'Administrator', 'color': '#999999'},
+        'aop':{'full_name': 'Apostolate public opinion', 'color': '#aaaaaa'}
+    }
+    
+    for dept in departments:
         print(dept)
-        db_dept = Dept(alias=dept,full_name=deparments[dept]['full_name'],color=deparments[dept]['color'])
+        db_dept = Dept(alias=dept,full_name=departments[dept]['full_name'],color=departments[dept]['color'])
         db.add(db_dept)
 
     db.commit()
+
+def transfer_find_depts():
+    db = Session(engine)
+    records = get_all_records(db)
+
+    for record in records:
+        if record.dept_id:
+            continue
+
+        dept_found = False
+        for tag in record.tags:
+            dept = get_dept_by_alias(tag.title,db)
+            if dept:
+                record.dept_id = dept.id
+                db.add(record)
+                dept_found = True
+                break
+        
+        if not dept_found:
+            print('/',record.sender,'/')
+            dept = get_dept_by_actor_id(record.sender_id,db)
+            print('++',dept,'++')
+            if dept:
+                record.dept_id = dept.id
+                db.add(record)
+                print('#######',record)
+                dept_found = True
+                break
+            else:
+                for target in record.targets:
+                    #print('|',target,'|')
+                    dept = get_dept_by_actor_id(target.user.id,db)
+                    if dept:
+                        record.dept_id = dept.id
+                        print('@@@@@@@',record)
+                        db.add(record)
+                        dept_found = True
+                        break
+    db.commit()
+
+def transfer_files():
+    db = Session(engine)
+    files = get_old_data('SELECT * from file')
+
+    for file in files:
+        print(file)
+        record = get_record_by_params('old_id',file['note_id'],db)
+        if record:
+            db_file = File(name=file['path'],record_id=record.id,permanent_link=file['permanent_link'], created_at=file['date'],updated_at=file['date'])
+            db.add(db_file)
+    db.commit()
+
 
 def transfer_actors():
     db = Session(engine)

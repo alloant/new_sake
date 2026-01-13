@@ -12,9 +12,9 @@ from app.core.auth import auth
 
 from app.routers import router
 
-from app.models import Register, Record, Actor, User, RecordUser
+from app.models import Register, Record, Actor, User, RecordUser, File
 
-from app.crud.transfer import transfer_notes, transfer_users, transfer_actors, transfer_registers, transfer_contacts, transfer_ctrs, transfer_note_user, transfer_tags, transfer_record_tag
+from app.crud.transfer import transfer_notes, transfer_users, transfer_actors, transfer_registers, transfer_contacts, transfer_ctrs, transfer_note_user, transfer_tags, transfer_record_tag, transfer_depts, transfer_find_depts, transfer_files
 
 # Initialize FastAPI
 app = FastAPI(title="Sake")
@@ -52,7 +52,9 @@ def on_startup():
         transfer_note_user()
         transfer_tags()
         transfer_record_tag()
-
+        transfer_depts()
+        transfer_find_depts()
+        transfer_files()
 # Mount Static Files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
