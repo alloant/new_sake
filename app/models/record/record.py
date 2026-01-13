@@ -64,3 +64,30 @@ class Record(SQLModel, RecordMethod, table=True):
     register: "Register" = Relationship(back_populates="records")
     files: list["File"] = Relationship(back_populates="record")
 
+    @property
+    def stage_icon(self):
+        if self.state == 'archived':
+            return 'archive-outline'
+        elif self.state == 'snooze':
+            return 'alarm-snooze'
+        
+        match self.stage:
+            case "inbox":
+                return 'file-alert-outline'
+            case "despacho":
+                return 'briefcase-outline'
+            case "registered":
+                return 'file-outline'
+            case "draft":
+                return 'progress-wrench'
+            case "outbox":
+                return 'timer-sand'
+            case "sent":
+                return 'email-fast-outline'
+            case "sketch":
+                return 'progress-wrench'
+            case "shared":
+                return 'account-arrow-right-outline'
+            case "closed":
+                return 'check'
+

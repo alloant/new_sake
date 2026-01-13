@@ -27,7 +27,7 @@ class File(SQLModel, table=True):
             case '': # Folder
                 return '',''
             case 'doc' | 'docx' | 'ppt' | 'pptx' | 'xls' | 'xlsx':
-                return 'dark','file-document'
+                return 'text','file-document'
             case 'mp4' | 'mkv':
                 return 'info','file-video'
             case 'mp3' | 'wav':

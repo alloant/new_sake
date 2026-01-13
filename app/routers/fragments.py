@@ -57,7 +57,7 @@ async def records_table(request: Request, page: int = None, last_search = None, 
     search = last_search if last_search else data.get("search")
     
     template, rst = await records_table_view(page, search, section, panel, db, current_user)
-    template = "record/table_pagination.html"
+    template = "record/table/table_pagination.html"
     
     return templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel} | rst)
 
@@ -80,7 +80,7 @@ async def records_global_search(request: Request, section: str = None, panel: st
     
     template, rst = await records_table_view(page, search, 'register', 'all', db, current_user)
     if section != 'register' or panel != 'all':
-        template = "record/table_sidebar.html"
+        template = "record/table/table_sidebar.html"
         sidebar = get_sidebar(payload,'register','all')
     else:
         sidebar = None

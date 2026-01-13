@@ -1,5 +1,5 @@
 <th style="position: relative;">
-  <span class="iconify behind-buttons" data-icon="mdi-alert-octagram"></span>
+  <span class="iconify behind-buttons" data-icon="mdi-{{ record.stage_icon }}"></span>
 
   <div class="hidden-row is-flex is-align-items-center justify-content-left pr-6"> <!-- Hidden part -->
     <!-- targets or sender -->
@@ -60,6 +60,6 @@
 <td class="has-text-right" style="position: relative;">
   <span class="behing-buttons">{{ record.date }}</span>
   <div class="action-buttons is-flex is-align-items-center px-6">
-    {% include 'record/table_row_actions.html' %}
+    {% include 'record/table/table_row_actions.html' %}
   </div>
 </td>
