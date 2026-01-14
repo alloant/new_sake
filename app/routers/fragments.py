@@ -57,9 +57,15 @@ async def records_table(request: Request, page: int = None, last_search = None, 
     search = last_search if last_search else data.get("search")
     
     template, rst = await records_table_view(page, search, section, panel, db, current_user)
-    template = "record/table/table_pagination.html"
+    layout = "table"
+    template = f"record/{layout}/table_pagination.html"
     
     return templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel} | rst)
+
+@router.post("/records/hidden-row", response_class=HTMLResponse)
+async def records_hidden_row(request: Request, record: "Record"):
+    return ','.join([file.name for file in record.files])
+
 
 @router.get("/action", response_class=HTMLResponse)
 async def action(request: Request, record_id: int, recorduser_id: str, action: str, section: str = None, panel: str = None, db: Session = Depends(get_db), current_user: str = Depends(get_current_user_from_cookie)):
@@ -80,7 +86,8 @@ async def records_global_search(request: Request, section: str = None, panel: st
     
     template, rst = await records_table_view(page, search, 'register', 'all', db, current_user)
     if section != 'register' or panel != 'all':
-        template = "record/table/table_sidebar.html"
+        layout = "table"
+        template = f"record/{layout}/table_sidebar.html"
         sidebar = get_sidebar(payload,'register','all')
     else:
         sidebar = None

@@ -5,6 +5,7 @@
   --sidebar-color-hover: #eeeeee;
   --sidebar-background-hover: #666666;
   --sidebar-background-active: hsl(229, 53%, 53%);
+  --records-hidden-row: #000000;
 }
 
 /* Dark Theme */
@@ -14,6 +15,7 @@
   --sidebar-color-hover: #111111;
   --sidebar-background-hover: #afafaf;
   --sidebar-background-active: var(--bulma-link);
+  --records-hidden-row: #FFFFFF;
 }
 
 html, body {
@@ -59,19 +61,28 @@ html, body {
 .hidden-row {
   visibility: hidden;
   opacity: 0;
-  height: 100%;
-  transition: opacity 0.2s ease-in-out;
+  max-height: 0;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
   position: absolute;
-  white-space: nowrap;
-  display: inline-block;
   top: 0%;
   left: 0%;
   background-color: var(--bulma-table-row-hover-background-color);
 }
 
+.hover-row {
+    transition: background-color 0.2s ease;
+    cursor: pointer; /* Makes it feel interactive */
+}
+
+.hover-row:hover {
+    background-color: var(--bulma-table-row-background-color); /* Light grey hover effect */
+}
+
 /* 2. Show them when the row (tr) is hovered */
 .hover-row:hover .hidden-row,
 .hover-row:hover .action-buttons {
+  transform: translateY(0);
+  max-height: 500px;
   visibility: visible;
   opacity: 1;
 }
@@ -203,4 +214,29 @@ nav.sidebar-section .item a.is-active {
   display: none;
   overflow: hidden;
   background-color: #f1f1f1;
+}
+
+/* The container for the content you want to reveal */
+.expandable-content {
+    max-height: 0;          /* Collapsed by default */
+    opacity: 0;             /* Invisible by default */
+    overflow: hidden;       /* Hide the 'extra' content */
+    transition: all 0.2s ease-in-out; /* Smooth sliding effect */
+}
+
+/* When the parent (the row or box) is hovered */
+.hover-box.is-active .expandable-content {
+    max-height: 500px;      /* Large enough to fit any content */
+    opacity: 1;             /* Fade in */
+    margin-top: 10px;       /* Spacing when expanded */
+}
+
+/* Optional: Subtle lift effect on the box itself */
+.hover-box {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-bottom: 1px solid #eee;
+}
+
+.hover-box:hover {
+    background-color: var(--sidebar-background);
 }

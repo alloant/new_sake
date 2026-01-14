@@ -1,0 +1,34 @@
+<div class="columns" style="border-bottom: 0.5px solid #555555;">
+  <div class="column is-2 p-2" style="gap: 1rem;"> <!-- here first 3 columns -->
+    <span><abbr title="Status">#</abbr></span>
+    <span><abbr title="Department"></abbr></span>
+    <span><abbr title="Protocol"></abbr></span>
+  </div>
+
+  <div class="column is-8 p-2">
+    <span>Title</span>
+  </div>
+  <div class="column is-2 p-2 has-text-right">
+    <span>Date</span>
+  </div>
+</div> <!-- End of columns -->
+
+{% for record, status in records %}
+  <div id="row-{{record.id}}" class="columns hover-box" style="border-bottom: 0.5px solid #555555;" onclick="toggleRow(event,this)">
+    {% include 'record/columns/table_row.html' %}
+  </div>
+{% endfor %}
+
+<script>
+function toggleRow(event, element) {
+    // 1. Check if the user clicked a button, a link, or an icon inside a button
+    // If they did, we stop the row from collapsing/expanding.
+    if (event.target.closest('button') || event.target.closest('a')) {
+        event.stopPropagation();
+        return; 
+    }
+
+    // 2. Otherwise, toggle the row as normal
+    element.classList.toggle('is-active');
+}
+</script>

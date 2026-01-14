@@ -1,0 +1,69 @@
+<div class="column is-2 is-flex is-flex-direction-column py-1">
+  <div class="" style="white-space: nowrap;">
+    <span class="iconify" data-icon="mdi-{{ record.stage_icon }}"></span>
+
+    {% if record.dept %}
+      <span class="tag is-bold has-text-black p-1 mx-2" style="width: 2rem; background-color: {{record.dept.color}};">
+        {{ record.dept.alias }}
+      </span>
+    {% else %}
+      <span class="tag is-bold has-text-black p-1 mx-2" style="width: 2rem;">
+        -
+      </span>
+    {% endif %}
+
+    <span class="" style="white-space: nowrap;">
+      {{ record.protocol }}
+    </span>
+  </div>
+
+  <div class="expandable-content"> <!-- Hidden part -->
+    <!-- targets or sender -->
+    {% if record.flow == 'outbound' %}
+      <span class="tag sender ml-1">{{ record.sender.alias }}</span>
+    {% else %}
+      {% for target in record.targets %}
+        <span class="tag sender ml-1">{{ target.user.actor.alias }}</span>
+      {% endfor %}
+    {% endif %}
+  </div> <!-- End hidden part -->
+
+</div>
+
+<div class="column is-8 is-flex is-flex-direction-column py-1">
+  <div class="">
+    <span class="{{ (status.read_status_html if status else 'has-text-weight-bold') if record.flow == 'inbound' else '' }}">
+      {{ record.title }}
+    </span>
+    <span class="">
+      {% for tag in record.tags %}
+        <span class="tag py-0">{{ tag.title }}</span>
+      {% endfor %}
+    </span>
+  </div>
+
+  <div class="expandable-content"> <!-- Hidden part -->
+    <!-- Files -->
+    {% for file in record.files %}
+      <a class="button is-rounded is-small py-1 px-2" target="_blank" href="https://nas.prome.sg:5001/oo/r/{{ file.permanent_link }}">
+        <span class="icon">
+          <span class="iconify has-text-{{file.icon[0]}}" data-icon="mdi-{{file.icon[1]}}"></span>
+        </span>
+        <span>
+          {{ file.name }}
+        </span>
+      </a>
+    {% endfor %}
+  </div> <!-- End hidden part -->
+
+</div>
+
+<div class="column is-2 py-1 has-text-right">
+  <div class="">
+    <span class="">{{ record.date }}</span>
+  </div>
+  
+  <div class="expandable-content px-6" style="white-space: nowrap;">
+    {% include 'record/columns/table_row_actions.html' %}
+  </div>
+</div>

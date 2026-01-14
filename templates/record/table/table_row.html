@@ -1,7 +1,32 @@
-<th style="position: relative;">
-  <span class="iconify behind-buttons" data-icon="mdi-{{ record.stage_icon }}"></span>
+<th>
+  <span class="iconify" data-icon="mdi-{{ record.stage_icon }}"></span>
+</th>
 
-  <div class="hidden-row is-flex is-align-items-center justify-content-left pr-6"> <!-- Hidden part -->
+<td>
+  {% if record.dept %}
+    <span class="tag is-bold has-text-black" style="width: 2rem; background-color: {{record.dept.color}};">
+      {{ record.dept.alias }}
+    </span>
+  {% else %}
+    <span class="tag is-bold has-text-black" style="width: 2rem;">
+    </span>
+  {% endif %}
+</td>
+
+<td class="has-text-left">
+  <span style="white-space: nowrap;">
+    {{ record.protocol }}
+  </span>
+
+  {% for tag in record.tags %}
+    <span class="tag is-small py-0" style="font-size: 0.65rem;">{{ tag.title }}</span>
+  {% endfor %}
+</td>
+
+<td>
+  <span class="is-4 {{ (status.read_status_html if status else 'has-text-weight-bold') if record.flow == 'inbound' else '' }}">
+    {{ record.title }}
+  </span>
     <!-- targets or sender -->
     {% if record.flow == 'outbound' %}
       <span class="tag sender ml-1">{{ record.sender.alias }}</span>
@@ -10,51 +35,6 @@
         <span class="tag sender ml-1">{{ target.user.actor.alias }}</span>
       {% endfor %}
     {% endif %}
-  </div> <!-- End hidden part -->
-</th>
-
-<td>
-  {% if record.dept %}
-    <span class="tag behind-buttons is-bold has-text-black" style="width: 2rem; background-color: {{record.dept.color}};">
-      {{ record.dept.alias }}
-    </span>
-  {% else %}
-    <span class="tag behind-buttons is-bold has-text-black" style="width: 2rem;">
-    </span>
-  {% endif %}
-</td>
-
-<td class="has-text-left p-0 m-0">
-  <span class="behind-buttons" style="white-space: nowrap;">
-    {{ record.protocol }}
-  </span>
-</td>
-
-<td style="position: relative;">
-  <span class="behind-buttons is-4 {{ (status.read_status_html if status else 'has-text-weight-bold') if record.flow == 'inbound' else '' }}">
-    {{ record.title }}
-  </span>
-  <span class="behind-buttons">
-    {% for tag in record.tags %}
-      <span class="tag py-0">{{ tag.title }}</span>
-    {% endfor %}
-  </span>
-  
-  <div class="hidden-row is-flex is-align-items-center justify-content-left"> <!-- Hidden part -->
-    <!-- Files -->
-    <span class="">
-      {% for file in record.files %}
-        <a class="button is-rounded is-small py-1 px-2" target="_blank" href="https://nas.prome.sg:5001/oo/r/{{ file.permanent_link }}">
-          <span class="icon">
-            <span class="iconify has-text-{{file.icon[0]}}" data-icon="mdi-{{file.icon[1]}}"></span>
-          </span>
-          <span>
-            {{ file.name }}
-          </span>
-        </a>
-      {% endfor %}
-    </span>
-  </div> <!-- End hidden part -->
 </td>
 
 <td class="has-text-right" style="position: relative;">
