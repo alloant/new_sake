@@ -37,4 +37,8 @@ class File(SQLModel, table=True):
             case _:
                 return '',''
 
-
+    @property
+    def short_name(self):
+        if len(self.name) > 12:
+            return f'{self.name[:10]}...'
+        return self.name

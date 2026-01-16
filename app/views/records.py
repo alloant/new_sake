@@ -1,4 +1,5 @@
 import math
+from app.core.config import LAYOUT
 from app.crud import get_record, get_records, get_record_user, get_record_user_by_id
 
 def pagination(num_records: int, page: int, limit_records: int):
@@ -27,8 +28,7 @@ def get_title(section,panel):
 async def records_view(page: int = None, search: str = None, section: str = None, panel: str = None, db = None, current_user = None):
     limit_records = current_user.get_setting('limit_records')
     records, num_records = get_records(db=db,user=current_user,section=section,panel=panel,search=search,limit=limit_records,offset=page)
-    layout = "table"
-    return f"record/{layout}/main.html", {"records": records, "pagination": pagination(num_records,page,limit_records), "title": get_title(section,panel), 'num_records': num_records, "current_user": current_user}
+    return f"record/{LAYOUT}/main.html", {"records": records, "pagination": pagination(num_records,page,limit_records), "title": get_title(section,panel), 'num_records': num_records, "current_user": current_user}
 
 
 async def records_table_view(page: int = None, search = None, section: str = None, panel: str = None, db = None, current_user = None):
@@ -36,8 +36,7 @@ async def records_table_view(page: int = None, search = None, section: str = Non
     offset = (page - 1)*limit_records if page else None
     records, num_records = get_records(db=db,user=current_user,section=section,panel=panel,search=search,limit=limit_records,offset=offset)
 
-    layout = "table"
-    return f"record/{layout}/table.html", {"records": records, "pagination": pagination(num_records,page,limit_records), "title": get_title(section,panel), 'num_records': num_records, "current_user": current_user}
+    return f"record/{LAYOUT}/table.html", {"records": records, "pagination": pagination(num_records,page,limit_records), "title": get_title(section,panel), 'num_records': num_records, "current_user": current_user}
 
 async def action_view(record_id,status_id, action, db, current_user):
     record = get_record(record_id)
@@ -53,5 +52,4 @@ async def action_view(record_id,status_id, action, db, current_user):
 
     db.add(status); db.commit(); db.refresh(status)
 
-    layout = "table"
-    return f"record/{layout}/table_row.html", {"record": record, "status": status}
+    return f"record/{LAYOUT}/table_row.html", {"record": record, "status": status}

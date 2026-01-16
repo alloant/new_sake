@@ -240,3 +240,20 @@ nav.sidebar-section .item a.is-active {
 .hover-box:hover {
     background-color: var(--sidebar-background);
 }
+
+.tag.dropdown-trigger:hover {
+    filter: brightness(90%);
+    cursor: pointer;
+}
+
+/* Allow the dropdown to be visible outside the cell */
+.table-container, 
+.table td, 
+.table th {
+  overflow: visible !important;
+}
+
+/* Ensure the dropdown menu stays on top of other rows */
+.dropdown.is-active {
+  z-index: 20;
+}

@@ -4,6 +4,7 @@
       <th><abbr title="Status">#</abbr></th>
       <th><abbr title="Department">Dep</abbr></th>
       <th><abbr title="Protocol">Pro</abbr></th>
+      <th>Files</th>
       
       <th class="is-full">Title</th>
       <th class="has-text-right">Date</th>
@@ -15,5 +16,22 @@
     {% include 'record/table/table_row.html' %}
    </tr>
   {% endfor %}
+<script>
+  document.addEventListener('click', function (event) {
+    // Check if we clicked the arrow part of the pill
+    const trigger = event.target.closest('.dropdown-trigger-button');
+    
+    if (trigger) {
+      const dropdown = trigger.closest('.dropdown');
+      dropdown.classList.toggle('is-active');
+      event.stopPropagation();
+    } else {
+      // Close all dropdowns if clicking elsewhere
+      document.querySelectorAll('.dropdown.is-active').forEach(d => {
+        d.classList.remove('is-active');
+      });
+    }
+  });
+</script>
   </tbody>
 </table>

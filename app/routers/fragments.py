@@ -8,6 +8,7 @@ from sqlmodel import Session
 
 from authx import TokenPayload
 
+from app.core.config import LAYOUT
 from app.core.auth import auth, get_current_user_from_cookie, get_payload_from_cookie
 from app.core.database import get_db
 from app.core.htmx import add_hx_trigger_header_on_success
@@ -57,8 +58,7 @@ async def records_table(request: Request, page: int = None, last_search = None, 
     search = last_search if last_search else data.get("search")
     
     template, rst = await records_table_view(page, search, section, panel, db, current_user)
-    layout = "table"
-    template = f"record/{layout}/table_pagination.html"
+    template = f"record/{LAYOUT}/table_pagination.html"
     
     return templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel} | rst)
 
@@ -86,8 +86,7 @@ async def records_global_search(request: Request, section: str = None, panel: st
     
     template, rst = await records_table_view(page, search, 'register', 'all', db, current_user)
     if section != 'register' or panel != 'all':
-        layout = "table"
-        template = f"record/{layout}/table_sidebar.html"
+        template = f"record/{LAYOUT}/table_sidebar.html"
         sidebar = get_sidebar(payload,'register','all')
     else:
         sidebar = None
