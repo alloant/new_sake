@@ -1,0 +1,29 @@
+<div id="modal-container" class="modal">
+  <div class="modal-background" onclick="closeModal()"></div>
+
+  <div class="modal-content">
+    <div id="modal-content-target" class="box">
+    </div>
+  </div>
+  <button class="modal-close is-large" aria-label="close" onclick="closeModal()"></button>
+
+</div> <!-- End modal container -->
+
+<script>
+  function closeModal() {
+    document.getElementById('modal-container').classList.remove('is-active');
+  }
+</script>
+
+<!-- to call modal
+
+<button 
+  class="button is-primary"
+  hx-get="/items/42/edit" 
+  hx-target="#modal-content-target"
+  hx-trigger="click"
+  onclick="document.getElementById('modal-container').classList.add('is-active')">
+  Edit Item
+</button>
+
+-->

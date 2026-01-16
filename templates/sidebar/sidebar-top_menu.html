@@ -4,11 +4,19 @@
   <ul class="menu-list">
 
   {% for item in group.items %}
-    <li>
-      <a  class="menu-link {{ item.active }}" 
+    <li class="">
+      <a  class="menu-link is-inline-flex is-justify-content-space-between is-align-items-center {{ item.active }}" 
           href="{{ item.link }}">
-        <i class="iconify" data-icon="{{ item.icon }}"></i>
-        {{ item.title }}
+        <span>
+          <i class="iconify" data-icon="{{ item.icon }}"></i>
+          {{ item.title }}
+        </span>
+        {% if item.show_count %}
+        <div  hx-get="/records/number?section={{section}}&panel={{item.id}}"
+            hx-trigger="load"
+            hx-indicator="#progress-indicator">
+        </div>
+        {% endif %}
       </a>
     </li>
   {% endfor %}

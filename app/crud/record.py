@@ -1,3 +1,5 @@
+import re
+
 from sqlmodel import Session, select, func
 from sqlalchemy import and_, or_, desc
 from sqlalchemy.orm import joinedload
@@ -115,7 +117,31 @@ def get_filter(user,section, panel):
 
     return fn
 
-def get_records(db: Session = None, user = None, section = None, panel = None, search: str = None, limit: int = None, offset: int = None) -> list[Record]:
+
+def get_search_filter(search):
+    fn = []
+    
+    # Try to find protocols
+    pattern_protocol = r"\b(\d+)/(\d{2})\b"
+    matches = re.findall(pattern_protocol, search)
+    cleaned_search = re.sub(pattern_protocol, "", search)
+    cleaned_search = " ".join(cleaned_search.split())
+
+    for match in matches:
+        fn.append(and_(Record.sequence==int(match[0]),Record.year==2000+int(match[1])))
+
+    # Numbers to equal them to sequence
+    for word in cleaned_search.split(' '):
+        if word.isdigit():
+            fn.append(Record.sequence==int(word))
+
+    # In title try find the whole search and the cleaned one.
+    fn.append(Record.title.like(f"%{cleaned_search}%"))
+    fn.append(Record.title.like(f"%{search}%"))
+
+    return or_(*fn)
+
+def get_records(db: Session = None, user = None, section = None, panel = None, search: str = None, limit: int = None, offset: int = None, just_number: bool = False) -> list[Record] | int:
     if not user:
         return []
     
@@ -125,8 +151,9 @@ def get_records(db: Session = None, user = None, section = None, panel = None, s
     fn = get_filter(user,section, panel)
     
     fn.append( or_(RecordUser.user_id == user.id,RecordUser.user_id.is_(None)) )
+
     if search:
-        fn.append(Record.title.like(f"%{search}%"))
+        fn.append(get_search_filter(search))
     
     num_stmt = select(func.count(Record.id)).join(RecordUser, isouter=True).where(*fn)
 
@@ -138,6 +165,9 @@ def get_records(db: Session = None, user = None, section = None, panel = None, s
     elif section == 'register':
         stmt = select(Record, RecordUser).join(RecordUser, isouter=True).where(*fn).options(joinedload(Record.sender),joinedload(Record.register)).limit(limit).offset(offset).order_by(desc(Record.updated_at))
     
+    if just_number:
+        return db.exec(num_stmt).one()
+
     return db.exec(stmt).all(), db.exec(num_stmt).one()
 
 def get_all_records(db: Session = None) -> list[Record]:

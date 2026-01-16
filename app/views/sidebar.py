@@ -50,6 +50,7 @@ class MenuItem(BaseModel):
     icon: str | None = None
     perms: list[str] = []
     active: str = ""
+    show_count: bool = False
 
 class MenuGroup(BaseModel):
     title: str
@@ -62,14 +63,14 @@ FULL_MENU['board'] = [
     MenuGroup(
         title="Despacho",
         items=[
-            MenuItem(id="despacho", title="Despacho", link="/?section=board&panel=despacho", icon="mdi-briefcase", perms=["despacho"]),
+            MenuItem(id="despacho", title="Despacho", link="/?section=board&panel=despacho", icon="mdi-briefcase", perms=["despacho"], show_count=True),
         ],
     ),
     MenuGroup(
         title="My inbox",
         items=[
-            MenuItem(id="inbox", title="Inbox", link="/?section=board&panel=inbox", icon="mdi-inbox-arrow-down", perms=["dr","of"]),
-            MenuItem(id="inbox-snooze", title="Snooze", link="/?section=board&panel=inbox-snooze", icon="mdi-alarm-snooze", perms=["dr","of"]),
+            MenuItem(id="inbox", title="Inbox", link="/?section=board&panel=inbox", icon="mdi-inbox-arrow-down", perms=["dr","of"], show_count=True),
+            MenuItem(id="inbox-snooze", title="Snooze", link="/?section=board&panel=inbox-snooze", icon="mdi-alarm-snooze", perms=["dr","of"], show_count=True),
             MenuItem(id="inbox-archived", title="Archived", link="/?section=board&panel=inbox-archived", icon="mdi-archive", perms=["dr","of"]),
         ],
     ),
@@ -77,24 +78,24 @@ FULL_MENU['board'] = [
     MenuGroup(
         title="My outbox",
         items=[
-            MenuItem(id="outbox-drafts", title="Drafts", link="/?section=board&panel=outbox-drafts", icon="mdi-note-edit", perms=["dr","of"]),
+            MenuItem(id="outbox-drafts", title="Drafts", link="/?section=board&panel=outbox-drafts", icon="mdi-note-edit", perms=["dr","of"], show_count=True),
             MenuItem(id="outbox-sent", title="Sent", link="/?section=board&panel=outbox-sent", icon="mdi-email-fast", perms=["dr","of"]),
         ]
     ),
     MenuGroup(
         title="Proposals",
         items=[
-            MenuItem(id="incoming-proposals-to-sign", title="To sign", link="/?section=board&panel=incoming-proposals-to-sign", icon="mdi-pen", perms=["dr","of"]),
+            MenuItem(id="incoming-proposals-to-sign", title="To sign", link="/?section=board&panel=incoming-proposals-to-sign", icon="mdi-pen", perms=["dr","of"], show_count=True),
             MenuItem(id="incoming-proposals-signed", title="Signed", link="/?section=board&panel=incoming-proposals-signed", icon="mdi-draw-pen", perms=["dr","of"]),
         ]
     ),
     MenuGroup(
         title="My proposals",
         items=[
-            MenuItem(id="outcoming-proposals-drafts", title="Drafts", link="/?section=board&panel=outcoming-proposals-drafts", icon="mdi-note-edit", perms=["dr","of"]),
-            MenuItem(id="outcoming-proposals-circulating", title="Circulating", link="/?section=board&panel=outcoming-proposals-circulating", icon="mdi-account-arrow-right-outline", perms=["dr","of"]),
-            MenuItem(id="outcoming-proposals-done", title="Done", link="/?section=board&panel=outcoming-proposals-done", icon="mdi-check-circle-outline", perms=["dr","of"]),
-            MenuItem(id="outcoming-proposals-snooze", title="Snooze", link="/?section=board&panel=outcoming-proposals-snooze", icon="mdi-alarm-snooze", perms=["dr","of"]),
+            MenuItem(id="outcoming-proposals-drafts", title="Drafts", link="/?section=board&panel=outcoming-proposals-drafts", icon="mdi-note-edit", perms=["dr","of"], show_count=True),
+            MenuItem(id="outcoming-proposals-circulating", title="Circulating", link="/?section=board&panel=outcoming-proposals-circulating", icon="mdi-account-arrow-right-outline", perms=["dr","of"], show_count=True),
+            MenuItem(id="outcoming-proposals-done", title="Done", link="/?section=board&panel=outcoming-proposals-done", icon="mdi-check-circle-outline", perms=["dr","of"], show_count=True),
+            MenuItem(id="outcoming-proposals-snooze", title="Snooze", link="/?section=board&panel=outcoming-proposals-snooze", icon="mdi-alarm-snooze", perms=["dr","of"], show_count=True),
             MenuItem(id="outcoming-proposals-archived", title="Archived", link="/?section=board&panel=outcoming-proposals-archived", icon="mdi-archive", perms=["dr","of"]),
         ]
     ),

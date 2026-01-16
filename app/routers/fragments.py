@@ -62,9 +62,13 @@ async def records_table(request: Request, page: int = None, last_search = None, 
     
     return templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel} | rst)
 
-@router.post("/records/hidden-row", response_class=HTMLResponse)
-async def records_hidden_row(request: Request, record: "Record"):
-    return ','.join([file.name for file in record.files])
+@router.get("/records/number", response_class=HTMLResponse)
+async def records_hidden_row(request: Request, section: str, panel: str, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
+    current_user = get_user_by_email(payload.sub, db)
+    num = get_records(db = db, user = current_user, section = section, panel = panel, just_number = True)
+    if num == 0:
+        return ''
+    return f'<span class="tag is-danger is-rounded py-0" style="font-size: 0.65rem;">{num}</span>'
 
 
 @router.get("/action", response_class=HTMLResponse)

@@ -14,7 +14,7 @@
 </div> <!-- End of columns -->
 
 {% for record, status in records %}
-  <div id="row-{{record.id}}" class="columns hover-box" style="border-bottom: 0.5px solid #555555;" onclick="toggleRow(event,this)">
+  <div id="row-{{record.id}}" class="columns hover-box hover-row" style="border-bottom: 0.5px solid #555555;" onclick="toggleRow(event,this)">
     {% include 'record/columns/table_row.html' %}
   </div>
 {% endfor %}

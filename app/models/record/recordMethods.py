@@ -38,7 +38,7 @@ class RecordMethod(object):
         actions = []
         if self.flow == 'inbound':
             actions.append(ActionGroup(title="Read",items=[]))
-            if state.read_status == 'read':
+            if not state or state.read_status == 'read':
                 actions[-1].items.append(Action(id="mark_unread", title="Mark as unread", hxget="/action?action=mark_unread", icon="mdi-email-open-outline"))
             else:
                 actions[-1].items.append(Action(id="mark_read", title="Mark as read", hxget="/action?action=mark_read", icon="mdi-email-check-outline"))

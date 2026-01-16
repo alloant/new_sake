@@ -1,13 +1,13 @@
 <div class="column is-2 is-flex is-flex-direction-column py-1">
-  <div class="" style="white-space: nowrap;">
+  <span class="" style="white-space: nowrap;">
     <span class="iconify" data-icon="mdi-{{ record.stage_icon }}"></span>
 
     {% if record.dept %}
-      <span class="tag is-bold has-text-black p-1 mx-2" style="width: 2rem; background-color: {{record.dept.color}};">
+      <span class="tag is-bold has-text-black p-1 mx-4" style="width: 2rem; background-color: {{record.dept.color}};">
         {{ record.dept.alias }}
       </span>
     {% else %}
-      <span class="tag is-bold has-text-black p-1 mx-2" style="width: 2rem;">
+      <span class="tag is-bold has-text-black p-1 mx-4" style="width: 2rem;">
         -
       </span>
     {% endif %}
@@ -15,10 +15,20 @@
     <span class="" style="white-space: nowrap;">
       {{ record.protocol }}
     </span>
-  </div>
+  </span>
 
   <div class="expandable-content"> <!-- Hidden part -->
-    <!-- targets or sender -->
+    {% for tag in record.tags %}
+      <span class="tag py-0">{{ tag.title }}</span>
+    {% endfor %}
+  </div> <!-- End hidden part -->
+</div> <!-- End column -->
+
+<div class="column is-8 py-1">
+  <div class="">
+    <span class="{{ (status.read_status_html if status else 'has-text-weight-bold') if record.flow == 'inbound' else '' }}">
+      {{ record.title }}
+    </span>
     {% if record.flow == 'outbound' %}
       <span class="tag sender ml-1">{{ record.sender.alias }}</span>
     {% else %}
@@ -26,20 +36,6 @@
         <span class="tag sender ml-1">{{ target.user.actor.alias }}</span>
       {% endfor %}
     {% endif %}
-  </div> <!-- End hidden part -->
-
-</div>
-
-<div class="column is-8 is-flex is-flex-direction-column py-1">
-  <div class="">
-    <span class="{{ (status.read_status_html if status else 'has-text-weight-bold') if record.flow == 'inbound' else '' }}">
-      {{ record.title }}
-    </span>
-    <span class="">
-      {% for tag in record.tags %}
-        <span class="tag py-0">{{ tag.title }}</span>
-      {% endfor %}
-    </span>
   </div>
 
   <div class="expandable-content"> <!-- Hidden part -->
@@ -55,15 +51,14 @@
       </a>
     {% endfor %}
   </div> <!-- End hidden part -->
+</div> <!-- End column -->
 
-</div>
-
-<div class="column is-2 py-1 has-text-right">
-  <div class="">
+<div class="column is-2 py-1 has-text-right" style="position: relative;">
+  <div class="behind-buttons">
     <span class="">{{ record.date }}</span>
   </div>
   
-  <div class="expandable-content px-6" style="white-space: nowrap;">
-    {% include 'record/columns/table_row_actions.html' %}
+  <div class="action-buttons is-flex is-align-items-center px-6" style="white-space: nowrap;">
+    {% include 'record/table/table_row_actions.html' %}
   </div>
 </div>
