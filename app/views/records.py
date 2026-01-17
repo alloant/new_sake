@@ -1,6 +1,6 @@
 import math
 from app.core.config import LAYOUT
-from app.crud import get_record, get_records, get_record_user, get_record_user_by_id
+from app.crud import get_record, get_records, get_record_user, get_record_user_by_id, get_user_registers
 
 def pagination(num_records: int, page: int, limit_records: int):
     num_pages = math.ceil(num_records / limit_records)
@@ -49,6 +49,9 @@ async def action_view(record_id,status_id, action, db, current_user):
         status.read_status = "read"
     elif action == "mark_unread":
         status.read_status = "unread"
+    elif action == "edit":
+        registers = get_user_registers(current_user.scopes)
+        return "forms/record.html", {'record': record, 'status': status, 'registers': registers}
 
     db.add(status); db.commit(); db.refresh(status)
 

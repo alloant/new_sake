@@ -56,12 +56,14 @@ def get_num_records(db: Session = None, search: str = None) -> list[Record]:
 def get_filter(user,section, panel):
     fn = []
     if section == 'register':
-        if panel == 'all':
+        if panel in ['all','unread']:
             user_registers = get_user_registers(user.scopes)
             fn_registers = [Record.register_id == get_register_by_alias(register).id for register in user_registers if user_registers[register]]
             fn.append(or_(*fn_registers))
-        elif panel == 'unread':
-            pass
+
+            if panel == 'unread':
+                fn.append(Record.flow=='inbound')
+                fn.append(or_(RecordUser==None,RecordUser.read_status!='read'))
         else:
             register_alias, flow = panel.split('-')
             register = get_register_by_alias(register_alias)

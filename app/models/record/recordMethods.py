@@ -1,12 +1,14 @@
 from pydantic import BaseModel
 from datetime import date
-from app.views.actions import get_actions
 
 class Action(BaseModel):
     id: str
     title: str
-    hxget: str | None = None
-    hxtarget: str | None = None
+    hxget: str = ""
+    hxtarget: str = ""
+    hxtrigger: str | None = None
+    modal: bool = False
+    other: str = ""
     icon: str | None = None
     perms: list[str] = []
 
@@ -38,23 +40,31 @@ class RecordMethod(object):
         actions = []
         if self.flow == 'inbound':
             actions.append(ActionGroup(title="Read",items=[]))
-            if not state or state.read_status == 'read':
-                actions[-1].items.append(Action(id="mark_unread", title="Mark as unread", hxget="/action?action=mark_unread", icon="mdi-email-open-outline"))
-            else:
+            if not state or state.read_status == 'unread':
                 actions[-1].items.append(Action(id="mark_read", title="Mark as read", hxget="/action?action=mark_read", icon="mdi-email-check-outline"))
+            else:
+                actions[-1].items.append(Action(id="mark_unread", title="Mark as unread", hxget="/action?action=mark_unread", icon="mdi-email-open-outline"))
 
-        actions.append(ActionGroup(title="Inbox",
-            items=[
-                Action(id="enable_snooze", title="Snooze", hxget="/action?action=enable_snooze", icon="mdi-alarm-snooze"),
-                Action(id="disable_snooze", title="Disable snooze", hxget="/action?action=disable_snooze", icon="mdi-weather-sunset"),
-                Action(id="archive", title="Archive", hxget="/action?action=archive", icon="mdi-archive-arrow-down-outline"),
-                Action(id="restore", title="Restore", hxget="/action?action=restore", icon="mdi-archive-arrow-up-outline")
-                ]))
+            actions.append(ActionGroup(title="Inbox",items=[]))
+            if self.state != 'snooze':
+                actions[-1].items.append(Action(id="enable_snooze", title="Snooze", hxget="/action?action=enable_snooze", icon="mdi-alarm-snooze"))
+            else:
+                actions[-1].items.append(Action(id="disable_snooze", title="Disable snooze", hxget="/action?action=disable_snooze", icon="mdi-weather-sunset"))
+            
+            if self.state != 'archived':
+                actions[-1].items.append(Action(id="archive", title="Archive", hxget="/action?action=archive", icon="mdi-archive-arrow-down-outline"))
+            else:
+                actions[-1].items.append(Action(id="restore", title="Restore", hxget="/action?action=restore", icon="mdi-archive-arrow-up-outline"))
 
         actions.append(ActionGroup(title="Info",
             items=[
                 Action(id="check_info", title="Info about the note", hxget="/action?action=check_info", icon="mdi-information-outline"),
                 Action(id="recursive_search", title="List all notes related with this entry", hxget="/action?action=recursive_search", icon="mdi-archive-search-outline")
                 ]))
+
+        actions.append(ActionGroup(title="Edition",
+            items=[
+                Action(id="edit_record",title="Edit", hxget="/action?action=edit", hxtarget="#modal-content-target", modal=True, icon="mdi-pen", perms=[]),
+            ]))
 
         return actions
