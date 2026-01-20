@@ -41,6 +41,11 @@ class Tag(SQLModel, table=True):
     title: str | None = Field(max_length=10, default="")
     records: list["Record"] = Relationship(back_populates="tags", link_model=RecordTag)
 
+
+class RecordRecord(SQLModel, table=True):
+    record_id: int | None = Field(default=None, foreign_key="record.id", primary_key=True)
+    reference_id: int | None = Field(default=None, foreign_key="record.id", primary_key=True)
+
 class Record(SQLModel, RecordMethod, table=True):
     id: int | None = Field(default=None, primary_key=True)
     state: State = Field()
@@ -63,6 +68,14 @@ class Record(SQLModel, RecordMethod, table=True):
     dept: "Dept" = Relationship(back_populates="records")
     register: "Register" = Relationship(back_populates="records")
     files: list["File"] = Relationship(back_populates="record")
+
+    references: list["Record"] = Relationship(
+        link_model=RecordRecord,
+        sa_relationship_kwargs={
+            "primaryjoin": "Record.id == RecordRecord.record_id",
+            "secondaryjoin": "Record.id == RecordRecord.reference_id",
+        },
+    )
 
     @property
     def stage_icon(self):

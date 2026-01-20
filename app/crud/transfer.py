@@ -2,7 +2,7 @@ from sqlmodel import Session
 
 from app.core.database import engine, get_old_data
 
-from app.models import User, Actor, Record, RecordUser, Register, Contact, Ctr, Dept, File
+from app.models import User, Actor, Record, RecordUser, Register, Contact, Ctr, Dept, File, RecordRecord
 from app.models.record.record import Tag, RecordTag
 
 from app.crud.actor import get_actor_by_alias, get_actors
@@ -294,4 +294,19 @@ def transfer_record_tag():
 
     db.commit()
 
+def transfer_references():
+    db = Session(engine)
+    records = get_all_records()
+
+    for record in records:
+        old_record_id = record.params['old_id']
+        references = get_old_data(f"SELECT * FROM note_ref WHERE note_id = {old_record_id}")
+        for reference in references:
+            print(reference)
+            new_reference = get_record_by_params('old_id',reference['ref_id'],db)
+            if new_reference:
+                recordref = RecordRecord(record_id=record.id,reference_id=new_reference.id)
+            db.add(recordref)
+
+        db.commit()
 

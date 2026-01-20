@@ -51,6 +51,7 @@ class MenuItem(BaseModel):
     perms: list[str] = []
     active: str = ""
     show_count: bool = False
+    hx_trigger: str = ""
 
 class MenuGroup(BaseModel):
     title: str
@@ -163,7 +164,7 @@ def get_panel_register(user_perms,panel):
     items = []
     items.append(MenuItem(id=f"all",title="All",link=f"/?section=register&panel=all",icon="mdi-web"))
     items[-1].active = "is-active" if "all" == panel else ""
-    items.append(MenuItem(id=f"unread",title="Unread",link=f"/?section=register&panel=unread",icon="mdi-message-badge"))
+    items.append(MenuItem(id=f"unread",title="Unread",link=f"/?section=register&panel=unread",icon="mdi-message-badge",show_count=True,hx_trigger=",read_state_changed from:body"))
     items[-1].active = "is-active" if "unread" == panel else ""
     menu.append(MenuGroup(title="All registers", items=items))
 

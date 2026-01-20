@@ -13,8 +13,8 @@
         </span>
         {% if item.show_count %}
         <div  hx-get="/records/number?section={{section}}&panel={{item.id}}"
-            hx-trigger="load"
-            hx-indicator="#progress-indicator">
+              hx-trigger="load{{item.hx_trigger}}"
+              hx-indicator="#progress-indicator">
         </div>
         {% endif %}
       </a>

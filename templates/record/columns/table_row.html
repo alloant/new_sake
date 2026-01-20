@@ -50,6 +50,19 @@
         </span>
       </a>
     {% endfor %}
+    {% for reference in record.references %}
+      <p class="p-2">{{ reference.protocol }} {{reference.title }}</p>
+      {% for file in reference.files %}
+        <a class="button is-rounded is-small py-1 px-2 ml-4" target="_blank" href="https://nas.prome.sg:5001/oo/r/{{ file.permanent_link }}">
+          <span class="icon">
+            <span class="iconify has-text-{{file.icon[0]}}" data-icon="mdi-{{file.icon[1]}}"></span>
+          </span>
+          <span>
+            {{ file.name }}
+          </span>
+        </a>
+      {% endfor %}
+    {% endfor %}
   </div> <!-- End hidden part -->
 </div> <!-- End column -->
 
@@ -58,7 +71,7 @@
     <span class="">{{ record.date }}</span>
   </div>
   
-  <div class="action-buttons is-flex is-align-items-center px-6" style="white-space: nowrap;">
+  <div class="action-buttons is-flex is-align-items-up px-6" style="white-space: nowrap;">
     {% include 'record/columns/table_row_actions.html' %}
   </div>
 </div>

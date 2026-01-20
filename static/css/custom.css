@@ -224,11 +224,12 @@ nav.sidebar-section .item a.is-active {
     transition: all 0.2s ease-in-out; /* Smooth sliding effect */
 }
 
-/* When the parent (the row or box) is hovered */
-.hover-box.is-active .expandable-content {
+/* When the parent (the row or box) is hovered. Changing :hover for .is-active I change hover for click */
+.hover-box:hover .expandable-content {
     max-height: 500px;      /* Large enough to fit any content */
     opacity: 1;             /* Fade in */
     margin-top: 10px;       /* Spacing when expanded */
+    transition-delay: 0.6s;
 }
 
 /* Optional: Subtle lift effect on the box itself */

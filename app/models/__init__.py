@@ -1,4 +1,4 @@
-from .record import Record
+from .record import Record, RecordRecord
 from .user import User
 from .actor import Actor
 from .record_user import RecordUser

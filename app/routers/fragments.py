@@ -74,8 +74,13 @@ async def records_hidden_row(request: Request, section: str, panel: str, db: Ses
 @router.get("/action", response_class=HTMLResponse)
 async def action(request: Request, record_id: int, recorduser_id: str, action: str, section: str = None, panel: str = None, db: Session = Depends(get_db), current_user: str = Depends(get_current_user_from_cookie)):
     template, rst = await action_view(record_id, recorduser_id, action, db, current_user)
-    
-    return templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel, 'current_user': current_user} | rst)
+    response = templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel, 'current_user': current_user} | rst)
+
+    if action in ['mark_read','mark_unread']:
+        response.headers['HX-Trigger'] = 'read_state_changed'
+
+
+    return response
 
 
 @router.post("/global_search", response_class=HTMLResponse)
