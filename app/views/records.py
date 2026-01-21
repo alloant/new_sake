@@ -39,7 +39,7 @@ async def records_table_view(page: int = None, search = None, section: str = Non
     return f"record/{LAYOUT}/table.html", {"records": records, "pagination": pagination(num_records,page,limit_records), "title": get_title(section,panel), 'num_records': num_records, "current_user": current_user}
 
 async def action_view(record_id,status_id, action, db, current_user):
-    record = get_record(record_id)
+    record = get_record(record_id, db = db)
     if status_id:
         status = get_record_user_by_id(record_user_id = status_id, db = db)
     else:
@@ -49,10 +49,17 @@ async def action_view(record_id,status_id, action, db, current_user):
         status.read_status = "read"
     elif action == "mark_unread":
         status.read_status = "unread"
+    elif action == "archive":
+        record.state = "archived"
+    elif action == "restore":
+        record.state = "active"
     elif action == "edit":
         registers = get_user_registers(current_user.scopes)
         return "forms/record.html", {'record': record, 'status': status, 'registers': registers}
 
-    db.add(status); db.commit(); db.refresh(status)
+    if action in ['mark_read','mark_unread']:
+        db.add(status); db.commit(); db.refresh(status)
+    elif action in ['archive','restore']:
+        db.add(record); db.commit(); db.refresh(record)
 
     return f"record/{LAYOUT}/table_row.html", {"record": record, "status": status}

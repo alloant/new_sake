@@ -59,7 +59,7 @@ class RecordMethod(object):
         actions.append(ActionGroup(title="Info",
             items=[
                 Action(id="check_info", title="Info about the note", hxget="/action?action=check_info", icon="mdi-information-outline"),
-                Action(id="recursive_search", title="List all notes related with this entry", hxget="/action?action=recursive_search", icon="mdi-archive-search-outline")
+                Action(id="recursive_search", title="List all notes related with this entry", hxget="/action?action=recursive_search", icon="mdi-archive-search-outline", hxtarget="#main-table")
                 ]))
 
         actions.append(ActionGroup(title="Edition",

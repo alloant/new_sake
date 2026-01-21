@@ -72,13 +72,24 @@ async def records_hidden_row(request: Request, section: str, panel: str, db: Ses
 
 
 @router.get("/action", response_class=HTMLResponse)
-async def action(request: Request, record_id: int, recorduser_id: str, action: str, section: str = None, panel: str = None, db: Session = Depends(get_db), current_user: str = Depends(get_current_user_from_cookie)):
+async def action(request: Request, record_id: int, recorduser_id: str, action: str, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
+    current_user = get_user_by_email(payload.sub, db)
+    if action == 'recursive_search':
+        page = 1
+        template, rst = await records_table_view(page, f'all_off:{record_id}', 'register', 'all', db, current_user)
+        template = f"record/{LAYOUT}/table_sidebar.html"
+        sidebar = get_sidebar(payload,'register','all')
+        response = templates.TemplateResponse(template, {'request': request, 'section': 'register', 'panel': 'all', 'sidebar': sidebar, 'search': f'all_off:{record_id}'} | rst)
+
+        return response
+   
     template, rst = await action_view(record_id, recorduser_id, action, db, current_user)
     response = templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel, 'current_user': current_user} | rst)
 
     if action in ['mark_read','mark_unread']:
         response.headers['HX-Trigger'] = 'read_state_changed'
-
+    elif action in ['archive','restore']:
+        response.headers['HX-Trigger'] = 'record_state_changed'
 
     return response
 
