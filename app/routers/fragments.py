@@ -56,11 +56,11 @@ async def records_table(request: Request, page: int = None, last_search = None, 
     form = await request.form()
     data = dict(form)
     search = last_search if last_search else data.get("search")
-    
+    print('last_search:',last_search)
     template, rst = await records_table_view(page, search, section, panel, db, current_user)
     template = f"record/{LAYOUT}/table_pagination.html"
     
-    return templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel} | rst)
+    return templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel, 'search': search} | rst)
 
 @router.get("/records/number", response_class=HTMLResponse)
 async def records_hidden_row(request: Request, section: str, panel: str, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
@@ -79,7 +79,7 @@ async def action(request: Request, record_id: int, recorduser_id: str, action: s
         template, rst = await records_table_view(page, f'all_off:{record_id}', 'register', 'all', db, current_user)
         template = f"record/{LAYOUT}/table_sidebar.html"
         sidebar = get_sidebar(payload,'register','all')
-        response = templates.TemplateResponse(template, {'request': request, 'section': 'register', 'panel': 'all', 'sidebar': sidebar, 'search':''} | rst)
+        response = templates.TemplateResponse(template, {'request': request, 'section': 'register', 'panel': 'all', 'sidebar': sidebar, 'search':f'all_off:{record_id}'} | rst)
 
         return response
    
