@@ -79,7 +79,7 @@ async def action(request: Request, record_id: int, recorduser_id: str, action: s
         template, rst = await records_table_view(page, f'all_off:{record_id}', 'register', 'all', db, current_user)
         template = f"record/{LAYOUT}/table_sidebar.html"
         sidebar = get_sidebar(payload,'register','all')
-        response = templates.TemplateResponse(template, {'request': request, 'section': 'register', 'panel': 'all', 'sidebar': sidebar, 'search': f'all_off:{record_id}'} | rst)
+        response = templates.TemplateResponse(template, {'request': request, 'section': 'register', 'panel': 'all', 'sidebar': sidebar, 'search':''} | rst)
 
         return response
    

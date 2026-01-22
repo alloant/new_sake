@@ -145,7 +145,7 @@ def get_search_filter(search):
     return or_(*fn)
 
 
-def get_recursive_records(start_id: int, user: "User", limit: int = None, offset:int = None, db: Session = None):
+def get_recursive_ids(start_id: int, user: "User", limit: int = None, offset:int = None, db: Session = None):
     start_record = get_record(start_id)
     start_ids = [start_id]
     for reference in start_record.references:
@@ -153,14 +153,6 @@ def get_recursive_records(start_id: int, user: "User", limit: int = None, offset
 
     start_ids = ",".join([str(r) for r in start_ids])
     
-    sql = text(
-            f"with recursive R as ( \
-            SELECT record_id as rec, reference_id as ref FROM recordrecord WHERE record_id in ({start_ids}) or reference_id in ({start_ids}) \
-            UNION \
-            SELECT recordrecord.record_id, recordrecord.reference_id FROM R, recordrecord WHERE recordrecord.record_id = R.rec or recordrecord.reference_id in (R.rec,R.ref) or recordrecord.record_id in (R.rec,R.ref)\
-            ) \
-            select rec, ref from R"
-        )
     sql = text(
         f"""
         WITH RECURSIVE R AS (
@@ -180,20 +172,13 @@ def get_recursive_records(start_id: int, user: "User", limit: int = None, offset
     all_ids = db.exec(sql).unique().all()
 
     #all_ids = list(set([start_id] + [item for sublist in all_ids for item in sublist]))
-    all_ids = [item[0] for item in all_ids]
-    fn = []
-    fn.append( or_(RecordUser.user_id == user.id,RecordUser.user_id.is_(None)) )
-    final_query = select(Record, RecordUser).join(RecordUser, isouter=True).where(and_(Record.id.in_(all_ids),*fn)).options(joinedload(Record.sender),joinedload(Record.register)).limit(limit).offset(offset).order_by(desc(Record.updated_at))
-    result = db.exec(final_query).all()
-    
-    return result, len(result)
+    all_ids = list(set([int(start_id)] + [item[0] for item in all_ids]))
+
+    return Record.id.in_(all_ids)
 
 def get_records(db: Session = None, user = None, section = None, panel = None, search: str = None, limit: int = None, offset: int = None, just_number: bool = False) -> list[Record] | int:
     if not user:
         return []
-    
-    if search and search.startswith('all_off:'):
-        return get_recursive_records(search[8:], user, limit, offset, db)
 
     if not db:
         db = Session(engine)
@@ -203,7 +188,10 @@ def get_records(db: Session = None, user = None, section = None, panel = None, s
     fn.append( or_(RecordUser.user_id == user.id,RecordUser.user_id.is_(None)) )
 
     if search:
-        fn.append(get_search_filter(search))
+        if search.startswith('all_off:'):
+            fn.append(get_recursive_ids(search[8:], user, limit, offset, db))
+        else:
+            fn.append(get_search_filter(search))
     
     num_stmt = select(func.count(Record.id)).join(RecordUser, isouter=True).where(*fn)
 
