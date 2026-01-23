@@ -3,7 +3,7 @@
     <div class="field">
       <p class="control has-icons-left">
         <input class="input is-mediumish is-rounded" type="search" placeholder="Global search"
-          name="all_search" id="all_search" value="{{search}}"
+          name="all_search" id="all_search" value="{{ search if not search.startswith('all_off:') else '' }}"
           hx-post="/global_search?section={{section}}&panel={{panel}}"
           hx-trigger="input changed delay:500ms, search"
           hx-target="#main-table"/>

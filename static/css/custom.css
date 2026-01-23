@@ -5,7 +5,7 @@
   --sidebar-color-hover: #eeeeee;
   --sidebar-background-hover: #666666;
   --sidebar-background-active: hsl(229, 53%, 53%);
-  --records-hidden-row: #000000;
+  --records-hidden-row: #eeeeee;
 }
 
 /* Dark Theme */
@@ -15,7 +15,7 @@
   --sidebar-color-hover: #111111;
   --sidebar-background-hover: #afafaf;
   --sidebar-background-active: var(--bulma-link);
-  --records-hidden-row: #FFFFFF;
+  --records-hidden-row: #111111;
 }
 
 html, body {
@@ -222,6 +222,7 @@ nav.sidebar-section .item a.is-active {
     opacity: 0;             /* Invisible by default */
     overflow: hidden;       /* Hide the 'extra' content */
     transition: all 0.2s ease-in-out; /* Smooth sliding effect */
+    background-color: var(--records-hidden-row);
 }
 
 /* When the parent (the row or box) is hovered. Changing :hover for .is-active I change hover for click */

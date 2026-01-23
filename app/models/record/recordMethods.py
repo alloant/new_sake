@@ -38,10 +38,10 @@ class RecordMethod(object):
 
     def get_actions(self, state, current_user, section, panel):
         actions = []
-        if self.flow == 'inbound':
+        if self.flow in ['inbound','internal_cr','internal_cl']:
             actions.append(ActionGroup(title="Read",items=[]))
             if not state or state.read_status == 'unread':
-                actions[-1].items.append(Action(id="mark_read", title="Mark as read", hxget="/action?action=mark_read", icon="mdi-email-check-outline"))
+                actions[-1].items.append(Action(id="mark_read", title="Mark as read", hxget="/action?action=mark_read", icon="mdi-email-check"))
             else:
                 actions[-1].items.append(Action(id="mark_unread", title="Mark as unread", hxget="/action?action=mark_unread", icon="mdi-email-open-outline"))
 
@@ -52,7 +52,7 @@ class RecordMethod(object):
                 actions[-1].items.append(Action(id="disable_snooze", title="Disable snooze", hxget="/action?action=disable_snooze", icon="mdi-weather-sunset"))
             
             if self.state != 'archived':
-                actions[-1].items.append(Action(id="archive", title="Archive", hxget="/action?action=archive", icon="mdi-archive-arrow-down-outline"))
+                actions[-1].items.append(Action(id="archive", title="Archive", hxget="/action?action=archive", icon="mdi-archive-arrow-down"))
             else:
                 actions[-1].items.append(Action(id="restore", title="Restore", hxget="/action?action=restore", icon="mdi-archive-arrow-up-outline"))
 
@@ -64,7 +64,7 @@ class RecordMethod(object):
 
         actions.append(ActionGroup(title="Edition",
             items=[
-                Action(id="edit_record",title="Edit", hxget="/action?action=edit", hxtarget="#modal-content-target", modal=True, icon="mdi-pen", perms=[]),
+                Action(id="edit_record",title="Edit", hxget="/action?action=edit", hxtarget="#modal-content-target", modal=True, icon="mdi-email-edit", perms=[]),
             ]))
 
         return actions

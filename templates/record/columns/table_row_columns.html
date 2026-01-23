@@ -1,4 +1,4 @@
-<div class="cell">
+<div class="column is-2 is-flex is-flex-direction-column py-1">
   <span class="" style="white-space: nowrap;">
     <span class="iconify" data-icon="mdi-{{ record.stage_icon }}"></span>
 
@@ -17,9 +17,14 @@
     </span>
   </span>
 
-</div> <!-- End cell -->
+  <div class="expandable-content"> <!-- Hidden part -->
+    {% for tag in record.tags %}
+      <span class="tag py-0">{{ tag.title }}</span>
+    {% endfor %}
+  </div> <!-- End hidden part -->
+</div> <!-- End column -->
 
-<div class="cell is-col-span-3">
+<div class="column is-8 py-1">
   <div class="">
     <span class="{{ (status.read_status_html if status else 'has-text-weight-bold') if record.flow == 'inbound' else '' }}">
       {{ record.title }}
@@ -32,39 +37,21 @@
       {% endfor %}
     {% endif %}
   </div>
-</div> <!-- End column -->
 
-<div class="cell has-text-right" style="position: relative;">
-  <div class="behind-buttons">
-    <span class="">{{ record.date }}</span>
-  </div>
-  
-  <div class="action-buttons is-flex is-align-items-up px-6" style="white-space: nowrap;">
-    {% include 'record/columns/table_row_actions.html' %}
-  </div>
-</div>
-
-<div class="cell expandable-content p-0">
-  {% for tag in record.tags %}
-    <span class="tag py-0 is-small">{{ tag.title }}</span>
-  {% endfor %}
-</div>
-    
+  <div class="expandable-content"> <!-- Hidden part -->
     <!-- Files -->
-<div class="cell is-col-span-4 expandable-content p-0">
-  {% for file in record.files %}
-    <a class="button is-rounded py-0 px-1 pb-1" target="_blank" href="https://nas.prome.sg:5001/oo/r/{{ file.permanent_link }}">
-      <span class="icon">
-        <span class="iconify has-text-{{file.icon[0]}}" data-icon="mdi-{{file.icon[1]}}"></span>
-      </span>
-      <span>
-        {{ file.short_name }}
-      </span>
-    </a>
-  {% endfor %}
-
-  {% for reference in record.references %}
-    <p class="p-1 is-small"><span class="has-text-white">{{ reference.protocol }}</span> {{reference.title }}
+    {% for file in record.files %}
+      <a class="button is-rounded is-small py-0 px-1" target="_blank" href="https://nas.prome.sg:5001/oo/r/{{ file.permanent_link }}">
+        <span class="icon">
+          <span class="iconify has-text-{{file.icon[0]}}" data-icon="mdi-{{file.icon[1]}}"></span>
+        </span>
+        <span>
+          {{ file.short_name }}
+        </span>
+      </a>
+    {% endfor %}
+    {% for reference in record.references %}
+      <p class="p-1"><span class="has-text-white">{{ reference.protocol }}</span> {{reference.title }}</p>
       {% for file in reference.files %}
         <a class="button is-rounded is-small py-0 px-1 ml-4" target="_blank" href="https://nas.prome.sg:5001/oo/r/{{ file.permanent_link }}">
           <span class="icon">
@@ -75,6 +62,16 @@
           </span>
         </a>
       {% endfor %}
-    </p>
-  {% endfor %}
+    {% endfor %}
+  </div> <!-- End hidden part -->
+</div> <!-- End column -->
+
+<div class="column is-2 py-1 has-text-right" style="position: relative;">
+  <div class="behind-buttons">
+    <span class="">{{ record.date }}</span>
+  </div>
+  
+  <div class="action-buttons is-flex is-align-items-up px-6" style="white-space: nowrap;">
+    {% include 'record/columns/table_row_actions.html' %}
+  </div>
 </div>

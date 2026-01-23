@@ -86,17 +86,17 @@ FULL_MENU['board'] = [
     MenuGroup(
         title="Proposals",
         items=[
-            MenuItem(id="incoming-proposals-to-sign", title="To sign", link="/?section=board&panel=incoming-proposals-to-sign", icon="mdi-pen", perms=["dr","of"], show_count=True),
-            MenuItem(id="incoming-proposals-signed", title="Signed", link="/?section=board&panel=incoming-proposals-signed", icon="mdi-draw-pen", perms=["dr","of"]),
+            MenuItem(id="incoming-proposals-to-sign", title="To sign", link="/?section=board&panel=incoming-proposals-to-sign", icon="mdi-file-outline", perms=["dr","of"], show_count=True),
+            MenuItem(id="incoming-proposals-signed", title="Signed", link="/?section=board&panel=incoming-proposals-signed", icon="mdi-file-sign", perms=["dr","of"]),
         ]
     ),
     MenuGroup(
         title="My proposals",
         items=[
-            MenuItem(id="outcoming-proposals-drafts", title="Drafts", link="/?section=board&panel=outcoming-proposals-drafts", icon="mdi-note-edit", perms=["dr","of"], show_count=True),
+            MenuItem(id="outcoming-proposals-drafts", title="Drafts", link="/?section=board&panel=outcoming-proposals-drafts", icon="mdi-note-edit", perms=["dr","of"], show_count=True, hx_trigger=",record_state_changed from:body"),
             MenuItem(id="outcoming-proposals-circulating", title="Circulating", link="/?section=board&panel=outcoming-proposals-circulating", icon="mdi-account-arrow-right-outline", perms=["dr","of"], show_count=True),
-            MenuItem(id="outcoming-proposals-done", title="Done", link="/?section=board&panel=outcoming-proposals-done", icon="mdi-check-circle-outline", perms=["dr","of"], show_count=True),
-            MenuItem(id="outcoming-proposals-snooze", title="Snooze", link="/?section=board&panel=outcoming-proposals-snooze", icon="mdi-alarm-snooze", perms=["dr","of"], show_count=True),
+            MenuItem(id="outcoming-proposals-done", title="Aproved", link="/?section=board&panel=outcoming-proposals-done", icon="mdi-check-circle-outline", perms=["dr","of"], show_count=True, hx_trigger=",record_state_changed from:body"),
+            MenuItem(id="outcoming-proposals-snooze", title="Snooze", link="/?section=board&panel=outcoming-proposals-snooze", icon="mdi-alarm-snooze", perms=["dr","of"], show_count=True, hx_trigger=",record_state_changed from:body"),
             MenuItem(id="outcoming-proposals-archived", title="Archived", link="/?section=board&panel=outcoming-proposals-archived", icon="mdi-archive", perms=["dr","of"]),
         ]
     ),

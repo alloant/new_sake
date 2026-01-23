@@ -1,4 +1,4 @@
-<div class="columns m-0 p-0" style="border-bottom: 0.5px solid #555555;">
+<div class="columns" style="border-bottom: 0.5px solid #555555;">
   <div class="column is-2 p-2" style="gap: 1rem;"> <!-- here first 3 columns -->
     <span><abbr title="Status">#</abbr></span>
     <span><abbr title="Department"></abbr></span>
@@ -14,10 +14,8 @@
 </div> <!-- End of columns -->
 
 {% for record, status in records %}
-  <div class="fixed-grid p-0 m-0 has-5-cols">
-    <div id="row-{{record.id}}" class="grid is-gap-0 py-1 hover-box hover-row" style="border-bottom: 0.5px solid #555555;" onclick="toggleRow(event,this)">
-      {% include 'record/columns/table_row.html' %}
-    </div>
+  <div id="row-{{record.id}}" class="columns hover-box hover-row" style="border-bottom: 0.5px solid #555555;" onclick="toggleRow(event,this)">
+    {% include 'record/columns/table_row.html' %}
   </div>
 {% endfor %}
 
