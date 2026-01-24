@@ -1,13 +1,13 @@
-<div class="cell">
+<div class="cell is-col-span-2 is-flex is-justify-content-space-between is-align-content-center">
   <span class="" style="white-space: nowrap;">
     <span class="iconify" data-icon="mdi-{{ record.stage_icon }}"></span>
 
     {% if record.dept %}
-      <span class="tag is-bold has-text-black p-1 mx-4" style="width: 2rem; background-color: {{record.dept.color}};">
+      <span class="tag is-bold has-text-black p-1 mx-4 my-0" style="width: 2rem; background-color: {{record.dept.color}};">
         {{ record.dept.alias }}
       </span>
     {% else %}
-      <span class="tag is-bold has-text-black p-1 mx-4" style="width: 2rem;">
+      <span class="tag is-bold has-text-black p-1 mx-4 my-0" style="width: 2rem;">
         -
       </span>
     {% endif %}
@@ -16,10 +16,62 @@
       {{ record.protocol }}
     </span>
   </span>
+    
+
+  <div class="field has-addons p-0 m-0">
+    <div class="control p-0 m-0">
+      <a class="button is-rounded is-small px-1 py-0" href="https://nas.prome.sg:5001/oo/r/{{ record.files[0].permanent_link }}">
+        {{ record.files[0].html_name | safe }}
+      </a>
+    </div>
+
+    <div class="control p-0 m-0">
+      <div class="dropdown is-hoverable mr-4">
+        <div class="dropdown-trigger">
+          <button class="button is-rounded is-small px-1 py-0" aria-haspopup="true" aria-controls="dropdown-{{ record.id }}">
+            <span class="is-small">{{ record.files|length }}</span>
+            <span class="icon is-small">
+              <i class="iconify" data-icon="mdi-menu-down" aria-hidden="true"></i>
+            </span>
+          </button>
+        </div>
+
+        <div class="dropdown-menu" id="dropdown-{{ record.id }}" role="menu" style="width: auto; min-width: 40rem">
+          <div class="dropdown-content" style="width: auto;">
+            {% if record.files %}
+              {% for file in record.files %}
+                <a href="https://nas.prome.sg:5001/oo/r/{{ file.permanent_link }}" class="dropdown-item" target="_blank">
+                  {{ file.html_name | safe }}
+                </a>
+              {% endfor %}
+            {% else %}
+              <div class="dropdown-item">No files found</div>
+            {% endif %}
+            <hr class="dropdown-divider">
+            {% for reference in record.references %}
+                <div class="dropdown-item has-text-grey">{{ reference.protocol }} {{ reference.title }}</div>
+                {% for file in reference.files %}
+                  <a class="dropdown-item" target="_blank" href="https://nas.prome.sg:5001/oo/r/{{ file.permanent_link }}">
+                    {{ file.html_name | safe }}
+                  </a>
+                {% endfor %}
+            {% endfor %}
+
+            <hr class="dropdown-divider">
+            <a  class="dropdown-item has-text-primary" 
+                hx-get="/records/{{ record.id }}/add-file" 
+                hx-target="#modals-here">
+                  + Upload New
+            </a>
+          </div> <!-- End dropdown content -->
+        </div> <!-- End dropdown-menu -->
+      </div> <!-- dropdown -->
+    </div> <!-- control -->
+  </div> <!-- end has addons -->
 
 </div> <!-- End cell -->
 
-<div class="cell is-col-span-3">
+<div class="cell is-col-span-5">
   <div class="">
     <span class="{{ (status.read_status_html if status else 'has-text-weight-bold') if record.flow == 'inbound' else '' }}">
       {{ record.title }}
@@ -44,37 +96,4 @@
   </div>
 </div>
 
-<div class="cell expandable-content p-0">
-  {% for tag in record.tags %}
-    <span class="tag py-0 is-small">{{ tag.title }}</span>
-  {% endfor %}
-</div>
-    
-    <!-- Files -->
-<div class="cell is-col-span-4 expandable-content p-0">
-  {% for file in record.files %}
-    <a class="button is-rounded py-0 px-1 pb-1" target="_blank" href="https://nas.prome.sg:5001/oo/r/{{ file.permanent_link }}">
-      <span class="icon">
-        <span class="iconify has-text-{{file.icon[0]}}" data-icon="mdi-{{file.icon[1]}}"></span>
-      </span>
-      <span>
-        {{ file.short_name }}
-      </span>
-    </a>
-  {% endfor %}
 
-  {% for reference in record.references %}
-    <p class="p-1 is-small"><span class="has-text-white">{{ reference.protocol }}</span> {{reference.title }}
-      {% for file in reference.files %}
-        <a class="button is-rounded is-small py-0 px-1 ml-4" target="_blank" href="https://nas.prome.sg:5001/oo/r/{{ file.permanent_link }}">
-          <span class="icon">
-            <span class="iconify has-text-{{file.icon[0]}}" data-icon="mdi-{{file.icon[1]}}"></span>
-          </span>
-          <span>
-            {{ file.short_name }}
-          </span>
-        </a>
-      {% endfor %}
-    </p>
-  {% endfor %}
-</div>

@@ -14,7 +14,7 @@
 </div> <!-- End of columns -->
 
 {% for record, status in records %}
-  <div class="fixed-grid p-0 m-0 has-5-cols">
+  <div class="fixed-grid p-0 m-0 has-8-cols">
     <div id="row-{{record.id}}" class="grid is-gap-0 py-1 hover-box hover-row" style="border-bottom: 0.5px solid #555555;" onclick="toggleRow(event,this)">
       {% include 'record/columns/table_row.html' %}
     </div>
