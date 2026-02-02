@@ -24,46 +24,11 @@
 </td>
 
 <td>
-{% if record.files %}
-    <div class="field is-grouped">
-      <div class="control">
-        <div class="tags has-addons py-1">
-          <a href="https://nas.prome.sg:5001/oo/r/{{ record.files[0].permanent_link }}" 
-             class="tag is-rounded p-0" style="width: 7rem;">
-            <span class="icon p-0">
-              <span class="iconify has-text-{{record.files[0].icon[0]}} p-0" data-icon="mdi-{{record.files[0].icon[1]}}"></span>
-            </span>
-            {{ record.files[0].short_name }}
-          </a>
-
-          <a class="tag is-rounded dropdown-trigger-button py-1" style="cursor: pointer; border-left: 1px solid rgba(255,255,255,0.3);">
-            <span class="icon is-small">
-              <i class="iconify" data-icon="mdi-menu-down"></i>
-            </span>
-          </a>
-        </div>
-      </div>
-
-  <div class="dropdown-menu" id="dropdown-menu-{{record.id}}" role="menu">
-    <div class="dropdown-content">
-      {% for file in record.files %}
-        <a href="https://nas.prome.sg:5001/oo/r/{{ file.permanent_link }}" class="dropdown-item">
-          <span class="icon">
-            <span class="iconify has-text-{{record.files[0].icon[0]}}" data-icon="mdi-{{record.files[0].icon[1]}}"></span>
-          </span>
-          {{ file.short_name }}
-        </a>
-      {% endfor %}
-                  <!-- <hr class="dropdown-divider" /> -->
-    </div>
-  </div>
-</div>
-{% endif %}
-
+  {% include 'record/record_files.html' %}
 </td>
 
 <td>
-  <span class="is-4 {{ (status.read_status_html if status else 'has-text-weight-bold') if record.flow == 'inbound' else '' }}">
+  <span class="is-4 {{ record.read_status_html(status) if record.flow == 'inbound' else '' }}">
     {{ record.title }}
   </span>
   

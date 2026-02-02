@@ -9,7 +9,7 @@ from sqlmodel import Session
 from app.core.database import get_db
 from app.core.auth import auth, get_payload_from_cookie, get_current_user_from_cookie
 
-from app.crud import get_user_by_email
+from app.crud import get_user_by_id
 
 from app.models.user import Role
 from app.views.sidebar import get_sections, get_panel, get_sidebar
@@ -52,7 +52,7 @@ async def home(request: Request, section: str | None = "board", panel: str | Non
                 panel = 'mail'
 
     sidebar = get_sidebar(payload,section,panel)
-    current_user = get_user_by_email(payload.sub, db)
+    current_user = get_user_by_id(payload.uid, db)
     theme = current_user.get_setting('theme') 
     
     return templates.TemplateResponse("index.html", {"request": request, "theme": theme, "sidebar": sidebar, "section": section, "panel": panel, "search": search})
@@ -61,7 +61,7 @@ async def home(request: Request, section: str | None = "board", panel: str | Non
 @router.post("/", name="homepage_search")
 async def home_search(request: Request, section: str | None = "board", panel: str | None = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
     sidebar = get_sidebar(payload,section,panel)
-    current_user = get_user_by_email(payload.sub, db)
+    current_user = get_user_by_id(payload.uid, db)
     theme = current_user.get_setting('theme') 
     
     form = await request.form()
@@ -76,14 +76,14 @@ async def home_search(request: Request, section: str | None = "board", panel: st
 @router.get("/settings", name="settings")
 async def settings(request: Request, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
     sidebar = get_sidebar(payload,'settings','')
-    current_user = get_user_by_email(payload.sub, db)
+    current_user = get_user_by_id(payload.uid, db)
     theme = current_user.get_setting('theme') 
     return templates.TemplateResponse("settings.html", {"request": request, "theme": theme, "sidebar": sidebar,"user": current_user,"settings": get_settings_form(current_user)})
 
 @router.post("/settings", name="settings")
 async def settings_post(request: Request, db: Session = Depends(get_db), payload = Depends(get_payload_from_cookie)):
     sidebar = get_sidebar(payload,'settings','')
-    current_user = get_user_by_email(payload.sub, db)
+    current_user = get_user_by_id(payload.uid, db)
     theme = current_user.get_setting('theme') 
     
     form = await request.form()

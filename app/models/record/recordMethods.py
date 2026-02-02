@@ -35,6 +35,22 @@ class RecordMethod(object):
     @property
     def targets(self):
         return [target for target in self.users if target.target > 0]
+    
+    def link(self, idx: int) -> str:
+        if idx <= len(self.files) + 1:
+            return self.files[idx].link
+        return ""
+
+    def read_status_html(self,status):
+        read = True
+        if not status or status.read_status != 'read':
+            read = False
+
+        if status.user.created_at >= self.created_at:
+            read != read
+        
+        return '' if read else 'has-text-weight-bold'
+
 
     def get_actions(self, state, current_user, section, panel):
         actions = []

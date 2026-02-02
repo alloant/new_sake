@@ -1,0 +1,20 @@
+{% extends "base_without_sidebar.html" %}
+
+{% block content %}
+<section class="hero is-fullheight">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-one-third-desktop is-half-tablet">
+          <div class="box has-text-centered">
+            <div class="">
+              <img src="{{ url_for('static', path='icons/sake_long.svg') }}"/>
+                <a class="button" href="{{ auth_url }}">Login with Synology SSO</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

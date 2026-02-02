@@ -13,7 +13,7 @@ from app.core.auth import auth, get_current_user_from_cookie, get_payload_from_c
 from app.core.database import get_db
 from app.core.htmx import add_hx_trigger_header_on_success
 
-from app.crud import get_record, get_user_by_email, get_records, get_register_by_alias, update_user
+from app.crud import get_record, get_records, get_register_by_alias, update_user, get_user_by_id
 from app.views.records import records_view, records_table_view, action_view
 from app.views.sidebar import get_sidebar
 
@@ -27,14 +27,12 @@ from .main import templates
 ## SIDEBAR
 @router.get("/sidebar", response_class=HTMLResponse)
 def sidebar_fragment(request: Request, section: str | None = "board", panel: str | None = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
-    #current_user = get_user_by_email(payload.sub, db)
     sidebar = get_sidebar(payload,section,panel)
     
     return templates.TemplateResponse("sidebar/main.html", {"request": request, "sidebar": sidebar, "section": section, "panel": panel})
 
 @router.get("/sidebar-top", response_class=HTMLResponse)
 def sidebar_top_fragment(request: Request, new_sidebar = None, myData = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
-    #current_user = get_user_by_email(payload.sub, db)
     section = 'register'
     panel = 'all'
     sidebar = get_sidebar(payload,section,panel)
@@ -44,7 +42,7 @@ def sidebar_top_fragment(request: Request, new_sidebar = None, myData = None, db
 # RECORDS
 @router.get("/records", response_class=HTMLResponse)
 async def records(request: Request, search:str = None, page: int = None, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
-    current_user = get_user_by_email(payload.sub, db)
+    current_user = get_user_by_id(payload.uid, db)
     #update_user(current_user,'settings',{'kind': 'cr'},db)
     template, rst = await records_view(page, search, section, panel, db, current_user)
    
@@ -64,7 +62,7 @@ async def records_table(request: Request, page: int = None, last_search = None, 
 
 @router.get("/records/number", response_class=HTMLResponse)
 async def records_hidden_row(request: Request, section: str, panel: str, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
-    current_user = get_user_by_email(payload.sub, db)
+    current_user = get_user_by_id(payload.uid, db)
     num = get_records(db = db, user = current_user, section = section, panel = panel, just_number = True)
     if num == 0:
         return ''
@@ -73,7 +71,7 @@ async def records_hidden_row(request: Request, section: str, panel: str, db: Ses
 
 @router.get("/action", response_class=HTMLResponse)
 async def action(request: Request, record_id: int, recorduser_id: str, action: str, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
-    current_user = get_user_by_email(payload.sub, db)
+    current_user = get_user_by_id(payload.uid, db)
     if action == 'recursive_search':
         page = 1
         template, rst = await records_table_view(page, f'all_off:{record_id}', 'register', 'all', db, current_user)
@@ -100,7 +98,7 @@ async def records_global_search(request: Request, section: str = None, panel: st
     data = dict(form)
     search = data.get("all_search")
     
-    current_user = get_user_by_email(payload.sub, db)
+    current_user = get_user_by_id(payload.uid, db)
     
     page = 1
     

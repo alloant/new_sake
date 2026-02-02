@@ -16,18 +16,53 @@
       {{ record.protocol }}
     </span>
   </span>
+</div> <!-- End cell -->
 
-   <div class="field p-0 m-0">
+<div class="cell is-col-span-4" style="position: relative;">
+  <div class="">
+    <span class="{{ (status.read_status_html if status else 'has-text-weight-bold') if record.flow == 'inbound' else '' }}">
+      {{ record.title }}
+    </span>
+    {% if record.flow == 'outbound' %}
+      <span class="tag sender ml-1">{{ record.sender.alias }}</span>
+    {% else %}
+      {% for target in record.targets %}
+        <span class="tag sender ml-1">{{ target.user.actor.alias }}</span>
+      {% endfor %}
+    {% endif %}
+  </div>
+  
+  <div class="action-buttons is-flex is-align-items-up" style="white-space: nowrap;">
+    {% include 'record/columns/table_row_actions.html' %}
+  </div>
+
+</div> <!-- End column -->
+
+<div class="cell">
+  <div class="field has-addons p-0 m-0">
+    <div class="control p-0 m-0">
+      {% if record.files %}
+      <a class="button is-small p-1" href="https://nas.prome.sg:5001/oo/r/{{ record.files[0].permanent_link }}" style="border: 0px; width: 9rem; text-align: left;">
+        {{ record.files[0].html_name | safe }}
+      </a>
+      {% else %}
+      <a class="button is-rounded is-small p-1" href="#" style="border: 0px; width: 9rem; text-align: left;">
+        <span class="text-danger">No files found</span>
+      </a>
+
+      {% endif %}
+    </div>
+
     <div class="control p-0 m-0">
       <div class="dropdown is-hoverable mr-4">
         <div class="dropdown-trigger">
           <button class="button is-rounded is-small p-1" aria-haspopup="true" aria-controls="dropdown-{{ record.id }}" style="border: 0px;">
-            <span class="p-0" style="position: relative;">
+            <div class="p-0" style="position: relative;">
               <i class="iconify is-size-6 p-0 has-text-warning" data-icon="mdi-folder"></i>
               <span class="p-0" style="position: absolute; top: 15%; left: 15%; color: black; font-size: 0.6rem;">{{ record.files|length }}</span>
-            </span>
+            </div>
             <span class="icon is-small p-0">
-              <i class="iconify p-0" data-icon="mdi-chevron{{'-double' if record.references else ''}}-down"></i>
+              <i class="iconify p-0" data-icon="mdi-chevron{{'-double' if record.references else ''}}-down" aria-hidden="true"></i>
             </span>
           </button>
         </div>
@@ -47,7 +82,7 @@
             {% for reference in record.references %}
                 <div class="dropdown-item has-text-grey">{{ reference.protocol }} {{ reference.title }}</div>
                 {% for file in reference.files %}
-                  <a class="dropdown-item" target="_blank" href="{{ file.link }}">
+                  <a class="dropdown-item" target="_blank" href="https://nas.prome.sg:5001/oo/r/{{ file.permanent_link }}">
                     {{ file.html_name | safe }}
                   </a>
                 {% endfor %}
@@ -67,30 +102,8 @@
 
 </div> <!-- End cell -->
 
-<div class="cell is-col-span-4">
-  <div class="">
-    <span class="{{ (status.read_status_html if status else 'has-text-weight-bold') if record.flow == 'inbound' else '' }}">
-      {{ record.title }}
-    </span>
-    {% if record.flow == 'outbound' %}
-      <span class="tag sender ml-1">{{ record.sender.alias }}</span>
-    {% else %}
-      {% for target in record.targets %}
-        <span class="tag sender ml-1">{{ target.user.actor.alias }}</span>
-      {% endfor %}
-    {% endif %}
-  </div>
-  
-
-</div> <!-- End column -->
-
-
-<div class="cell has-text-right" style="position: relative;">
-  <span class="behind-buttons">{{ record.date }}</span>
-  <div class="action-buttons is-flex is-align-items-up" style="white-space: nowrap;">
-    {% include 'record/columns/table_row_actions.html' %}
-  </div>
-
+<div class="cell has-text-right">
+  <span class="">{{ record.date }}</span>
 </div>
 
 

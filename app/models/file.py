@@ -14,6 +14,10 @@ class File(SQLModel, table=True):
     record: "Record" = Relationship(back_populates="files")
 
     @property
+    def link(self):
+        return f"https://nas.prome.sg:8001/oo/r/{self.permanent_link}"
+
+    @property
     def icon(self):
         match Path(self.name).suffix:
             case '.osheet':

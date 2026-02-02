@@ -7,7 +7,7 @@ from types import SimpleNamespace
 from jose import JWTError, jwt
 
 from app.models.user import User
-from app.crud.user import get_user_by_email
+from app.crud.user import get_user_by_id
 
 # Authx
 config = AuthXConfig(
@@ -48,10 +48,10 @@ async def get_current_user_from_cookie(request: Request):
     
     try:
         payload = jwt.decode(token, "SECRET_KEY", algorithms=["HS256"])
-        username: str = payload.get("sub")
+        username: str = payload.get("uid")
         if username is None:
             raise HTTPException(status_code=401, detail="Invalid token")
-        user = get_user_by_email(username)
+        user = get_user_by_id(username)
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
     

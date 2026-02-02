@@ -14,23 +14,9 @@
 </div> <!-- End of columns -->
 
 {% for record, status in records %}
-  <div class="fixed-grid p-0 m-0 has-8-cols">
-    <div id="row-{{record.id}}" class="grid is-gap-0 py-1 hover-box hover-row" style="border-bottom: 0.5px solid #555555;" onclick="toggleRow(event,this)">
+  <div class="fixed-grid p-0 m-0 has-7-cols">
+    <div id="row-{{record.id}}" class="grid is-gap-0 py-1 hover-box hover-row" style="border-bottom: 0.5px solid #555555;" onclick="window.open(record.link(0),'_blank')">
       {% include 'record/columns/table_row.html' %}
     </div>
   </div>
 {% endfor %}
-
-<script>
-function toggleRow(event, element) {
-    // 1. Check if the user clicked a button, a link, or an icon inside a button
-    // If they did, we stop the row from collapsing/expanding.
-    if (event.target.closest('button') || event.target.closest('a')) {
-        event.stopPropagation();
-        return; 
-    }
-
-    // 2. Otherwise, toggle the row as normal
-    element.classList.toggle('is-active');
-}
-</script>

@@ -4,7 +4,8 @@ from fastapi.responses import RedirectResponse
 from fastapi import APIRouter, Request, Depends, Form, Response, status, HTTPException
 
 from app.core.auth import auth
-from app.crud.user import create_user, get_user_by_email, verify_user_password
+from app.core.sso import login_by_sso, callback
+from app.crud.user import create_user, get_user_by_id, verify_user_password
 
 # Initialize the router and templates
 router = APIRouter()
@@ -14,13 +15,15 @@ from app.routers.main import templates
 @router.get('/logout')
 def logout():
     response = RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
-    response.delete_cookie(key="access_token")
+    response.delete_cookie("sake")
     
     return response
 
 @router.get('/login')
-def login_form(request: Request):
-    return templates.TemplateResponse("auth/login.html", {"request": request})
+async def login_form(request: Request):
+    print('Here getting the login')
+    auth_url =  await login_by_sso()
+    return templates.TemplateResponse("auth/sso.html", {"request": request, "auth_url": auth_url})
 
 
 @router.post('/login')
@@ -46,6 +49,11 @@ def login(email: Annotated[str, Form()], password: Annotated[str, Form()]):
         max_age=36000 
     )
     return response
+
+
+@router.get("/auth/callback")
+async def callback_route(request: Request, code: str = None, state: str = None):
+    return await callback(request,code,state)
 
 @router.get('/register')
 def register_form(request: Request):
