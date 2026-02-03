@@ -12,5 +12,5 @@ class Actor(SQLModel, table=True):
     alias: str = Field(unique=True, index=True, max_length=50)
     kind: Kind = Field()
     
-    records: list["Record"] = Relationship(back_populates="sender")
+    #records: list["Record"] = Relationship(back_populates="sender")
 

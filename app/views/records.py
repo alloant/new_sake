@@ -54,7 +54,7 @@ async def action_view(record_id,status_id, action, db, current_user):
     elif action == "restore":
         record.state = "active"
     elif action == "edit":
-        registers = get_user_registers(current_user.scopes)
+        registers = get_user_registers(current_user.scopes,db)
         return "forms/record.html", {'record': record, 'status': status, 'registers': registers}
 
     if action in ['mark_read','mark_unread']:

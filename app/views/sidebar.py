@@ -137,9 +137,9 @@ FULL_MENU['settings'] = [
 
 ]
 
-def get_panel(user_perms,section,panel):
+def get_panel(user_perms,section,panel,db):
     if section == 'register':
-        return get_panel_register(user_perms,panel)
+        return get_panel_register(user_perms,panel,db)
     
     filtered_menu = []
     for group in FULL_MENU[section]:
@@ -158,8 +158,8 @@ def get_panel(user_perms,section,panel):
 
     return filtered_menu
 
-def get_panel_register(user_perms,panel):
-    registers = get_registers()
+def get_panel_register(user_perms,panel,db):
+    registers = get_registers(db)
     menu = []
     items = []
     items.append(MenuItem(id=f"all",title="All",link=f"/?section=register&panel=all",icon="mdi-web"))
@@ -179,8 +179,8 @@ def get_panel_register(user_perms,panel):
             menu.append(MenuGroup(title=register.full_name, items=items))
     return menu
 
-def get_sidebar(payload,section,panel):
+def get_sidebar(payload,section,panel,db):
     sections = get_sections([payload.data['role']] + payload.scopes,section)
-    panel = get_panel([payload.data['role']] + payload.scopes,section,panel)
+    panel = get_panel([payload.data['role']] + payload.scopes,section,panel,db)
 
     return {'user_alias': payload.alias, 'sections': sections, 'panel': panel}

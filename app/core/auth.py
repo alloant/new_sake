@@ -51,11 +51,11 @@ async def get_current_user_from_cookie(request: Request):
         username: str = payload.get("uid")
         if username is None:
             raise HTTPException(status_code=401, detail="Invalid token")
-        user = get_user_by_id(username)
+        #user = get_user_by_id(username)
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
     
-    return user
+    return username
 
 async def get_payload_from_cookie(request: Request):
     token = request.cookies.get("access_token")

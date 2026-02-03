@@ -3,15 +3,33 @@ from sqlalchemy.orm import sessionmaker
 
 from app.core.config import settings
 
-engine = create_engine(settings.DB_URL, pool_size=30, max_overflow=30, pool_timeout=30, echo=settings.DB_ECHO, future=True)
+#engine = create_engine(settings.DB_URL, pool_size=30, max_overflow=30, pool_timeout=30, echo=settings.DB_ECHO, future=True)
+engine = create_engine(
+    settings.DB_URL,
+    pool_size=20,
+    max_overflow=10,
+    pool_timeout=30,
+    # This helps reclaim connections that have been sitting idle too long
+    pool_recycle=3600,
+    # This checks if a connection is still alive before giving it to you
+    pool_pre_ping=True,
+    echo=settings.DB_ECHO,
+    future=True
+    )
+
 SessionLocal = sessionmaker(bind=engine, class_=Session, expire_on_commit=False)
 
 def init_db():
     SQLModel.metadata.create_all(engine)
 
 def get_db():
-    with SessionLocal() as session:
+    #with SessionLocal() as session:
+    #    yield session
+    session = SessionLocal()
+    try:
         yield session
+    finally:
+        session.close() # Explicitly ensure it returns to the pool
 
 ## This part is just to copy old data to the new db
 import pymysql.cursors

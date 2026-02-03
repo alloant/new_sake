@@ -9,4 +9,4 @@ class Register(SQLModel, table=True):
 
     protocol: dict[str, object] = Field(sa_column=Column(JSON, nullable=False), default_factory=dict)
 
-    records: list["Record"] = Relationship(back_populates="register")
+    #records: list["Record"] = Relationship(back_populates="register")

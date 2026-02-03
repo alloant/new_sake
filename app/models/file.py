@@ -11,7 +11,7 @@ class File(SQLModel, table=True):
     created_at: datetime | None = Field(default_factory=datetime.utcnow)
     updated_at: datetime | None = Field(default_factory=datetime.utcnow)
 
-    record: "Record" = Relationship(back_populates="files")
+    #record: "Record" = Relationship(back_populates="files")
 
     @property
     def link(self):

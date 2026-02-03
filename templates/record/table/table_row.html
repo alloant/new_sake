@@ -28,7 +28,7 @@
 </td>
 
 <td>
-  <span class="is-4 {{ record.read_status_html(status) if record.flow == 'inbound' else '' }}">
+  <span class="is-4 {{ record.read_status_html(status,current_user) if record.flow == 'inbound' else '' }}">
     {{ record.title }}
   </span>
   

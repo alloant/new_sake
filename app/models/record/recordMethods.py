@@ -41,13 +41,14 @@ class RecordMethod(object):
             return self.files[idx].link
         return ""
 
-    def read_status_html(self,status):
+    def read_status_html(self,status,user):
         read = True
-        if not status or status.read_status != 'read':
+        if not status and self.created_at > user.created_at:
             read = False
-
-        if status.user.created_at >= self.created_at:
-            read != read
+        elif status.read_status != 'read' and self.created_at > user.created_at:
+            read = False
+        elif status.read_status == 'read' and self.created_at <= user.created_at:
+            read = False
         
         return '' if read else 'has-text-weight-bold'
 

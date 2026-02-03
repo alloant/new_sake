@@ -51,7 +51,7 @@ async def home(request: Request, section: str | None = "board", panel: str | Non
             case 'sccr':
                 panel = 'mail'
 
-    sidebar = get_sidebar(payload,section,panel)
+    sidebar = get_sidebar(payload,section,panel,db)
     current_user = get_user_by_id(payload.uid, db)
     theme = current_user.get_setting('theme') 
     
@@ -60,7 +60,7 @@ async def home(request: Request, section: str | None = "board", panel: str | Non
 # Here is only for all_search. It will always have a section and panel
 @router.post("/", name="homepage_search")
 async def home_search(request: Request, section: str | None = "board", panel: str | None = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
-    sidebar = get_sidebar(payload,section,panel)
+    sidebar = get_sidebar(payload,section,panel, db)
     current_user = get_user_by_id(payload.uid, db)
     theme = current_user.get_setting('theme') 
     
@@ -75,14 +75,14 @@ async def home_search(request: Request, section: str | None = "board", panel: st
 ## Settings/profile part
 @router.get("/settings", name="settings")
 async def settings(request: Request, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
-    sidebar = get_sidebar(payload,'settings','')
+    sidebar = get_sidebar(payload,'settings','', db)
     current_user = get_user_by_id(payload.uid, db)
     theme = current_user.get_setting('theme') 
-    return templates.TemplateResponse("settings.html", {"request": request, "theme": theme, "sidebar": sidebar,"user": current_user,"settings": get_settings_form(current_user)})
+    return templates.TemplateResponse("settings.html", {"request": request, "theme": theme, "sidebar": sidebar,"user": current_user,"settings": get_settings_form(current_user, db)})
 
 @router.post("/settings", name="settings")
 async def settings_post(request: Request, db: Session = Depends(get_db), payload = Depends(get_payload_from_cookie)):
-    sidebar = get_sidebar(payload,'settings','')
+    sidebar = get_sidebar(payload,'settings','', db)
     current_user = get_user_by_id(payload.uid, db)
     theme = current_user.get_setting('theme') 
     
