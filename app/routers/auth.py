@@ -2,9 +2,11 @@
 from typing import Annotated
 from fastapi.responses import RedirectResponse
 from fastapi import APIRouter, Request, Depends, Form, Response, status, HTTPException
+from sqlmodel import Session
 
 from app.core.auth import auth
 from app.core.sso import login_by_sso, callback
+from app.core.database import get_db
 from app.crud.user import create_user, get_user_by_id, verify_user_password
 
 # Initialize the router and templates
@@ -27,8 +29,8 @@ async def login_form(request: Request):
 
 
 @router.post('/login')
-def login(email: Annotated[str, Form()], password: Annotated[str, Form()]):
-    user = get_user_by_email(email)
+def login(email: Annotated[str, Form()], password: Annotated[str, Form()], db: Session = Depends(get_db)):
+    user = get_user_by_email(email, db)
     if not user or verify_user_password(user,password):
         raise HTTPException(401, "Bad email/password")
     
@@ -52,16 +54,16 @@ def login(email: Annotated[str, Form()], password: Annotated[str, Form()]):
 
 
 @router.get("/auth/callback")
-async def callback_route(request: Request, code: str = None, state: str = None):
-    return await callback(request,code,state)
+async def callback_route(request: Request, code: str = None, state: str = None, db: Session = Depends(get_db)):
+    return await callback(request,db,code,state)
 
 @router.get('/register')
 def register_form(request: Request):
     return templates.TemplateResponse("auth/register.html", {"request": request})
 
 @router.post('/register')
-def register(email: Annotated[str, Form()], full_name: Annotated[str, Form()], password: Annotated[str, Form()]):
-    user = get_user_by_email(email)
+def register(email: Annotated[str, Form()], full_name: Annotated[str, Form()], password: Annotated[str, Form()], db: Session = Depends(get_db)):
+    user = get_user_by_email(email,db)
     
     if user:
         raise HTTPException(401, "Email already in system")

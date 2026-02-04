@@ -48,13 +48,13 @@ def get_filter(user,section, panel, db: Session):
             user_registers = get_user_registers(user.scopes, db)
             fn_registers = [Record.register_id == get_register_by_alias(register,db).id for register in user_registers if user_registers[register]]
             fn.append(or_(*fn_registers))
-
+            print(user)
             if panel == 'unread':
                 fn.append(Record.flow=='inbound')
                 fn.append(or_(
                     and_(RecordUser == None, Record.created_at > user.created_at),
-                    and_(RecordUser != 'read', Record.created_at > user.created_at),
-                    and_(RecordUser == 'read', Record.created_at <= user.created_at)
+                    and_(RecordUser.read_status != 'read', Record.created_at > user.created_at),
+                    and_(RecordUser.read_status == 'read', Record.created_at <= user.created_at)
                     )
                 )
                 #fn.append(or_(and_(Record.created_at < user.created_at,RecordUser.read_status=='read'),and_(or_(RecordUser==None,RecordUser.read_status!='read'), Record.created_at < user.created_at)))

@@ -74,13 +74,14 @@ async def login_by_sso():
     auth_url = auth_ep + "?" + urlencode(params)
     return auth_url
 
-async def callback(request: Request, code: str = None, state: str = None):
-    print('CALLBACK')
+async def callback(request: Request, db: Session, code: str = None, state: str = None):
     if not code:
         return HTMLResponse("Missing code", status_code=400)
+
     disc = await get_discovery()
     token_ep = disc["token_endpoint"]
     userinfo_ep = disc.get("userinfo_endpoint")
+    
     async with httpx.AsyncClient(verify=False) as client:
         # exchange code for tokens
         data = {
@@ -114,7 +115,6 @@ async def callback(request: Request, code: str = None, state: str = None):
             claims = r2.json()
     
     # build session payload
-    print('claims',claims)
     session_claims = claims.copy() if claims else {}
     if access_token:
         session_claims["access_token"] = access_token
@@ -124,8 +124,8 @@ async def callback(request: Request, code: str = None, state: str = None):
         session_claims["expires_at"] = int(time.time()) + int(expires_in)
   
     alias = claims['username']
-    actor = get_actor_by_alias(alias)
-    user = get_user_by_actor_id(actor.id)
+    actor = get_actor_by_alias(alias, db)
+    user = get_user_by_actor_id(actor.id, db)
     user_payload = {
         "uid": user.id,
         "alias": alias,

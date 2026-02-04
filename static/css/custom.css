@@ -18,6 +18,12 @@
   --records-hidden-row: #111111;
 }
 
+@media screen and (max-width: 768px) {
+  .has-order-1-mobile { order: 1; }
+  .has-order-2-mobile { order: 2; }
+  .has-order-3-mobile { order: 3; }
+}
+
 html, body {
   height: 100%;
 }
