@@ -19,6 +19,9 @@
 }
 
 @media screen and (max-width: 768px) {
+  .columns.is-mobile {
+    display: flex !important; /* Ensures flex context is active */
+  }
   .has-order-1-mobile { order: 1; }
   .has-order-2-mobile { order: 2; }
   .has-order-3-mobile { order: 3; }

@@ -20,7 +20,7 @@ class User(SQLModel, UserSettings, table=True):
     hashed_password: str = Field(max_length=200, default="")
     scopes: list[str] = Field(sa_column=Column(JSON, nullable=False), default_factory=list)
     
-    #actor: "Actor" = Relationship()
+    actor: "Actor" = Relationship()
 
     settings: dict[str, object] = Field(sa_column=Column(JSON, nullable=False), default_factory=dict)
     created_at: datetime = Field(default_factory=datetime.utcnow)

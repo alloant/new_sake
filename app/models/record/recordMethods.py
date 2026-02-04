@@ -43,8 +43,9 @@ class RecordMethod(object):
 
     def read_status_html(self,status,user):
         read = True
-        if not status and self.created_at > user.created_at:
-            read = False
+        if not status:
+            if self.created_at > user.created_at:
+                read = False
         elif status.read_status != 'read' and self.created_at > user.created_at:
             read = False
         elif status.read_status == 'read' and self.created_at <= user.created_at:

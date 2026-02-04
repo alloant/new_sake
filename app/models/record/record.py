@@ -74,6 +74,7 @@ class Record(SQLModel, RecordMethod, table=True):
     dept: "Dept" = Relationship()
     register: "Register" = Relationship()
     files: list["File"] = Relationship()
+    users: list["RecordUser"] = Relationship(back_populates="record")
 
 
     references: list["Record"] = Relationship(

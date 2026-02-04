@@ -199,11 +199,11 @@ def get_records(db: Session, user = None, section = None, panel = None, search: 
         joinedload(Record.register),
         joinedload(Record.dept),
         selectinload(Record.tags),
-        #selectinload(Record.users),
+        selectinload(Record.users),
         selectinload(Record.files),
-        selectinload(Record.references)
-        #joinedload(RecordUser.user),
-        #joinedload(RecordUser.record)
+        selectinload(Record.references),
+        joinedload(RecordUser.user),
+        joinedload(RecordUser.record)
     ).limit(limit).offset(offset).order_by(desc(Record.updated_at))
     
     if just_number:

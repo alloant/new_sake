@@ -25,7 +25,7 @@ class RecordUser(SQLModel, table=True):
     
     params: dict[str,str] = Field(sa_column=Column(JSON, nullable=False), default_factory=dict)
     
-    #record: "Record" = Relationship(back_populates="users")
-    #user: "User" = Relationship(back_populates="records")
+    record: "Record" = Relationship(back_populates="users")
+    user: "User" = Relationship()
 
     
