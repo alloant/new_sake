@@ -1,0 +1,8 @@
+<div class="columns is-mobile is-multiline is-gapless hover-row hover-box m-2" style="border-bottom: 0.5px solid #555555;">
+</div>
+
+{% for record, status in records %}
+  <div id="row-{{record.id}}" class="columns is-mobile is-multiline is-gapless hover-row hover-box m-2" style="border-bottom: 0.5px solid #555555;">
+    {% include 'record/table_row.html' %}
+  </div>
+{% endfor %}

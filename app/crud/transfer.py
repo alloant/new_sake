@@ -140,7 +140,7 @@ def transfer_users():
     db = Session(engine)
     rows = get_old_data('SELECT * from user')
     emails = []
-    actors = get_actors()
+    actors = get_actors(db)
     for row in rows:
         if row['email'] and row['category'] in ['dr','of','cl']:
             if not row['email'] in emails:
@@ -149,7 +149,7 @@ def transfer_users():
                 for actor in actors:
                     if actor.alias == row['alias']:
                         break
-                db_user = User(email=row['email'], hashed_password='', full_name=row['name'],role="dr",actor_id=actor.id)
+                db_user = User(email=row['email'], hashed_password='', full_name=row['name'],role="dr",actor_id=actor.id, created_at=row['date'])
                 db.add(db_user)
                 emails.append(row['email'])
     db.commit()
@@ -158,7 +158,7 @@ def transfer_contacts():
     db = Session(engine)
     rows = get_old_data('SELECT * from user')
     alias = []
-    actors = get_actors()
+    actors = get_actors(db)
     for row in rows:
         if row['alias'] and row['category'] == 'contact':
             if not row['alias'] in alias:
@@ -176,7 +176,7 @@ def transfer_ctrs():
     db = Session(engine)
     rows = get_old_data('SELECT * from user')
     alias = []
-    actors = get_actors()
+    actors = get_actors(db)
     for row in rows:
         if row['alias'] and row['category'] == 'contact':
             if not row['alias'] in alias:
@@ -195,7 +195,7 @@ def transfer_notes():
     rows = get_old_data('SELECT * from note')
     users = get_old_data('SELECT * from user')
 
-    actors = get_actors()
+    actors = get_actors(db)
     
     for row in rows:
         title = row['content']
@@ -247,14 +247,14 @@ def transfer_notes():
 
 def transfer_note_user():
     db = Session(engine)
-    records = get_all_records()
+    records = get_all_records(db)
 
     for record in records:
         old_id = record.params['old_id']
         print(old_id,record.title)
         status = get_old_data(f'SELECT * FROM noteuser WHERE note_id = {old_id}')
         for state in status:
-            read = "read" if state['read'] == 0 else "unread"
+            read = "read" if state['read'] == 1 else "unread"
             if state['target'] == 1:
                 target = state['target_order'] + 1
                 target_action = 'approved' if state['target_acted'] == 1 else 'pending'
@@ -283,7 +283,7 @@ def transfer_tags():
 
 def transfer_record_tag():
     db = Session(engine)
-    records = get_all_records()
+    records = get_all_records(db)
 
     for record in records:
         old_record_id = record.params['old_id']
@@ -296,7 +296,7 @@ def transfer_record_tag():
 
 def transfer_references():
     db = Session(engine)
-    records = get_all_records()
+    records = get_all_records(db)
 
     for record in records:
         old_record_id = record.params['old_id']

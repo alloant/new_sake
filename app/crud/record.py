@@ -174,8 +174,6 @@ def get_records(db: Session, user = None, section = None, panel = None, search: 
         return []
 
     fn = get_filter(user,section, panel, db)
-    
-    fn.append( or_(RecordUser.user_id == user.id,RecordUser.user_id.is_(None)) )
 
     if search:
         if search.startswith('all_off:'):
@@ -183,16 +181,20 @@ def get_records(db: Session, user = None, section = None, panel = None, search: 
         else:
             fn.append(get_search_filter(search))
     
-    num_stmt = select(func.count(Record.id)).join(RecordUser, isouter=True).where(*fn)
+    join_condition = and_(
+        Record.id == RecordUser.record_id, 
+        RecordUser.user_id == user.id
+    )
 
+    num_stmt = select(func.count(Record.id)).join(RecordUser, join_condition, isouter=True).where(*fn)
     stmt = select(Record, RecordUser)
     if section == 'board':
         if panel.startswith('inbox') or panel.startswith('incoming'):
-            stmt = stmt.join(RecordUser).where(*fn, RecordUser.user_id==user.id)
+            stmt = stmt.join(RecordUser, join_condition).where(*fn, RecordUser.user_id==user.id)
         elif panel.startswith('outbox') or panel.startswith('outcoming'):
-            stmt = stmt.join(RecordUser, isouter=True).where(*fn)
+            stmt = stmt.join(RecordUser, join_condition, isouter=True).where(*fn)
     elif section == 'register':
-        stmt = stmt.join(RecordUser, isouter=True).where(*fn)
+        stmt = stmt.join(RecordUser, join_condition, isouter=True).where(*fn)
     
     stmt = stmt.options(
         joinedload(Record.sender),
@@ -208,7 +210,7 @@ def get_records(db: Session, user = None, section = None, panel = None, search: 
     
     if just_number:
         return db.exec(num_stmt).one()
-
+    
     return db.exec(stmt).unique().all(), db.exec(num_stmt).one()
 
 def get_all_records(db: Session) -> list[Record]:

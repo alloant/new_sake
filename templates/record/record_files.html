@@ -1,6 +1,6 @@
   <div class="field p-0 m-0">
     <div class="control p-0 m-0">
-      <div class="dropdown is-hoverable mr-4">
+      <div class="dropdown is-hoverable is-right mr-4">
         <div class="dropdown-trigger">
           <button class="button is-rounded is-small p-1" aria-haspopup="true" aria-controls="dropdown-{{ record.id }}" style="border: 0px;">
             <span class="p-0" style="position: relative;">
@@ -13,7 +13,7 @@
           </button>
         </div>
 
-        <div class="dropdown-menu" id="dropdown-{{ record.id }}" role="menu" style="width: auto; min-width: 40rem">
+        <div class="dropdown-menu" id="dropdown-{{ record.id }}" role="menu" style="width: auto; min-width: 30rem">
           <div class="dropdown-content" style="width: auto;">
             {% if record.files %}
               {% for file in record.files %}

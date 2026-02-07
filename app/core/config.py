@@ -4,8 +4,6 @@ import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-LAYOUT = 'final'
-
 class Config:
     DEBUG= os.environ.get('DEBUG')
 

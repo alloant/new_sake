@@ -27,6 +27,9 @@
   .has-order-3-mobile { order: 3; }
 }
 
+
+
+
 html, body {
   height: 100%;
 }
@@ -53,6 +56,10 @@ html, body {
   text-overflow: ellipsis;    /* show "..." */
 }
 
+.popover .popover-content {
+    background-color: #000000 !important;
+}
+  
 /* 1. Hide the buttons by default */
 .action-buttons {
   visibility: hidden;
@@ -123,6 +130,35 @@ html, body {
 
 .sidebar-bottom {
 }
+
+.is-main-sidebar {
+    transition: transform 0.3s ease;
+    z-index: 10; /* Ensure it's on top when shown */
+}
+
+.is-main-sidebar.is-active {
+    transform: translateX(0); /* Show the sidebar */
+}
+
+.is-main-content.is-darkened {
+    filter: brightness(0.7); /* Darken the main content */
+}
+
+@media (min-width: 1024px) {
+    .is-main-sidebar {
+        left: 0;
+        transform: translateX(0); /* Sidebar is visible on desktop */
+    }
+}
+
+@media (max-width: 1024px) {
+    .is-main-sidebar {
+        right: 0;
+        transform: translateX(100%); /* Initially hide the sidebar */
+        position: absolute; /* Allows it to overlay content in mobile view */
+    }
+}
+
 
 nav.pagination a {
   color: var(--sidebar-color);

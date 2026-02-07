@@ -8,7 +8,6 @@ from sqlmodel import Session
 
 from authx import TokenPayload
 
-from app.core.config import LAYOUT
 from app.core.auth import auth, get_current_user_from_cookie, get_payload_from_cookie
 from app.core.database import get_db
 from app.core.htmx import add_hx_trigger_header_on_success
@@ -57,7 +56,7 @@ async def records_table(request: Request, page: int = None, last_search = None, 
     search = last_search if last_search else data.get("search")
     
     template, rst = await records_table_view(page, search, section, panel, db, current_user)
-    template = f"record/{LAYOUT}/table_pagination.html"
+    template = f"record/table_pagination.html"
     
     return templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel, 'search': search} | rst)
 
@@ -72,11 +71,12 @@ async def records_hidden_row(request: Request, section: str, panel: str, db: Ses
 
 @router.get("/action", response_class=HTMLResponse)
 async def action(request: Request, record_id: int, recorduser_id: str, action: str, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
+    print('HERE IS')
     current_user = get_user_by_id(payload.uid, db)
     if action == 'recursive_search':
         page = 1
         template, rst = await records_table_view(page, f'all_off:{record_id}', 'register', 'all', db, current_user)
-        template = f"record/{LAYOUT}/table_sidebar.html"
+        template = f"record/table_sidebar.html"
         sidebar = get_sidebar(payload,'register','all',db)
         response = templates.TemplateResponse(template, {'request': request, 'section': 'register', 'panel': 'all', 'sidebar': sidebar, 'search':f'all_off:{record_id}'} | rst)
 
@@ -105,7 +105,7 @@ async def records_global_search(request: Request, section: str = None, panel: st
     
     template, rst = await records_table_view(page, search, 'register', 'all', db, current_user)
     if section != 'register' or panel != 'all':
-        template = f"record/{LAYOUT}/table_sidebar.html"
+        template = f"record/table_sidebar.html"
         sidebar = get_sidebar(payload,'register','all',db)
     else:
         sidebar = None

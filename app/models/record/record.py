@@ -94,7 +94,7 @@ class Record(SQLModel, RecordMethod, table=True):
         
         match self.stage:
             case "inbox":
-                return 'file-alert-outline'
+                return 'file-alert'
             case "despacho":
                 return 'briefcase-outline'
             case "registered":
