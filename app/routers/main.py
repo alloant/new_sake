@@ -108,7 +108,9 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
         elif kind == 'register':
             if data[setting]:
                 scopes.append(f'{key}:{data[setting]}')
-
+        elif kind == 'ctr':
+            print('ctr',key)
+            scopes.append(f'ctr_{key}:editor')
         elif kind == 'setting': 
             settings[key] = int(data[setting]) if data[setting].isdigit() else data[setting]
 

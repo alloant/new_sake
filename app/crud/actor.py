@@ -1,4 +1,4 @@
-from sqlmodel import Session, select
+from sqlmodel import Session, select, and_
 
 from app.core.database import engine
 from app.models.actor import Actor
@@ -16,3 +16,6 @@ def create_actor(alias: str, kind: str, db: Session) -> Actor:
     db_actor = Register(alias=alias, kind=kind)
     db.add(db_actor); db.commit(); db.refresh(db_actor)
     return db_actor
+
+def get_ctrs(db: Session) -> list(Actor):
+    return db.exec(select(Actor).where(and_(Actor.kind=='ctr',Actor.is_active==1))).all()

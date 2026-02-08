@@ -77,6 +77,30 @@
           </div>
         </div>
       </div>
+      
+      <div class="card mb-5">
+        <header class="card-header">
+          <p class="card-header-title">Centers</p>
+        </header>
+        <div class="card-content">
+          <div class="columns is-multiline">
+
+            {% for ctr in settings['ctrs'] %}
+            <div class="column">
+                <div class="field is-horizontal is-align-items-center">
+                  <div class="checkboxes">
+                    <label class="checkbox" style="white-space: nowrap;">
+                      <input type="checkbox" name="ctr_{{ ctr }}" {{ settings['ctrs'][ctr] }} />
+                      {{ ctr }}
+                    </label>
+                  </div>
+                </div>
+            </div>
+            {% endfor %}
+
+          </div>
+        </div>
+      </div>
 
       <div class="card mb-5">
         <header class="card-header">
