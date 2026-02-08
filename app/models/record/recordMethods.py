@@ -34,31 +34,31 @@ class RecordMethod(object):
 
     @property
     def targets(self):
-        return [target for target in self.users if target.target > 0]
+        return [target for target in self.actors if target.target > 0]
     
     def link(self, idx: int) -> str:
         if idx <= len(self.files) + 1:
             return self.files[idx].link
         return ""
 
-    def read_status_html(self,status,user):
+    def read_status_html(self,status,actor):
         read = True
         if not status:
-            if self.created_at > user.created_at:
+            if self.created_at > actor.created_at:
                 read = False
-        elif status.read_status != 'read' and self.created_at > user.created_at:
+        elif status.handled != 'read' and self.created_at > actor.created_at:
             read = False
-        elif status.read_status == 'read' and self.created_at <= user.created_at:
+        elif status.handled == 'read' and self.created_at <= actor.created_at:
             read = False
         
         return '' if read else 'has-text-weight-bold'
 
 
-    def get_actions(self, state, current_user, section, panel):
+    def get_actions(self, state, current_actor, section, panel):
         actions = []
         if self.flow in ['inbound','internal_cr','internal_cl']:
             actions.append(ActionGroup(title="Read",items=[]))
-            if not state or state.read_status == 'unread':
+            if not state or state.handled == 'unread':
                 actions[-1].items.append(Action(id="mark_read", title="Mark as read", hxget="/action?action=mark_read", icon="mdi-email-check"))
             else:
                 actions[-1].items.append(Action(id="mark_unread", title="Mark as unread", hxget="/action?action=mark_unread", icon="mdi-email-open-outline"))

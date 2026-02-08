@@ -17,22 +17,30 @@ def create_register(alias: str, full_name: str, db: Session) -> Register:
     db.add(db_register); db.commit(); db.refresh(db_register)
     return db_register
 
-def has_permission(user_perms, required_perms):
+def has_permission(actor_perms, required_perms):
     if not required_perms:
         return True
 
-    for u_perm in user_perms:
+    for u_perm in actor_perms:
         for r_perm in required_perms:
             if u_perm == r_perm or u_perm.startswith(f"{r_perm}:"):
                 return u_perm
 
     return ''
 
-def get_user_registers(user_perms, db: Session):
+def get_actor_registers(actor_perms, db: Session):
     registers = get_registers(db)
     available = {}
     for register in registers:
-        available[register.alias] = has_permission(user_perms,[register.alias])
+        available[register.alias] = has_permission(actor_perms,[register.alias])
 
     return available
 
+def get_actor_ctrs(actor_perms, db: Session):
+    rst = []
+    for u_perm in actor_perms:
+        if u_perm.startswith("ctr_"):
+            ctr_alias = u_perm[4:]
+            rst.append(ctr_alias.split(':')[0])
+
+    return rst

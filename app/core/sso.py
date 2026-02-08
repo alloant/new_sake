@@ -9,7 +9,7 @@ from itsdangerous import URLSafeSerializer, BadSignature
 import httpx
 from authlib.jose import JsonWebKey, jwt
 
-from app.crud import get_actor_by_alias, get_user_by_actor_id
+from app.crud import get_actor_by_alias
 from app.core.auth import auth
 
 # CONFIG - replace these with your values
@@ -68,7 +68,7 @@ async def login_by_sso():
         "response_type": "code",
         "client_id": CLIENT_ID,
         "redirect_uri": REDIRECT_URI,
-        "scope": "openid drive filestation files user_id",
+        "scope": "openid",
         "state": "state123",  # simple static state for demo; in prod generate/verifiy per session
     }
     auth_url = auth_ep + "?" + urlencode(params)
@@ -125,14 +125,13 @@ async def callback(request: Request, db: Session, code: str = None, state: str =
   
     alias = claims['username']
     actor = get_actor_by_alias(alias, db)
-    user = get_user_by_actor_id(actor.id, db)
     user_payload = {
-        "uid": user.id,
+        "uid": actor.id,
         "alias": alias,
-        "data": {"role": user.role.value},
+        "data": {"kind": actor.kind.value},
     }
     
-    access_token = auth.create_access_token("sake",data=user_payload, scopes=user.scopes)
+    access_token = auth.create_access_token("sake",data=user_payload, scopes=actor.scopes)
     response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(
         key="access_token",

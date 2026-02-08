@@ -2,30 +2,27 @@ from enum import Enum
 from sqlalchemy.dialects.mysql import JSON
 from sqlmodel import SQLModel, Field, Relationship, Column
 
-class ReadStatus(str, Enum):
+class HandledStatus(str, Enum):
+    NONE = ""
     READ = "read"
     UNREAD = "unread"
     MUSTREAD = "mustread"
-
-class TargetAction(str, Enum):
     PENDING = "pending"
     RETURN = "return"
     DENY = "deny"
     APPROVED = "approved"
+    DONE = "done"
+    
 
-class RecordUser(SQLModel, table=True):
+class RecordActor(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    user_id: int = Field(foreign_key="user.id")
+    actor_id: int = Field(foreign_key="actor.id")
     record_id: int = Field(foreign_key="record.id")
 
-    read_status: ReadStatus = Field(default=ReadStatus.UNREAD)
-    
+    handled: HandledStatus = Field()
     target: int = Field(default=0) # 0 means not involve. > 0 means involved. The number marks the order
-    target_action: TargetAction = Field(default=TargetAction.PENDING)
     
     params: dict[str,str] = Field(sa_column=Column(JSON, nullable=False), default_factory=dict)
     
-    record: "Record" = Relationship(back_populates="users")
-    user: "User" = Relationship()
-
-    
+    record: "Record" = Relationship(back_populates="actors")
+    actor: "Actor" = Relationship()

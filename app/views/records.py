@@ -1,5 +1,5 @@
 import math
-from app.crud import get_record, get_records, get_record_user, get_record_user_by_id, get_user_registers
+from app.crud import get_record, get_records, get_record_actor, get_record_actor_by_id, get_actor_registers
 
 def pagination(num_records: int, page: int, limit_records: int):
     num_pages = math.ceil(num_records / limit_records)
@@ -24,36 +24,37 @@ def pagination(num_records: int, page: int, limit_records: int):
 def get_title(section,panel):
     return panel.replace('-',' ').title()
 
-async def records_view(page: int = None, search: str = None, section: str = None, panel: str = None, db = None, current_user = None):
-    limit_records = current_user.get_setting('limit_records')
-    records, num_records = get_records(db=db,user=current_user,section=section,panel=panel,search=search,limit=limit_records,offset=page)
-    return f"record/main.html", {"records": records, "pagination": pagination(num_records,page,limit_records), "title": get_title(section,panel), 'num_records': num_records, "current_user": current_user}
+async def records_view(page: int = None, search: str = None, section: str = None, panel: str = None, db = None, current_actor = None):
+    limit_records = current_actor.get_setting('limit_records')
+    records, num_records = get_records(db=db,actor=current_actor,section=section,panel=panel,search=search,limit=limit_records,offset=page)
+    
+    return f"record/main.html", {"records": records, "pagination": pagination(num_records,page,limit_records), "title": get_title(section,panel), 'num_records': num_records, "current_actor": current_actor}
 
 
-async def records_table_view(page: int = None, search = None, section: str = None, panel: str = None, db = None, current_user = None):
-    limit_records = current_user.get_setting('limit_records')
+async def records_table_view(page: int = None, search = None, section: str = None, panel: str = None, db = None, current_actor = None):
+    limit_records = current_actor.get_setting('limit_records')
     offset = (page - 1)*limit_records if page else None
-    records, num_records = get_records(db=db,user=current_user,section=section,panel=panel,search=search,limit=limit_records,offset=offset)
+    records, num_records = get_records(db=db,actor=current_actor,section=section,panel=panel,search=search,limit=limit_records,offset=offset)
 
-    return f"record/table.html", {"records": records, "pagination": pagination(num_records,page,limit_records), "title": get_title(section,panel), 'num_records': num_records, "current_user": current_user}
+    return f"record/table.html", {"records": records, "pagination": pagination(num_records,page,limit_records), "title": get_title(section,panel), 'num_records': num_records, "current_actor": current_actor}
 
-async def action_view(record_id,status_id, action, db, current_user):
+async def action_view(record_id,status_id, action, db, current_actor):
     record = get_record(record_id, db = db)
     if status_id:
-        status = get_record_user_by_id(record_user_id = status_id, db = db)
+        status = get_record_actor_by_id(record_actor_id = status_id, db = db)
     else:
-        status = get_record_user(record_id = record_id, user_id = current_user.id, db = db)
+        status = get_record_actor(record_id = record_id, actor_id = current_actor.id, db = db)
 
     if action == "mark_read":
-        status.read_status = "read"
+        status.handled = "read"
     elif action == "mark_unread":
-        status.read_status = "unread"
+        status.handled = "unread"
     elif action == "archive":
         record.state = "archived"
     elif action == "restore":
         record.state = "active"
     elif action == "edit":
-        registers = get_user_registers(current_user.scopes,db)
+        registers = get_actor_registers(current_actor.scopes,db)
         return "forms/record.html", {'record': record, 'status': status, 'registers': registers}
 
     if action in ['mark_read','mark_unread']:

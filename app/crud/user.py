@@ -2,7 +2,7 @@ from sqlmodel import Session, select
 from argon2 import PasswordHasher
 
 from app.core.database import engine
-from app.models import User
+from app.models import Actor
 
 
 def hash_password(str_password): 
@@ -33,7 +33,7 @@ def verify_user_password(db_user: User, password: str):
 
 def create_user(email: str, full_name: str, password: str, db: Session) -> User:
     hashed = hash_password(password)
-    db_user = User(email=email, hashed_password=hashed, full_name=full_name, role="cl")
+    db_user = User(email=email, hashed_password=hashed, full_name=full_name, kind="user")
     db.add(db_user); db.commit(); db.refresh(db_user)
     return db_user
 

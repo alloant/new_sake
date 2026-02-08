@@ -24,7 +24,7 @@
 
   <div class="column is-full-mobile has-order-3-mobile">
     <div class="is-flex is-justify-content-left is-align-content-center">
-      <span class="{{ record.read_status_html(status,current_user) if record.flow == 'inbound' else '' }}">
+      <span class="{{ record.read_status_html(status,current_actor) if record.flow == 'inbound' else '' }}">
         {{ record.title }}
       </span>
   
@@ -33,7 +33,7 @@
         <span class="tag sender ml-1 is-hidden-mobile">{{ record.sender.alias }}</span>
       {% else %}
         {% for target in record.targets %}
-          <span class="tag sender ml-1 is-hidden-mobile">{{ target.user.actor.alias }}</span>
+          <span class="tag sender ml-1 is-hidden-mobile">{{ target.actor.alias }}</span>
         {% endfor %}
       {% endif %}
     </div>

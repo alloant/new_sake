@@ -3,7 +3,7 @@ from sqlmodel import SQLModel, Field, Relationship, Column
 from sqlalchemy.dialects.mysql import JSON
 from datetime import datetime
 
-from app.models.record_user import RecordUser
+from app.models.record_actor import RecordActor
 from .recordMethods import RecordMethod
 
 class Flow(str, Enum): # Flow of records
@@ -63,7 +63,7 @@ class Record(SQLModel, RecordMethod, table=True):
     updated_at: datetime = Field(default_factory=datetime.utcnow)#, sa_column=Column("updated_at", SQLModel.__config__.orm_mode and None))
     
     #tags: list["Tag"] = Relationship(back_populates="records", link_model=RecordTag)
-    #users: list["RecordUser"] = Relationship(back_populates="record")
+    #actors: list["RecordActor"] = Relationship(back_populates="record")
     #sender: "Actor" = Relationship(back_populates="records")
     #dept: "Dept" = Relationship(back_populates="records")
     #register: "Register" = Relationship(back_populates="records")
@@ -74,7 +74,7 @@ class Record(SQLModel, RecordMethod, table=True):
     dept: "Dept" = Relationship()
     register: "Register" = Relationship()
     files: list["File"] = Relationship()
-    users: list["RecordUser"] = Relationship(back_populates="record")
+    actors: list["RecordActor"] = Relationship(back_populates="record")
 
 
     references: list["Record"] = Relationship(

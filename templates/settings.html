@@ -3,9 +3,9 @@
 {% block content %}
 <section class="section">
   <div class="container">
-    <h1 class="title has-text-centered">Edit User: {{ user.full_name }}</h1>
+    <h1 class="title has-text-centered">Edit User: {{ actor.full_name }}</h1>
     
-    <form action="/settings?user_id={{ user.id }}" method="POST">
+    <form action="/settings?actor_id={{ actor.id }}" method="POST">
       <div class="card mb-5">
         <header class="card-header">
           <p class="card-header-title">Role</p>
@@ -15,10 +15,10 @@
                 <label class="label mr-1" style="white-space: nowrap;">Role:</label>
                 <div class="control">
                     <div class="select">
-                        <select name="user_role">
-                            <option value="dr" {{ 'selected' if settings['role'] == 'dr' }}>Director cr</option>
-                            <option value="of" {{ 'selected' if settings['role'] == 'of' }}>Official cr</option>
-                            <option value="cl" {{ 'selected' if settings['role'] == 'cl' }}>Member cl</option>
+                        <select name="actor_kind">
+                            <option value="dr" {{ 'selected' if settings['kind'] == 'dr' }}>Director cr</option>
+                            <option value="of" {{ 'selected' if settings['kind'] == 'of' }}>Official cr</option>
+                            <option value="cl" {{ 'selected' if settings['kind'] == 'cl' }}>Member cl</option>
                         </select>
                     </div>
                 </div>
@@ -91,7 +91,7 @@
             <div class="field-body">
               <div class="field">
                 <p class="control is-expanded">
-                  <input class="input" type="text" name="setting_{{ key }}" value="{{ user.get_setting(key) }}">
+                  <input class="input" type="text" name="setting_{{ key }}" value="{{ actor.get_setting(key) }}">
                 </p>
               </div>
             </div>

@@ -5,20 +5,32 @@ from sqlalchemy import and_, or_, desc
 from sqlalchemy.orm import joinedload, aliased, selectinload
 
 from app.core.database import engine
-from app.crud.register import get_register_by_alias, get_user_registers
+from app.crud.register import get_register_by_alias, get_actor_registers
+from app.crud.actor import get_actor_by_id, get_actor_by_alias
 
 from app.models.record import Record, RecordRecord
-from app.models.record_user import RecordUser
+from app.models.record_actor import RecordActor
 
-def get_record_user(record_id: int, user_id: int, db: Session) -> RecordUser:
-    smnt = select(RecordUser).where(
-    RecordUser.user_id == user_id,
-    RecordUser.record_id == record_id)
+
+current_target_subquery = (
+        select(func.min(RecordActor.target))
+        #.where(RecordActor.record_id == Record.id)
+        .where(RecordActor.handled == 'pending')
+        .where(RecordActor.target > 0)
+        .correlate(Record) # Ensures it checks target per record
+        .scalar_subquery()
+    )
+
+
+def get_record_actor(record_id: int, actor_id: int, db: Session) -> RecordActor:
+    smnt = select(RecordActor).where(
+    RecordActor.actor_id == actor_id,
+    RecordActor.record_id == record_id)
 
     status = db.exec(smnt).first()
 
     if not status:
-        status = RecordUser(user_id=user_id, record_id=record_id)
+        status = RecordActor(actor_id=actor_id, record_id=record_id)
         db.add(status)
         db.commit()
         db.refresh(status)
@@ -29,8 +41,8 @@ def get_record_by_params(param: str, value, db: Session) -> Record | None:
     smnt = select(Record).where(Record.params[param] == value)
     return db.exec(smnt).one()
 
-def get_record_user_by_id(record_user_id: int, db: Session) -> Record | None:
-    return db.get(RecordUser, record_user_id)
+def get_record_actor_by_id(record_actor_id: int, db: Session) -> Record | None:
+    return db.get(RecordActor, record_actor_id)
 
 def get_record(record_id: int, db: Session) -> Record | None:
     return db.get(Record, record_id)
@@ -41,23 +53,33 @@ def get_num_records(db: Session, search: str = None) -> list[Record]:
 
     return db.exec(select(func.count(Record.id))).one()
 
-def get_filter(user,section, panel, db: Session):
+def get_filter(actor,section, panel, db: Session):
     fn = []
     if section == 'register':
         if panel in ['all','unread']:
-            user_registers = get_user_registers(user.scopes, db)
-            fn_registers = [Record.register_id == get_register_by_alias(register,db).id for register in user_registers if user_registers[register]]
+            actor_registers = get_actor_registers(actor.scopes, db)
+            fn_registers = [Record.register_id == get_register_by_alias(register,db).id for register in actor_registers if actor_registers[register]]
             fn.append(or_(*fn_registers))
-            print(user)
+            
             if panel == 'unread':
                 fn.append(Record.flow=='inbound')
                 fn.append(or_(
-                    and_(RecordUser == None, Record.created_at > user.created_at),
-                    and_(RecordUser.read_status != 'read', Record.created_at > user.created_at),
-                    and_(RecordUser.read_status == 'read', Record.created_at <= user.created_at)
+                    and_(RecordActor == None, Record.created_at > actor.created_at),
+                    and_(RecordActor.handled != 'read', Record.created_at > actor.created_at),
+                    and_(RecordActor.handled == 'read', Record.created_at <= actor.created_at)
                     )
                 )
-                #fn.append(or_(and_(Record.created_at < user.created_at,RecordUser.read_status=='read'),and_(or_(RecordUser==None,RecordUser.read_status!='read'), Record.created_at < user.created_at)))
+        elif panel.endswith('_ctr'):
+            ctr_alias, flow = panel[:-4].split('-')
+            ctr = get_actor_by_alias(ctr_alias, db)
+            
+            if flow == 'in':
+                fn.append(Record.flow == 'outbound')
+                fn.append(RecordActor.actor_id == ctr.id)
+            else:
+                fn.append(Record.flow == 'inbound')
+                fn.append(Record.sender_id == ctr.id)
+
         else:
             register_alias, flow = panel.split('-')
             register = get_register_by_alias(register_alias, db)
@@ -71,31 +93,32 @@ def get_filter(user,section, panel, db: Session):
     elif section == 'board':
         if panel.startswith('inbox'):
             fn.append(Record.flow=='inbound')
-            fn.append(RecordUser.target > 0)
+            fn.append(RecordActor.target > 0)
             if panel == 'inbox':
                 fn.append(Record.state == 'active')
             if panel == 'inbox-snooze':
                 fn.append(Record.state == 'snooze')
             elif panel == 'inbox-archived':
+                pass
                 fn.append(Record.state == 'archived')
         elif panel.startswith('outbox'):
             fn.append(Record.flow=='outbound')
-            fn.append(Record.sender_id == user.id)
+            fn.append(Record.sender_id == actor.id)
             if panel == 'outbox-drafts':
                 fn.append(Record.stage == 'draft')
             elif panel == 'outbox-sent':
-                print('outbox-sent')
                 fn.append(Record.stage == 'sent')
         elif panel.startswith('incoming-proposals'):
             fn.append(Record.flow=='internal_cr')
-            fn.append(RecordUser.target > 0)
+            fn.append(RecordActor.target > 0)
             if panel == 'incoming-proposals-to-sign':
-                fn.append(Record.stage == 'pending')
+                fn.append(RecordActor.handled == 'pending')
+                fn.append(RecordActor.target == current_target_subquery)
             elif panel == 'incoming-proposals-signed':
-                fn.append(RecordUser.target_action != 'pending')
+                fn.append(RecordActor.handled != 'pending')
         elif panel.startswith('outcoming-proposals'):
             fn.append(Record.flow=='internal_cr')
-            fn.append(Record.sender_id == user.id)
+            fn.append(Record.sender_id == actor.id)
             if panel == 'outcoming-proposals-drafts':
                 fn.append(Record.stage == 'sketch')
                 fn.append(Record.state == 'active')
@@ -138,7 +161,7 @@ def get_search_filter(search):
     return or_(*fn)
 
 
-def get_recursive_ids(start_id: int, user: "User", db: Session, limit: int = None, offset:int = None):
+def get_recursive_ids(start_id: int, actor: "Actor", db: Session, limit: int = None, offset:int = None):
     start_record = get_record(start_id)
     start_ids = [start_id]
     for reference in start_record.references:
@@ -169,43 +192,53 @@ def get_recursive_ids(start_id: int, user: "User", db: Session, limit: int = Non
 
     return Record.id.in_(all_ids)
 
-def get_records(db: Session, user = None, section = None, panel = None, search: str = None, limit: int = None, offset: int = None, just_number: bool = False) -> list[Record] | int:
-    if not user:
+def get_records(db: Session, actor = None, section = None, panel = None, search: str = None, limit: int = None, offset: int = None, just_number: bool = False) -> list[Record] | int:
+    if not actor:
         return []
 
-    fn = get_filter(user,section, panel, db)
+    fn = get_filter(actor,section, panel, db)
 
     if search:
         if search.startswith('all_off:'):
-            fn.append(get_recursive_ids(search[8:], user, limit, offset, db))
+            fn.append(get_recursive_ids(search[8:], actor, limit, offset, db))
         else:
             fn.append(get_search_filter(search))
     
-    join_condition = and_(
-        Record.id == RecordUser.record_id, 
-        RecordUser.user_id == user.id
-    )
+    if panel.endswith('in_ctr'):
+        ctr_alias, flow = panel[:-4].split('-')
+        ctr = get_actor_by_alias(ctr_alias, db)
 
-    num_stmt = select(func.count(Record.id)).join(RecordUser, join_condition, isouter=True).where(*fn)
-    stmt = select(Record, RecordUser)
+        join_condition = and_(
+            Record.id == RecordActor.record_id, 
+            RecordActor.actor_id == ctr.id
+        )
+    else:
+        join_condition = and_(
+            Record.id == RecordActor.record_id, 
+            RecordActor.actor_id == actor.id
+        )
+     
+    num_stmt = select(func.count(Record.id)).join(RecordActor, join_condition, isouter=True).where(*fn)
+    stmt = select(Record, RecordActor, current_target_subquery.label("target_order"))
+
     if section == 'board':
         if panel.startswith('inbox') or panel.startswith('incoming'):
-            stmt = stmt.join(RecordUser, join_condition).where(*fn, RecordUser.user_id==user.id)
+            stmt = stmt.join(RecordActor, join_condition).where(*fn, RecordActor.actor_id==actor.id)
         elif panel.startswith('outbox') or panel.startswith('outcoming'):
-            stmt = stmt.join(RecordUser, join_condition, isouter=True).where(*fn)
+            stmt = stmt.join(RecordActor, join_condition, isouter=True).where(*fn)
     elif section == 'register':
-        stmt = stmt.join(RecordUser, join_condition, isouter=True).where(*fn)
+        stmt = stmt.join(RecordActor, join_condition, isouter=True).where(*fn)
     
     stmt = stmt.options(
         joinedload(Record.sender),
         joinedload(Record.register),
         joinedload(Record.dept),
         selectinload(Record.tags),
-        selectinload(Record.users),
+        selectinload(Record.actors),
         selectinload(Record.files),
         selectinload(Record.references),
-        joinedload(RecordUser.user),
-        joinedload(RecordUser.record)
+        joinedload(RecordActor.actor),
+        joinedload(RecordActor.record)
     ).limit(limit).offset(offset).order_by(desc(Record.updated_at))
     
     if just_number:
@@ -218,7 +251,7 @@ def get_all_records(db: Session) -> list[Record]:
 
     return db.exec(stmt).all()
 
-def get_records_for_user(sender_id: int, db: Session) -> list[Record]:
+def get_records_for_actor(sender_id: int, db: Session) -> list[Record]:
     return db.exec(select(Record).where(Record.sender_id == sender_id)).all()
 
 def get_record_by_protocol(protocol: str, sequence: int, year: int, db: Session) -> Record | None:

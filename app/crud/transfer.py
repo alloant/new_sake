@@ -2,13 +2,12 @@ from sqlmodel import Session
 
 from app.core.database import engine, get_old_data
 
-from app.models import User, Actor, Record, RecordUser, Register, Contact, Ctr, Dept, File, RecordRecord
+from app.models import Actor, Record, RecordActor, Register, Dept, File, RecordRecord
 from app.models.record.record import Tag, RecordTag
 
 from app.crud.actor import get_actor_by_alias, get_actors
 from app.crud.register import get_register_by_alias
 from app.crud.record import create_record, get_all_records, get_record_by_params
-from app.crud.user import create_user, get_users, get_user_by_id, get_user_by_actor_id
 from app.crud.dept import get_dept_by_alias, get_dept_by_actor_id
 
 
@@ -99,11 +98,9 @@ def transfer_find_depts():
                 break
             else:
                 for target in record.targets:
-                    #print('|',target,'|')
-                    dept = get_dept_by_actor_id(target.user.id,db)
+                    dept = get_dept_by_actor_id(target.actor.id,db)
                     if dept:
                         record.dept_id = dept.id
-                        print('@@@@@@@',record)
                         db.add(record)
                         dept_found = True
                         break
@@ -139,19 +136,24 @@ def transfer_actors():
 def transfer_users():
     db = Session(engine)
     rows = get_old_data('SELECT * from user')
-    emails = []
-    actors = get_actors(db)
+    alias = []
+
     for row in rows:
-        if row['email'] and row['category'] in ['dr','of','cl']:
-            if not row['email'] in emails:
-                print(row['alias'],row['email'], row['name'])
-                #actor = get_actor_by_alias(row['alias'])
-                for actor in actors:
-                    if actor.alias == row['alias']:
-                        break
-                db_user = User(email=row['email'], hashed_password='', full_name=row['name'],role="dr",actor_id=actor.id, created_at=row['date'])
-                db.add(db_user)
-                emails.append(row['email'])
+        if not row['alias'] in alias:
+            if row['category'] in ['dr','of','cl']:
+                kind = 'user'
+            elif row['category'] == 'contact':
+                kind = 'contact'
+            elif row['category'] == 'ctr':
+                kind = 'ctr'
+            else:
+                kind = 'user'
+
+            print(row['alias'],row['email'], row['name'])
+
+            db_actor = Actor(alias=row['alias'],kind=kind,email=row['email'],full_name=row['name'],created_at=row['date'])
+            db.add(db_actor)
+            alias.append(row['alias'])
     db.commit()
 
 def transfer_contacts():
@@ -254,21 +256,34 @@ def transfer_note_user():
         print(old_id,record.title)
         status = get_old_data(f'SELECT * FROM noteuser WHERE note_id = {old_id}')
         for state in status:
-            read = "read" if state['read'] == 1 else "unread"
-            if state['target'] == 1:
-                target = state['target_order'] + 1
-                target_action = 'approved' if state['target_acted'] == 1 else 'pending'
-            else:
-                target = 0
-                target_action = 'pending'
-            user_old_id = state['user_id']
-            user_old = get_old_data(f'SELECT * FROM user WHERE id = {user_old_id}')[0]
-            actor = get_actor_by_alias(user_old['alias'], db)
-            user = get_user_by_actor_id(actor.id, db)
-            if user:
-                db_record_user = RecordUser(user_id=user.id,record_id=record.id,read_status=read,target=target,target_action=target_action)
+            add_it = True
+            target = 0
+            if record.flow == 'inbound':
+                handled = "read" if state['read'] == 1 else "unread"
+                target = state['target']
+            elif record.flow == 'internal_cr':
+                if state['target'] == 1:
+                    target = state['target_order'] + 1
+                    handled = 'approved' if state['target_acted'] == 1 else 'pending'
+                else:
+                    target = 0
+                    handled = 'pending'
+            elif record.flow == 'outbound':
+                if state['target'] == 1:
+                    target = 1
+                    handled = 'done' if state['target_acted'] == 1 else 'pending'
+                else:
+                    add_it = False
+
+            if add_it:            
+                user_old_id = state['user_id']
+                user_old = get_old_data(f'SELECT * FROM user WHERE id = {user_old_id}')[0]
+                actor = get_actor_by_alias(user_old['alias'], db)
             
-            db.add(db_record_user)
+                if actor:
+                    db_record_actor = RecordActor(actor_id=actor.id,record_id=record.id,handled=handled,target=target)
+            
+            db.add(db_record_actor)
     db.commit()
 
 def transfer_tags():
