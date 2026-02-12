@@ -31,22 +31,23 @@ def get_db():
     finally:
         session.close() # Explicitly ensure it returns to the pool
 
-## This part is just to copy old data to the new db
-import pymysql.cursors
-
-# Connection settings
-conn = pymysql.connect(
-    host='localhost',
-    port=3306,
-    user='root',
-    password=settings.DB_URL_OLD_PASS,
-    database='sake2',
-    cursorclass=pymysql.cursors.DictCursor,  # optional: return rows as dicts
-    autocommit=True                         # optional: enable autocommit
-)
-
 
 def get_old_data(sql):
+    ## This part is just to copy old data to the new db
+    import pymysql.cursors
+
+    # Connection settings
+    conn = pymysql.connect(
+        host=settings.DB_URL_HOST_OLD,
+        port=settings.DB_URL_PORT_OLD,
+        user=settings.DB_URL_USER_OLD,
+        password=settings.DB_URL_PASS_OLD,
+        database=settings.DB_URL_DB_OLD,
+        cursorclass=pymysql.cursors.DictCursor,  # optional: return rows as dicts
+        autocommit=True                         # optional: enable autocommit
+    )
+
+
     try:
         with conn.cursor() as cur:
             cur.execute(sql)

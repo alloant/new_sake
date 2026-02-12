@@ -50,16 +50,17 @@ def transfer_depts():
     db = Session(engine)
 
     departments = {
-        'vcr':{'full_name': 'Regional vicar', 'color': '#111111'},
-        'vc':{'full_name': 'Vicars', 'color': '#222222'},
-        'df':{'full_name': 'Defensor', 'color': '#333333'},
-        'dg':{'full_name': 'Delegate', 'color': '#444444'},
-        'scr':{'full_name': 'Secretary', 'color': '#555555'},
-        'vsm':{'full_name': 'St Michael', 'color': '#666666'},
-        'vsr':{'full_name': 'St Raphael', 'color': '#777777'},
-        'vsg':{'full_name': 'St Gabriel', 'color': '#888888'},
-        'ar':{'full_name': 'Administrator', 'color': '#999999'},
-        'aop':{'full_name': 'Apostolate public opinion', 'color': '#aaaaaa'}
+        'vcr':{'full_name': 'Regional vicar', 'color': '#E57373'},
+        'vc':{'full_name': 'Vicars', 'color': '#FF8A65'},
+        'df':{'full_name': 'Defensor', 'color': '#FFB74D'},
+        'dg':{'full_name': 'Delegate', 'color': '#81C784'},
+        'sccr':{'full_name': 'Secretary', 'color': '#4DB6AC'},
+        'sm':{'full_name': 'St Michael', 'color': '#64B5F6'},
+        'sr':{'full_name': 'St Raphael', 'color': '#7986CB'},
+        'sg':{'full_name': 'St Gabriel', 'color': '#9575CD'},
+        'ar':{'full_name': 'Administrator', 'color': '#F06292'},
+        'pffer':{'full_name': 'Prefecto', 'color': '#AED581'},
+        'aop':{'full_name': 'Apostolate public opinion', 'color': '#90A4AE'}
     }
     
     for dept in departments:
@@ -79,7 +80,12 @@ def transfer_find_depts():
 
         dept_found = False
         for tag in record.tags:
-            dept = get_dept_by_alias(tag.title,db)
+            if tag.title == 'desr':
+                dept = get_dept_by_alias(tag.title,db)
+                if not dept:
+                    dept = get_dept_by_alias('pffer',db)
+            else:
+                dept = get_dept_by_alias(tag.title,db)
             if dept:
                 record.dept_id = dept.id
                 db.add(record)

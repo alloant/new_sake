@@ -2,6 +2,10 @@
   <!-- Here logo -->
   <div class="item is-flex is-justify-content-space-between px-2 pt-1 pb-2" style="width: 100%;">
     <img class="logo" src="{{ url_for('static', path='icons/sake_long.svg') }}" alt="logo" />
+    <button class="button is-ghost"  onclick="togglePanel()">
+      <i class="iconify" data-icon="mdi-post-outline"></i>
+    </button>
+
     <a  class="button has-tooltip-arrow has-tooltip-left flex-shrink"
         data-tooltip="Settings"
         href="settings">

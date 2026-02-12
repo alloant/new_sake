@@ -17,7 +17,7 @@
           <div class="dropdown-content" style="width: auto;">
             {% if record.files %}
               {% for file in record.files %}
-                <a href="https://nas.prome.sg:5001/oo/r/{{ file.permanent_link }}" class="dropdown-item" target="_blank">
+                <a href="{{ file.link }}" class="dropdown-item" target="_blank">
                   {{ file.html_name | safe }}
                 </a>
               {% endfor %}

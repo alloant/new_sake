@@ -22,8 +22,14 @@ def logout():
 
 @router.get('/login')
 async def login_form(request: Request):
-    print('Here getting the login')
     auth_url =  await login_by_sso()
+    # 1. Check if this is an HTMX request
+    if request.headers.get("HX-Request"):
+        # 2. Tell HTMX to redirect the entire window to the SSO page
+        return Response(
+            headers={"HX-Redirect": "/login"} 
+        )
+
     return templates.TemplateResponse("auth/sso.html", {"request": request, "auth_url": auth_url})
 
 @router.get("/auth/callback")

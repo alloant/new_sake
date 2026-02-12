@@ -29,7 +29,7 @@ def is_false(obj,condition,text=""):
 
 
 class AppTemplates(Jinja2Templates):
-    def TemplateResponse(self, name: str, context: Dict[str, Any], status_code: int = 200):
+    def TemplateResponse(self, name: str, context: dict[str, Any], status_code: int = 200):
         context.setdefault("is_true", is_true)
         context.setdefault("is_false", is_false)
         return super().TemplateResponse(name, context, status_code=status_code)

@@ -162,7 +162,7 @@ def get_search_filter(search):
 
 
 def get_recursive_ids(start_id: int, actor: "Actor", db: Session, limit: int = None, offset:int = None):
-    start_record = get_record(start_id)
+    start_record = get_record(start_id, db)
     start_ids = [start_id]
     for reference in start_record.references:
         start_ids.append(reference.id)
@@ -218,16 +218,19 @@ def get_records(db: Session, actor = None, section = None, panel = None, search:
             RecordActor.actor_id == actor.id
         )
      
-    num_stmt = select(func.count(Record.id)).join(RecordActor, join_condition, isouter=True).where(*fn)
+    num_stmt = select(func.count(Record.id))
     stmt = select(Record, RecordActor, current_target_subquery.label("target_order"))
 
     if section == 'board':
         if panel.startswith('inbox') or panel.startswith('incoming'):
             stmt = stmt.join(RecordActor, join_condition).where(*fn, RecordActor.actor_id==actor.id)
+            num_stmt = num_stmt.join(RecordActor, join_condition).where(*fn, RecordActor.actor_id==actor.id)
         elif panel.startswith('outbox') or panel.startswith('outcoming'):
             stmt = stmt.join(RecordActor, join_condition, isouter=True).where(*fn)
+            num_stmt = num_stmt.join(RecordActor, join_condition, isouter=True).where(*fn)
     elif section == 'register':
         stmt = stmt.join(RecordActor, join_condition, isouter=True).where(*fn)
+        num_stmt = num_stmt.join(RecordActor, join_condition, isouter=True).where(*fn)
     
     stmt = stmt.options(
         joinedload(Record.sender),

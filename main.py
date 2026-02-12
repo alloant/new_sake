@@ -42,6 +42,7 @@ async def auth_exception_handler(request: Request, exc: Exception):
 def on_startup():
     # This creates all tables when the app first starts
     init_db()
+    #transfer_find_depts()
     if False:
         transfer_registers()
         transfer_users()
@@ -54,7 +55,7 @@ def on_startup():
         transfer_files()
         transfer_references()
 # Mount Static Files
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="static", html=True), name="static")
 
 # Include Routers
 # Use the main router defined in app/routers/main.py

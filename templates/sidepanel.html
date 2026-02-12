@@ -1,0 +1,72 @@
+<div id="side-panel" class="side-panel-hidden">
+    <div id="side-panel-content">
+        
+    </div>
+</div>
+
+<div id="side-panel-overlay" class="is-hidden" onclick="closePanel()"></div>
+
+<style>
+    #side-panel {
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 100vh;
+        width: 200px;
+        background: #1a1a1b; /* Match your dark theme */
+        border-left: 1px solid #333;
+        z-index: 1050;
+        transition: transform 0.3s ease-in-out;
+        transform: translateX(100%); /* Hidden by default with 100% */
+        padding: 20px;
+    }
+
+    #side-panel.is-active {
+        transform: translateX(0);
+    }
+
+    #side-panel-overlay.is-active {
+        display: block !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0,0,0,0.5);
+        z-index: 1040;
+    }
+
+    @media screen and (max-width: 768px) {
+        #side-panel { width: 100%; }
+    }
+</style>
+
+<script>
+    function closePanel() {
+        document.getElementById('side-panel').classList.remove('is-active');
+        document.getElementById('side-panel-overlay').classList.add('is-hidden');
+    }
+    function openPanel() {
+        document.getElementById('side-panel').classList.add('is-active');
+        document.getElementById('side-panel-overlay').classList.remove('is-hidden');
+    }
+
+    function togglePanel(forceClose = false) {
+        const panel = document.getElementById('side-panel');
+        const overlay = document.getElementById('side-panel-overlay');
+        
+        if (panel.classList.contains('is-active') || forceClose) {
+            panel.classList.remove('is-active');
+            overlay.classList.add('is-hidden');
+        } else {
+            panel.classList.add('is-active');
+            overlay.classList.remove('is-hidden');
+        }
+    }
+
+    // Close on 'Escape' key for better UX
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') togglePanel(true);
+    });
+
+</script>

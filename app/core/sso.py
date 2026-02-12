@@ -13,12 +13,14 @@ from app.crud import get_actor_by_alias
 from app.core.auth import auth
 
 # CONFIG - replace these with your values
-DSM = os.getenv("DSM_HOST", "nas-backup.gate-buri.ts.net:5001")  # e.g. example.com:5001
-DISCOVERY = f"https://{DSM}/webman/sso/.well-known/openid-configuration"
-CLIENT_ID = os.getenv("CLIENT_ID", "88c9eb9147909890a7527fb460887c9b")
-CLIENT_SECRET = os.getenv("CLIENT_SECRET", "X7JRl78URIvbi9wgG2erMOVjAbFtcWiO")
-REDIRECT_URI = os.getenv("REDIRECT_URI", "https://voidpad.gate-buri.ts.net:8000/auth/callback")
-SESSION_SECRET = os.getenv("SESSION_SECRET", "change-this-secret")
+DSM = os.getenv("SSO_SERVER")
+PORT = os.getenv("SYNOLOGY_PORT")
+DISCOVERY = f"https://{DSM}:{PORT}/webman/sso/.well-known/openid-configuration"
+CLIENT_ID = os.getenv("CLIENT_ID")
+CLIENT_SECRET = os.getenv("CLIENT_SECRET")
+REDIRECT_URI = os.getenv("REDIRECT_URI")
+SESSION_SECRET = os.getenv("SESSION_SECRET")
+
 
 serializer = URLSafeSerializer(SESSION_SECRET, salt="session")
 

@@ -2,17 +2,13 @@
   <span class="px-2">
     {% for action in actiongroup.items %}
       <button class="px-1 is-small has-tooltip-arrow" data-tooltip="{{ action.title }}"
-          hx-get="{{action.hxget}}&record_id={{ record.id }}&recordactor_id={{ is_true(status,'id') }}&section={{section}}&panel={{panel}}"
-
-        {% if action.hxtarget != "" %}
-          hx-target="{{ action.hxtarget }}"
-        {% else %}
-          hx-target="#row-{{record.id}}"
-        {% endif %}
-        
-        {% if action.modal %}
-          onclick="openModal()"
-        {% endif %}
+        {% for attr in action.attr %}
+          {% if attr in ['hx-get','hx-post'] %}
+            {{ attr }}="{{ action.attr[attr] }}&record_id={{ record.id }}&recordactor_id={{ is_true(status,'id') }}&section={{section}}&panel={{panel}}"
+          {% else %}
+            {{ attr }}="{{ action.attr[attr] }}"
+          {% endif %}
+        {% endfor %}
       >
         <i class="iconify" data-icon="{{ action.icon }}"></i>
         {{action.other}}

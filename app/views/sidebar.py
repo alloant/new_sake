@@ -61,8 +61,8 @@ FULL_MENU['board'] = [
         title="My inbox",
         items=[
             MenuItem(id="inbox", title="Inbox", link="/?section=board&panel=inbox", icon="mdi-inbox-arrow-down", perms=["user"], show_count=True,hx_trigger=",record_state_changed from:body"),
-            MenuItem(id="inbox-snooze", title="Snooze", link="/?section=board&panel=inbox-snooze", icon="mdi-alarm-snooze", perms=["dr","of"], show_count=True),
-            MenuItem(id="inbox-archived", title="Archived", link="/?section=board&panel=inbox-archived", icon="mdi-archive", perms=["dr","of"]),
+            MenuItem(id="inbox-snooze", title="Snooze", link="/?section=board&panel=inbox-snooze", icon="mdi-alarm-snooze", perms=["user"], show_count=True),
+            MenuItem(id="inbox-archived", title="Archived", link="/?section=board&panel=inbox-archived", icon="mdi-archive", perms=["user"]),
         ],
     ),
 

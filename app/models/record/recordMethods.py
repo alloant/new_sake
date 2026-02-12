@@ -4,11 +4,7 @@ from datetime import date
 class Action(BaseModel):
     id: str
     title: str
-    hxget: str = ""
-    hxtarget: str = ""
-    hxtrigger: str | None = None
-    modal: bool = False
-    other: str = ""
+    attr: dict[str,str] = {}
     icon: str | None = None
     perms: list[str] = []
 
@@ -54,35 +50,36 @@ class RecordMethod(object):
         return '' if read else 'has-text-weight-bold'
 
 
+        
     def get_actions(self, state, current_actor, section, panel):
         actions = []
         if self.flow in ['inbound','internal_cr','internal_cl']:
             actions.append(ActionGroup(title="Read",items=[]))
             if not state or state.handled == 'unread':
-                actions[-1].items.append(Action(id="mark_read", title="Mark as read", hxget="/action?action=mark_read", icon="mdi-email-check"))
+                actions[-1].items.append(Action(id="mark_read", title="Mark as read", attr={"hx-get": "/action?action=mark_read", "hx-target": f"#row-{self.id}"}, icon="mdi-email-check"))
             else:
-                actions[-1].items.append(Action(id="mark_unread", title="Mark as unread", hxget="/action?action=mark_unread", icon="mdi-email-open-outline"))
+                actions[-1].items.append(Action(id="mark_unread", title="Mark as unread", attr={"hx-get": "/action?action=mark_unread", "hx-target": f"#row-{self.id}"}, icon="mdi-email-open-outline"))
 
             actions.append(ActionGroup(title="Inbox",items=[]))
             if self.state != 'snooze':
-                actions[-1].items.append(Action(id="enable_snooze", title="Snooze", hxget="/action?action=enable_snooze", icon="mdi-alarm-snooze"))
+                actions[-1].items.append(Action(id="enable_snooze", title="Snooze", attr={"hx-post": "/action?action=enable_snooze", "hx-prompt": "Due date (dd/mm/yyyy)", "hx-target": f"#row-{self.id}"}, icon="mdi-alarm-snooze"))
             else:
-                actions[-1].items.append(Action(id="disable_snooze", title="Disable snooze", hxget="/action?action=disable_snooze", icon="mdi-weather-sunset"))
+                actions[-1].items.append(Action(id="disable_snooze", title="Disable snooze", attr={"hx-get": "/action?action=disable_snooze", "hx-target": f"#row-{self.id}"}, icon="mdi-weather-sunset"))
             
             if self.state != 'archived':
-                actions[-1].items.append(Action(id="archive", title="Archive", hxget="/action?action=archive", icon="mdi-archive-arrow-down"))
+                actions[-1].items.append(Action(id="archive", title="Archive", attr={"hx-get": "/action?action=archive", "hx-target": f"#row-{self.id}"}, icon="mdi-archive-arrow-down"))
             else:
-                actions[-1].items.append(Action(id="restore", title="Restore", hxget="/action?action=restore", icon="mdi-archive-arrow-up-outline"))
+                actions[-1].items.append(Action(id="restore", title="Restore", attr={"hx-get": "/action?action=restore", "hx-target": f"#row-{self.id}"}, icon="mdi-archive-arrow-up-outline"))
 
         actions.append(ActionGroup(title="Info",
             items=[
-                Action(id="check_info", title="Info about the note", hxget="/action?action=check_info", icon="mdi-information-outline"),
-                Action(id="recursive_search", title="List all notes related with this entry", hxget="/action?action=recursive_search", icon="mdi-archive-search-outline", hxtarget="#main-table")
+                Action(id="check_info", title="Info about the note", attr={"hx-get": "/action?action=check_info", "hx-target": f"#row-{self.id}"}, icon="mdi-information-outline"),
+                Action(id="recursive_search", title="List all notes related with this entry", attr={"hx-get": "/action?action=recursive_search", "hx-target": f"#main-table"}, icon="mdi-archive-search-outline")
                 ]))
 
         actions.append(ActionGroup(title="Edition",
             items=[
-                Action(id="edit_record",title="Edit", hxget="/action?action=edit", hxtarget="#modal-content-target", modal=True, icon="mdi-email-edit", perms=[]),
+                Action(id="edit_record",title="Edit", attr={"hx-get": "/action?action=edit", "hx-target": "#modal-content-target", "onclick": "openModal()"}, icon="mdi-email-edit", perms=[]),
             ]))
 
         return actions

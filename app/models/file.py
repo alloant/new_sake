@@ -2,6 +2,8 @@ from pathlib import Path
 from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime
 
+from app.core.config import settings
+
 class File(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     name: str = Field(max_length=200,default=None,description="Name file. Needed to show it in Sake")
@@ -15,7 +17,7 @@ class File(SQLModel, table=True):
 
     @property
     def link(self):
-        return f"https://nas.prome.sg:8001/oo/r/{self.permanent_link}"
+        return f"https://{settings.SYNOLOGY_SERVER}:8001/oo/r/{self.permanent_link}"
 
     @property
     def icon(self):
