@@ -22,7 +22,8 @@ def logout():
 
 @router.get('/login')
 async def login_form(request: Request):
-    auth_url =  await login_by_sso()
+    auth_url =  await login_by_sso("synology")
+    auth_url_google =  await login_by_sso("google")
     # 1. Check if this is an HTMX request
     if request.headers.get("HX-Request"):
         # 2. Tell HTMX to redirect the entire window to the SSO page
@@ -30,8 +31,12 @@ async def login_form(request: Request):
             headers={"HX-Redirect": "/login"} 
         )
 
-    return templates.TemplateResponse("auth/sso.html", {"request": request, "auth_url": auth_url})
+    return templates.TemplateResponse("auth/sso.html", {"request": request, "auth_url": auth_url, "auth_url_google": auth_url_google})
 
 @router.get("/auth/callback")
 async def callback_route(request: Request, code: str = None, state: str = None, db: Session = Depends(get_db)):
     return await callback(request,db,code,state)
+
+@router.get("/auth/callback-google")
+async def callback_route(request: Request, code: str = None, state: str = None, db: Session = Depends(get_db)):
+    return await callback(request,db,code,state,'google')

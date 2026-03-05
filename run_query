@@ -1,0 +1,25 @@
+#!/usr/bin/sh
+
+
+SSO_SERVER=nas-backup.gate-buri.ts.net \
+CLIENT_ID="88c9eb9147909890a7527fb460887c9b" \
+CLIENT_SECRET="X7JRl78URIvbi9wgG2erMOVjAbFtcWiO" \
+REDIRECT_URI="https://voidpad.gate-buri.ts.net:8000/auth/callback" \
+SESSION_SECRET="oStnJZ9gap8MXtlRwBcsSK7ghmQSoCdPre0i7LA-k8E" \
+EMAIL_CARDUMEN_USER="Aes-cr" \
+EMAIL_CARDUMEN_SERVER=10.0.0.10 \
+EMAIL_CARDUMEN_SECRET="2VacgrH" \
+SOCK_SERVER=localhost \
+SYNOLOGY_FOLDER_NOTES=/team-folders/Data \
+SYNOLOGY_SERVER=nas-backup.gate-buri.ts.net \
+SYNOLOGY_PORT=5001 \
+EMAIL_ADDRESS="sake.prome@gmail.com" \
+EMAIL_SECRET="cfeg zoak xowt rkkn" \
+SECRET_KEY="eBHpWUbs-Fk8y5FGcUgvMsgw2DFRPgzmocX8QyKUXB0" \
+DB_URL_HOST_OLD='localhost' \
+DB_URL_PORT_OLD=3306 \
+DB_URL_USER_OLD='root' \
+DB_URL_DB_OLD='sake2' \
+DB_URL_PASS_OLD=']9sT3vn+&R(a$]bxD"hWP^eHb' \
+DB_URL='mariadb+pymysql://root:]9sT3vn+&R(a$]bxD"hWP^eHb@localhost/new_sake?charset=utf8mb4' \
+poetry run python queries.py

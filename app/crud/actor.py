@@ -9,6 +9,9 @@ def get_actor_by_id(actor_id: int, db: Session) -> Actor | None:
 def get_actor_by_alias(alias: str, db: Session) -> Actor | None:
     return db.exec(select(Actor).where(Actor.alias == alias)).first()
 
+def get_actor_by_email(email: str, db: Session) -> Actor | None:
+    return db.exec(select(Actor).where(Actor.email == email)).first()
+
 def get_actors(db: Session) -> List[Actor]:
     return db.exec(select(Actor)).all()
 
