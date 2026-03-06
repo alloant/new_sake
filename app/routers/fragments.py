@@ -65,7 +65,7 @@ async def records_hidden_row(request: Request, section: str, panel: str, db: Ses
     num = get_records(db = db, actor = current_actor, section = section, panel = panel, just_number = True)
     if num == 0:
         return ''
-    return f'<span class="tag is-danger is-rounded py-0" style="font-size: 0.65rem;">{num}</span>'
+    return f'<span class="tag is-secondary has-text-secondary is-rounded py-0 px-1" style="font-size: 0.6rem;">{num}</span>'
 
 
 @router.get("/action", response_class=HTMLResponse)

@@ -7,13 +7,21 @@
       <div class="columns is-centered">
         <div class="column is-one-third-desktop is-half-tablet">
           <div class="box has-text-centered">
-            <div class="">
-              <img src="{{ url_for('static', path='icons/sake_long.svg') }}"/>
-                <a class="button" href="{{ auth_url }}">Login with Synology</a>
-            </div>
-            <div class="">
-              <img src="{{ url_for('static', path='icons/google.svg') }}"/>
-                <a class="button" href="{{ auth_url_google }}">Login with Google</a>
+              <img src="{{ url_for('static', path='icons/sake_long.svg') }}">
+            <div class="container">
+              <a href="{{ auth_url_google }}" class="button is-fullwidth m-2">
+                <span class="icon">
+                  <img src="{{ url_for('static', path='icons/google.svg') }}" alt="Google Logo">
+                </span>
+                <span>Sign in with Google</span>
+              </a>
+              
+              <a href="{{ auth_url }}" class="button is-fullwidth m-2">
+                <span class="icon">
+                  <img src="{{ url_for('static', path='icons/synology.svg') }}" alt="Google Logo">
+                </span>
+                <span>Sign in with Synology</span>
+              </a>
             </div>
           </div>
         </div>

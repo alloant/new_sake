@@ -32,16 +32,16 @@ class File(SQLModel, table=True):
                 return 'danger','file-pdf'
             case '': # Folder
                 return '',''
-            case 'doc' | 'docx' | 'ppt' | 'pptx' | 'xls' | 'xlsx':
+            case '.doc' | '.docx' | '.ppt' | '.pptx' | '.xls' | '.xlsx':
                 return 'text','file-document'
-            case 'mp4' | 'mkv':
+            case '.mp4' | '.mkv':
                 return 'info','file-video'
-            case 'mp3' | 'wav':
+            case '.mp3' | '.wav':
                 return 'info', 'file-music'
-            case 'jpg' | 'gif' | 'png':
+            case '.jpg' | '.gif' | '.png':
                 return 'warning','file-image'
             case _:
-                return '',''
+                return 'secondary','file-document-online'
 
     @property
     def short_name(self):

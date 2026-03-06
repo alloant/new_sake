@@ -67,7 +67,7 @@ async def get_discovery(provider: str = "synology"):
     if provider not in _discovery_cache:
         url = GOOGLE_DISCOVERY if provider == "google" else DISCOVERY
         
-        async with httpx.AsyncClient(verify=False) as client:
+        async with httpx.AsyncClient(verify=True) as client:
             # Fetch OpenID Configuration
             r = await client.get(url, timeout=10)
             r.raise_for_status()
@@ -93,7 +93,7 @@ async def login_by_sso(provider: str = "synology"):
     if provider == "google":
         client_id = GOOGLE_CLIENT_ID
         redirect_uri = GOOGLE_REDIRECT_URI
-        scope = "openid email profile"
+        scope = "openid email profile https://www.googleapis.com/auth/drive.file"
     else:
         client_id = CLIENT_ID
         redirect_uri = REDIRECT_URI
@@ -108,42 +108,6 @@ async def login_by_sso(provider: str = "synology"):
     }
     
     return auth_ep + "?" + urlencode(params)
-
-
-async def get_discovery_old(provider: str):
-    global _discovery, _jwks
-    url = GOOGLE_DISCOVERY if provider == "google" else DISCOVERY
-    if _discovery is None:
-        async with httpx.AsyncClient(verify=False) as client:
-            r = await client.get(url, timeout=10)
-            r.raise_for_status()
-            _discovery = r.json()
-            jwks_uri = _discovery.get("jwks_uri")
-            if jwks_uri:
-                r2 = await client.get(jwks_uri, timeout=10)
-                r2.raise_for_status()
-                _jwks = r2.json()
-
-    return _discovery
-
-
-async def login_by_sso_old(provider: str = "synology"):
-    disc = await get_discovery(provider)
-    print(provider,disc)
-    # Google specific: Usually needs 'email' and 'profile' scopes
-    scope = "openid" if provider == "google" else "openid"
-    client_id = GOOGLE_CLIENT_ID if provider == "google" else CLIENT_ID
-    redirect_uri = GOOGLE_REDIRECT_URI if provider == "google" else REDIRECT_URI
-
-    params = {
-        "response_type": "code",
-        "client_id": client_id,
-        "redirect_uri": redirect_uri,
-        "scope": scope,
-        "state": "state123",
-    }
-    return disc["authorization_endpoint"] + "?" + urlencode(params)
-
 
 async def callback(request: Request, db: Session, code: str = None, state: str = None, provider: str = "synology"):
     # 0. Without code we cannot go forward
@@ -217,92 +181,27 @@ async def callback(request: Request, db: Session, code: str = None, state: str =
         alias = actor.alias
     else:
         actor = get_actor_by_alias(alias, db)
+    
     user_payload = {
         "uid": actor.id,
         "alias": alias,
+        "provider": provider,
         "data": {"kind": actor.kind.value},
     }
     
     access_token = auth.create_access_token("sake",data=user_payload, scopes=actor.scopes)
+    cookie_duration = 60 * 60 * 24 * 7 # 7 Days
+
     response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(
         key="access_token",
         value=access_token,
         httponly=True,
-        secure=True,
+        secure=True, 
         samesite="lax",
-        max_age=session_claims["expires_at"] if expires_in else 36000 
-    )
-    return response
-
-
-async def callback_old(request: Request, db: Session, code: str = None, state: str = None):
-    if not code:
-        return HTMLResponse("Missing code", status_code=400)
-
-    disc = await get_discovery()
-    token_ep = disc["token_endpoint"]
-    userinfo_ep = disc.get("userinfo_endpoint")
+        max_age=cookie_duration, # Correctly set to seconds
+    )   
     
-    async with httpx.AsyncClient(verify=False) as client:
-        # exchange code for tokens
-        data = {
-            "grant_type": "authorization_code",
-            "code": code,
-            "redirect_uri": REDIRECT_URI,
-            "client_id": CLIENT_ID,
-            "client_secret": CLIENT_SECRET,
-        }
-        r = await client.post(token_ep, data=data, timeout=10)
-        r.raise_for_status()
-        token_resp = r.json()
-        id_token = token_resp.get("id_token")
-        access_token = token_resp.get("access_token")
-        refresh_token = token_resp.get("refresh_token")
-        expires_in = token_resp.get("expires_in")  # seconds
-
-        claims = {}
-        if id_token and _jwks:
-            # verify id_token signature and basic claims (simplified)
-            jwk_set = JsonWebKey.import_key_set(_jwks)
-            try:
-                claims = jwt.decode(id_token, jwk_set)
-                claims.validate_exp()
-            except Exception:
-                claims = {}
-        # fallback: fetch userinfo if available
-        if not claims and userinfo_ep and access_token:
-            r2 = await client.get(userinfo_ep, headers={"Authorization": f"Bearer {access_token}"}, timeout=10)
-            r2.raise_for_status()
-            claims = r2.json()
-    
-    # build session payload
-    session_claims = claims.copy() if claims else {}
-    if access_token:
-        session_claims["access_token"] = access_token
-    if refresh_token:
-        session_claims["refresh_token"] = refresh_token
-    if expires_in:
-        session_claims["expires_at"] = int(time.time()) + int(expires_in)
-  
-    alias = claims['username']
-    actor = get_actor_by_alias(alias, db)
-    user_payload = {
-        "uid": actor.id,
-        "alias": alias,
-        "data": {"kind": actor.kind.value},
-    }
-    
-    access_token = auth.create_access_token("sake",data=user_payload, scopes=actor.scopes)
-    response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=True,
-        secure=True,
-        samesite="lax",
-        max_age=session_claims["expires_at"] if expires_in else 36000 
-    )
     return response
 
 

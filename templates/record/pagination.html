@@ -1,25 +1,28 @@
-<nav id="pagination-table" class="pagination is-small is-right py-2" role="navigation" aria-label="pagination">
-  <ul class="pagination-list">
-    <li class="px-2">{{pagination['first']}} - {{pagination['last']}} of {{num_records}}</li> 
+<div id="pagination-table" class="pagination is-small is-right py-2" role="navigation" aria-label="pagination">
+  <div class="pagination-list">
+    <span class="px-2" style="white-space: nowrap;">{{pagination['first']}} - {{pagination['last']}} of {{num_records}}</span> 
+    <span class="px-2" style="white-space: nowrap;">
+    
     {% if pagination['prev'] %}
       {% if search %}
-        <li><a hx-post="/records/table?last_search={{search}}&page={{pagination['prev']}}&section={{section}}&panel={{panel}}" hx-target="#main-table" hx-indicator="#progress-indicator" class="pagination-link"><i class="iconify" data-icon="mdi-chevron-left"></i></a></li>
+        <a hx-post="/records/table?last_search={{search}}&page={{pagination['prev']}}&section={{section}}&panel={{panel}}" hx-target="#main-table" hx-indicator="#progress-indicator" class="pagination-link"><i class="iconify" data-icon="mdi-chevron-left"></i></a>
       {% else %}
-        <li><a hx-post="/records/table?page={{pagination['prev']}}&section={{section}}&panel={{panel}}" hx-target="#main-table" hx-indicator="#progress-indicator" class="pagination-link"><i class="iconify" data-icon="mdi-chevron-left"></i></a></li>
+        <a hx-post="/records/table?page={{pagination['prev']}}&section={{section}}&panel={{panel}}" hx-target="#main-table" hx-indicator="#progress-indicator" class="pagination-link"><i class="iconify" data-icon="mdi-chevron-left"></i></a>
       {% endif %}
     {% else %}
-        <li><a href="#" class="pagination-link" disabled><i class="iconify" data-icon="mdi-chevron-left"></i></a></li>
+        <a href="#" class="pagination-link" disabled><i class="iconify" data-icon="mdi-chevron-left"></i></a>
     {% endif %}
 
     
     {% if pagination['next'] %}
       {% if search %}
-        <li><a hx-post="/records/table?last_search={{search}}&page={{pagination['next']}}&section={{section}}&panel={{panel}}" hx-target="#main-table" hx-indicator="#progress-indicator" class="pagination-link" aria-label="Goto page {{pagination['next']}}"><i class="iconify" data-icon="mdi-chevron-right"></i></a></li>
+        <a hx-post="/records/table?last_search={{search}}&page={{pagination['next']}}&section={{section}}&panel={{panel}}" hx-target="#main-table" hx-indicator="#progress-indicator" class="pagination-link" aria-label="Goto page {{pagination['next']}}"><i class="iconify" data-icon="mdi-chevron-right"></i></a>
       {% else %}
-        <li><a hx-post="/records/table?page={{pagination['next']}}&section={{section}}&panel={{panel}}" hx-target="#main-table" hx-indicator="#progress-indicator" class="pagination-link" aria-label="Goto page {{pagination['next']}}"><i class="iconify" data-icon="mdi-chevron-right"></i></a></li>
+        <a hx-post="/records/table?page={{pagination['next']}}&section={{section}}&panel={{panel}}" hx-target="#main-table" hx-indicator="#progress-indicator" class="pagination-link" aria-label="Goto page {{pagination['next']}}"><i class="iconify" data-icon="mdi-chevron-right"></i></a>
       {% endif %}
     {% else %}
-      <li><a href="#" class="pagination-link" disabled><i class="iconify" data-icon="mdi-chevron-right"></i></a></li>
+      <a href="#" class="pagination-link" disabled><i class="iconify" data-icon="mdi-chevron-right"></i></a>
     {% endif %}
-  </ul>
-</nav>
+    </span>
+  </div>
+</div>

@@ -5,6 +5,9 @@
   --sidebar-color-hover: #eeeeee;
   --sidebar-background-hover: #666666;
   --sidebar-background-active: hsl(229, 53%, 53%);
+  --row-hover: #cccccc;
+  --row-alternate: #eeeeee;
+  --button-files-hover: #eeeeee;
   --records-hidden-row: #eeeeee;
 }
 
@@ -15,6 +18,9 @@
   --sidebar-color-hover: #111111;
   --sidebar-background-hover: #afafaf;
   --sidebar-background-active: var(--bulma-link);
+  --row-hover: #333333;
+  --row-alternate: #222222;
+  --button-files-hover: #111111;
   --records-hidden-row: #111111;
 }
 
@@ -59,7 +65,15 @@ html, body {
 .popover .popover-content {
     background-color: #000000 !important;
 }
-  
+
+.button-files {
+  background: transparent;
+}
+
+.button-files:hover {
+  background: var(--button-files-hover);
+}
+
 /* 1. Hide the buttons by default */
 .action-buttons {
   visibility: hidden;
@@ -90,11 +104,20 @@ html, body {
     cursor: pointer; /* Makes it feel interactive */
 }
 
+.hover-row-alternate {
+    background-color: var(--row-alternate); /* Light grey hover effect */
+    transition: background-color 0.2s ease;
+    cursor: pointer; /* Makes it feel interactive */
+}
+
+.hover-row-alternate:hover,
 .hover-row:hover {
-    background-color: var(--bulma-table-row-background-color); /* Light grey hover effect */
+    background-color: var(--row-hover);
 }
 
 /* 2. Show them when the row (tr) is hovered */
+.hover-row-alternate:hover .hidden-row,
+.hover-row-alternate:hover .action-buttons,
 .hover-row:hover .hidden-row,
 .hover-row:hover .action-buttons {
   transform: translateY(0);
@@ -103,9 +126,28 @@ html, body {
   opacity: 1;
 }
 
+.hover-row-alternate:hover .behind-buttons,
 .hover-row:hover .behind-buttons {
   visibility: hidden;
   opacity: 1;
+}
+
+/* When the parent (the row or box) is hovered. Changing :hover for .is-active I change hover for click */
+.hover-box:hover .expandable-content {
+    max-height: 500px;      /* Large enough to fit any content */
+    opacity: 1;             /* Fade in */
+    margin-top: 10px;       /* Spacing when expanded */
+    transition-delay: 0.6s;
+}
+
+/* Optional: Subtle lift effect on the box itself */
+.hover-box {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-bottom: 1px solid #eee;
+}
+
+.hover-box:hover {
+    background-color: var(--sidebar-background);
 }
 
 /* custom size between small and medium */
@@ -268,24 +310,6 @@ nav.sidebar-section .item a.is-active {
     overflow: hidden;       /* Hide the 'extra' content */
     transition: all 0.2s ease-in-out; /* Smooth sliding effect */
     background-color: var(--records-hidden-row);
-}
-
-/* When the parent (the row or box) is hovered. Changing :hover for .is-active I change hover for click */
-.hover-box:hover .expandable-content {
-    max-height: 500px;      /* Large enough to fit any content */
-    opacity: 1;             /* Fade in */
-    margin-top: 10px;       /* Spacing when expanded */
-    transition-delay: 0.6s;
-}
-
-/* Optional: Subtle lift effect on the box itself */
-.hover-box {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border-bottom: 1px solid #eee;
-}
-
-.hover-box:hover {
-    background-color: var(--sidebar-background);
 }
 
 .tag.dropdown-trigger:hover {

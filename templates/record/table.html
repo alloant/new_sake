@@ -1,8 +1,8 @@
-<div class="columns is-mobile is-multiline is-gapless hover-row hover-box m-2" style="border-bottom: 0.5px solid #555555;">
+<div class="columns is-mobile is-multiline is-gapless hover-row m-0 p-1" style="border-bottom: 0.5px solid #555555;">
 </div>
 
 {% for record, status, target_order in records %}
-  <div id="row-{{record.id}}" class="columns is-mobile is-multiline is-gapless hover-row hover-box m-2" style="border-bottom: 0.5px solid #555555;">
+  <div id="row-{{record.id}}" class="columns is-mobile is-multiline is-gapless m-0 p-1 {{ loop.cycle('hover-row-alternate', 'hover-row') }}" style="border-bottom: 0.5px solid #555555;">
     {% include 'record/table_row.html' %}
   </div>
 {% endfor %}

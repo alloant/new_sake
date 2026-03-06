@@ -13,3 +13,30 @@ document.getElementById('navbar-burger').addEventListener('click', function() {
     this.classList.toggle('is-active');
 });
 
+document.addEventListener('click', function (event) {
+    // 1. Find if the user clicked the button or anything INSIDE the button (like the icon)
+    const trigger = event.target.closest('.dropdown-trigger');
+    
+    // 2. If it's a dropdown trigger, toggle its parent
+    if (trigger) {
+        const dropdown = trigger.closest('.dropdown');
+        
+        // Close any other open dropdowns first (Optional, but cleaner)
+        document.querySelectorAll('.dropdown.is-active').forEach(openDropdown => {
+            if (openDropdown !== dropdown) {
+                openDropdown.classList.remove('is-active');
+            }
+        });
+
+        // Toggle the current one
+        dropdown.classList.toggle('is-active');
+        
+        // Prevent the click from "bubbling up" to the document listener below
+        event.stopPropagation(); 
+    } else {
+        // 3. If the user clicked anywhere else, close all open dropdowns
+        document.querySelectorAll('.dropdown.is-active').forEach(dropdown => {
+            dropdown.classList.remove('is-active');
+        });
+    }
+});

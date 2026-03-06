@@ -1,8 +1,8 @@
   <div class="field p-0 m-0">
     <div class="control p-0 m-0">
-      <div class="dropdown is-hoverable is-right mr-4">
+      <div class="dropdown is-right mr-4">
         <div class="dropdown-trigger">
-          <button class="button is-rounded is-small p-1" aria-haspopup="true" aria-controls="dropdown-{{ record.id }}" style="border: 0px;">
+          <button class="button-files button is-rounded is-small p-1" aria-haspopup="true" aria-controls="dropdown-{{ record.id }}" style="border: 0px;">
             <span class="p-0" style="position: relative;">
               <i class="iconify is-size-6 p-0 has-text-warning" data-icon="mdi-folder"></i>
               <span class="p-0" style="position: absolute; top: 15%; left: 15%; color: black; font-size: 0.6rem;">{{ record.files|length }}</span>
@@ -15,20 +15,25 @@
 
         <div class="dropdown-menu" id="dropdown-{{ record.id }}" role="menu" style="width: auto; min-width: 30rem">
           <div class="dropdown-content" style="width: auto;">
+            
             {% if record.files %}
               {% for file in record.files %}
-                <a href="{{ file.link }}" class="dropdown-item" target="_blank">
+                <a href="{{ file.link }}" class="dropdown-item m-0" target="_blank">
                   {{ file.html_name | safe }}
                 </a>
               {% endfor %}
             {% else %}
-              <div class="dropdown-item">No files found</div>
+              <div class="dropdown-item p-0 m-0">No files found</div>
             {% endif %}
-            <hr class="dropdown-divider">
+            
+            {% if record.references %}
+            <hr class="dropdown-divider p-0 m-0">
+            {% endif %}
+            
             {% for reference in record.references %}
-                <div class="dropdown-item has-text-grey">{{ reference.protocol }} {{ reference.title }}</div>
+                <div class="dropdown-item has-text-grey m-0">{{ reference.protocol }} {{ reference.title }}</div>
                 {% for file in reference.files %}
-                  <a class="dropdown-item pl-4" target="_blank" href="{{ file.link }}">
+                  <a class="dropdown-item pl-4 py-1 m-0" target="_blank" href="{{ file.link }}">
                     {{ file.html_name | safe }}
                   </a>
                 {% endfor %}

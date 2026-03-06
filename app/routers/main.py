@@ -84,6 +84,7 @@ async def settings(request: Request, db: Session = Depends(get_db), payload: Tok
 async def settings_post(request: Request, db: Session = Depends(get_db), payload = Depends(get_payload_from_cookie)):
     sidebar = get_sidebar(payload,'settings','', db)
     current_actor = get_actor_by_id(payload.uid, db)
+    provider = payload.provider
     theme = current_actor.get_setting('theme') 
     
     form = await request.form()
@@ -127,10 +128,12 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
     user_payload = {
         "uid": current_actor.id,
         "alias": current_actor.alias,
+        "provider": provider,
         "data": {"kind": "user"},
     }
     
     access_token = auth.create_access_token("sake",data=user_payload, scopes=current_actor.scopes)
+    cookie_duration = 60 * 60 * 24 * 7 # 7 Days
     response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(
         key="access_token",
@@ -138,6 +141,6 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
         httponly=True,
         secure=True,
         samesite="lax",
-        max_age=36000 
+        max_age=cookie_duration
     )
     return response
