@@ -40,3 +40,13 @@ document.addEventListener('click', function (event) {
         });
     }
 });
+
+function markAsRead(statusId) {
+    // This sends a background request to your Python server
+    fetch(`/api/mark-as-read/${statusId}`, {
+        method: 'POST',
+    }).then(response => {
+        console.log("Marked as read");
+        // Optional: Update the UI here (e.g., remove 'unread' bolding)
+    });
+}

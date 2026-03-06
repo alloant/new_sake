@@ -1,5 +1,5 @@
-{% for actiongroup in record.get_actions(status,current_actor,section,panel) %}
-  <span class="px-2">
+{% for actiongroup in record.get_actions(status,current_actor,section,panel,True) %}
+  <span class="px-1">
     {% for action in actiongroup.items %}
       <button class="px-1 is-small has-tooltip-arrow" data-tooltip="{{ action.title }}"
         {% for attr in action.attr %}
@@ -11,7 +11,6 @@
         {% endfor %}
       >
         <i class="iconify" data-icon="{{ action.icon }}"></i>
-        {{action.other}}
       </button>
     {% endfor %}
   </span>

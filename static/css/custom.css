@@ -18,7 +18,7 @@
   --sidebar-color-hover: #111111;
   --sidebar-background-hover: #afafaf;
   --sidebar-background-active: var(--bulma-link);
-  --row-hover: #333333;
+  --row-hover: #050505;
   --row-alternate: #222222;
   --button-files-hover: #111111;
   --records-hidden-row: #111111;
@@ -74,30 +74,6 @@ html, body {
   background: var(--button-files-hover);
 }
 
-/* 1. Hide the buttons by default */
-.action-buttons {
-  visibility: hidden;
-  opacity: 1;
-  height: 100%;
-  transition: opacity 0.2s ease-in-out;
-  position: absolute;
-  white-space: nowrap;
-  display: inline-block;
-  top: 0%;
-  right: 0%;
-  background-color: var(--bulma-table-row-hover-background-color);
-}
-
-.hidden-row {
-  visibility: hidden;
-  opacity: 0;
-  max-height: 0;
-  transition: max-height 0.3s ease, opacity 0.3s ease;
-  position: absolute;
-  top: 0%;
-  left: 0%;
-  background-color: var(--bulma-table-row-hover-background-color);
-}
 
 .hover-row {
     transition: background-color 0.2s ease;
@@ -115,40 +91,34 @@ html, body {
     background-color: var(--row-hover);
 }
 
+/* 1. Hide the buttons by default */
+.action-buttons {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  display: flex;           /* Keep items inside aligned */
+  align-items: center;
+  white-space: nowrap;
+  
+  /* Background & Appearance */
+  background-color: transparent;
+  z-index: 30;
+  
+  /* Hide by default */
+  opacity: 0;
+  pointer-events: none;    /* Prevents clicking invisible buttons */
+  transition: none; /* opacity 0.2s ease-in-out;*/
+}
+
+
 /* 2. Show them when the row (tr) is hovered */
-.hover-row-alternate:hover .hidden-row,
 .hover-row-alternate:hover .action-buttons,
-.hover-row:hover .hidden-row,
 .hover-row:hover .action-buttons {
-  transform: translateY(0);
-  max-height: 500px;
-  visibility: visible;
   opacity: 1;
+  pointer-events: auto;
 }
 
-.hover-row-alternate:hover .behind-buttons,
-.hover-row:hover .behind-buttons {
-  visibility: hidden;
-  opacity: 1;
-}
-
-/* When the parent (the row or box) is hovered. Changing :hover for .is-active I change hover for click */
-.hover-box:hover .expandable-content {
-    max-height: 500px;      /* Large enough to fit any content */
-    opacity: 1;             /* Fade in */
-    margin-top: 10px;       /* Spacing when expanded */
-    transition-delay: 0.6s;
-}
-
-/* Optional: Subtle lift effect on the box itself */
-.hover-box {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border-bottom: 1px solid #eee;
-}
-
-.hover-box:hover {
-    background-color: var(--sidebar-background);
-}
 
 /* custom size between small and medium */
 .input.is-mediumish {

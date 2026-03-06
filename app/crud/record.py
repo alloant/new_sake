@@ -44,7 +44,7 @@ def get_record_by_params(param: str, value, db: Session) -> Record | None:
 def get_record_actor_by_id(record_actor_id: int, db: Session) -> Record | None:
     return db.get(RecordActor, record_actor_id)
 
-def get_record(record_id: int, db: Session) -> Record | None:
+def get_record_by_id(record_id: int, db: Session) -> Record | None:
     return db.get(Record, record_id)
 
 def get_num_records(db: Session, search: str = None) -> list[Record]:
@@ -162,7 +162,7 @@ def get_search_filter(search):
 
 
 def get_recursive_ids(start_id: int, actor: "Actor", db: Session, limit: int = None, offset:int = None):
-    start_record = get_record(start_id, db)
+    start_record = get_record_by_id(start_id, db)
     start_ids = [start_id]
     for reference in start_record.references:
         start_ids.append(reference.id)
@@ -200,7 +200,7 @@ def get_records(db: Session, actor = None, section = None, panel = None, search:
 
     if search:
         if search.startswith('all_off:'):
-            fn.append(get_recursive_ids(search[8:], actor, limit, offset, db))
+            fn.append(get_recursive_ids(search[8:], actor, db, limit, offset))
         else:
             fn.append(get_search_filter(search))
     

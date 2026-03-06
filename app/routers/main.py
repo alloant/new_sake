@@ -9,7 +9,7 @@ from sqlmodel import Session
 from app.core.database import get_db
 from app.core.auth import auth, get_payload_from_cookie, get_current_actor_alias_from_cookie
 
-from app.crud import get_actor_by_id
+from app.crud import get_actor_by_id, get_record_by_id, get_record_actor_by_id
 
 from app.models.actor import Kind
 from app.views.sidebar import get_sections, get_panel, get_sidebar
@@ -144,3 +144,14 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
         max_age=cookie_duration
     )
     return response
+
+
+@router.post("/api/mark-as-read/{status_id}")
+async def mark_as_read(status_id: int, db: Session = Depends(get_db), payload = Depends(get_payload_from_cookie)):
+    status = get_record_actor_by_id(record_actor_id = status_id, db = db)
+    status.handled = 'read'
+    db.add(status); db.commit(); db.refresh(status)
+    return {"status": "success", "message": f"Record {status_id} updated"}
+    
+    return {"status": "no_change", "message": "Already marked as read"}
+

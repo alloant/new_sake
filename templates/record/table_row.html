@@ -13,7 +13,7 @@
     </div>
   </div> <!-- End first cell -->
 
-  <div class="column is-full-mobile has-order-3-mobile">
+  <div class="column is-full-mobile has-order-3-mobile position-relative">
     <div class="is-flex is-justify-content-left is-align-items-center">
       {% if record.dept %}
         <span class="tag is-bold has-text-black mx-2 p-0" style="width: 2rem; background-color: {{record.dept.color}};">
@@ -38,19 +38,24 @@
         {% endfor %}
       {% endif %}
     </div>
+    <div class="action-buttons is-hidden-mobile is-rounded">
+      {% include 'record/table_row_actions.html' %}
+    </div>
   </div>
 
-  <div class="column is-one-fifth-desktop is-half-mobile has-order-2-mobile">
-    <div class="is-flex is-justify-content-right is-align-items-center">
-      <span class="behind-buttons is-hidden-mobile" style="position: relative;">
+
+
+  <div class="column is-one-fifth-desktop is-half-mobile has-order-2-mobile position-relative">
+    <div class="is-flex is-justify-content-space-between is-align-items-center">
+      
+      <div class="is-flex is-align-items-center">
+        {% include 'record/table_menu_actions.html' %}
+        {% include 'record/record_files.html' %}
+      </div>
+
+      <div class="ml-2" style="flex-shrink: 0;">
         {{ record.date }}
-        <span class="action-buttons is-flex is-align-items-center">
-          {% include 'record/table_row_actions.html' %}
-        </span>
-      </span>
-      <span class="icon px-1">
-        <i class="iconify" data-icon="mdi-dots-vertical"></i>
-      </span>
-      {% include 'record/record_files.html' %}
+      </div>
+
     </div> 
   </div>

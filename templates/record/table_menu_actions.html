@@ -1,0 +1,35 @@
+<div class="field p-0 m-0">
+  <div class="control p-0 m-0">
+    <div class="dropdown is-right mr-4">
+      <div class="dropdown-trigger">
+        <button class="button-files button is-rounded p-0" aria-haspopup="true" aria-controls="dropdown-menu-{{ record.id }}" style="border: 0px;">
+          <span class="icon m-0 p-0">
+            <i class="iconify" data-icon="mdi-dots-vertical"></i>
+          </span>
+        </button>
+      </div>
+
+      <div class="dropdown-menu" id="dropdown-{{ record.id }}" role="menu" style="width: auto; min-width: 30rem">
+        <div class="dropdown-content" style="width: auto;">
+          {% for actiongroup in record.get_actions(status,current_actor,section,panel) %}
+            {% for action in actiongroup.items %}
+              <a class="dropdown-item m-0"
+                {% for attr in action.attr %}
+                  {% if attr in ['hx-get','hx-post'] %}
+                    {{ attr }}="{{ action.attr[attr] }}&record_id={{ record.id }}&recordactor_id={{ is_true(status,'id') }}&section={{section}}&panel={{panel}}"
+                  {% else %}
+                    {{ attr }}="{{ action.attr[attr] }}"
+                  {% endif %}
+                {% endfor %}>
+                <i class="iconify" data-icon="{{ action.icon }}"></i>
+                {{ action.title }}
+              </a>
+            {% endfor %}
+          {% endfor %}
+        </div> <!-- End dropdown content -->
+      </div> <!-- End dropdown-menu -->
+    </div> <!-- dropdown -->
+  </div> <!-- control -->
+</div> <!-- end has addons -->
+
+

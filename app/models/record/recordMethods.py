@@ -51,15 +51,16 @@ class RecordMethod(object):
 
 
         
-    def get_actions(self, state, current_actor, section, panel):
+    def get_actions(self, state, current_actor, section, panel, quick_access = False):
         actions = []
-        if self.flow in ['inbound','internal_cr','internal_cl']:
+        if self.flow in ['inbound']:
             actions.append(ActionGroup(title="Read",items=[]))
             if not state or state.handled == 'unread':
                 actions[-1].items.append(Action(id="mark_read", title="Mark as read", attr={"hx-get": "/action?action=mark_read", "hx-target": f"#row-{self.id}"}, icon="mdi-email-check"))
             else:
                 actions[-1].items.append(Action(id="mark_unread", title="Mark as unread", attr={"hx-get": "/action?action=mark_unread", "hx-target": f"#row-{self.id}"}, icon="mdi-email-open-outline"))
 
+        if self.flow in ['inbound','internal_cr','internal_cl'] and not quick_access:
             actions.append(ActionGroup(title="Inbox",items=[]))
             if self.state != 'snooze':
                 actions[-1].items.append(Action(id="enable_snooze", title="Snooze", attr={"hx-post": "/action?action=enable_snooze", "hx-prompt": "Due date (dd/mm/yyyy)", "hx-target": f"#row-{self.id}"}, icon="mdi-alarm-snooze"))
@@ -71,15 +72,16 @@ class RecordMethod(object):
             else:
                 actions[-1].items.append(Action(id="restore", title="Restore", attr={"hx-get": "/action?action=restore", "hx-target": f"#row-{self.id}"}, icon="mdi-archive-arrow-up-outline"))
 
-        actions.append(ActionGroup(title="Info",
-            items=[
-                Action(id="check_info", title="Info about the note", attr={"hx-get": "/action?action=check_info", "hx-target": f"#row-{self.id}"}, icon="mdi-information-outline"),
-                Action(id="recursive_search", title="List all notes related with this entry", attr={"hx-get": "/action?action=recursive_search", "hx-target": f"#main-table"}, icon="mdi-archive-search-outline")
-                ]))
+        if not quick_access:
+            actions.append(ActionGroup(title="Info",
+                items=[
+                    Action(id="check_info", title="Info about the note", attr={"hx-get": "/action?action=check_info", "hx-target": f"#row-{self.id}"}, icon="mdi-information-outline"),
+                    Action(id="recursive_search", title="List all notes related with this entry", attr={"hx-get": "/action?action=recursive_search", "hx-target": f"#main-table"}, icon="mdi-archive-search-outline")
+                    ]))
 
-        actions.append(ActionGroup(title="Edition",
-            items=[
-                Action(id="edit_record",title="Edit", attr={"hx-get": "/action?action=edit", "hx-target": "#modal-content-target", "onclick": "openModal()"}, icon="mdi-email-edit", perms=[]),
-            ]))
+            actions.append(ActionGroup(title="Edition",
+                items=[
+                    Action(id="edit_record",title="Edit", attr={"hx-get": "/action?action=edit", "hx-target": "#modal-content-target", "onclick": "openModal()"}, icon="mdi-email-edit", perms=[]),
+                ]))
 
         return actions
