@@ -33,9 +33,6 @@
   .has-order-3-mobile { order: 3; }
 }
 
-
-
-
 html, body {
   height: 100%;
 }
@@ -111,12 +108,12 @@ html, body {
   transition: none; /* opacity 0.2s ease-in-out;*/
 }
 
-
 /* 2. Show them when the row (tr) is hovered */
 .hover-row-alternate:hover .action-buttons,
 .hover-row:hover .action-buttons {
   opacity: 1;
   pointer-events: auto;
+  background-color: var(--row-hover);
 }
 
 

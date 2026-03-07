@@ -19,6 +19,14 @@ class ActorSettings(object):
                 return 20
             case 'theme':
                 return 'light'
+            case 'admin_active':
+                return True
+
+    @property
+    def admin(self):
+        if 'admin' in self.scopes and self.get_setting('admin_active') and False:
+            return True
+        return False
 
 class Actor(SQLModel, ActorSettings, table=True):
     id: int | None = Field(default=None, primary_key=True)

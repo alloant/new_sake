@@ -61,13 +61,6 @@ class Record(SQLModel, RecordMethod, table=True):
     
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)#, sa_column=Column("updated_at", SQLModel.__config__.orm_mode and None))
-    
-    #tags: list["Tag"] = Relationship(back_populates="records", link_model=RecordTag)
-    #actors: list["RecordActor"] = Relationship(back_populates="record")
-    #sender: "Actor" = Relationship(back_populates="records")
-    #dept: "Dept" = Relationship(back_populates="records")
-    #register: "Register" = Relationship(back_populates="records")
-    #files: list["File"] = Relationship(back_populates="record")
 
     tags: list["Tag"] = Relationship(link_model=RecordTag)
     sender: "Actor" = Relationship()
