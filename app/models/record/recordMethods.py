@@ -34,6 +34,7 @@ ACTIONS['restore'] = {"id": "restore", "title": "Restore", "attr": {"hx-get": "/
 ACTIONS['check_info'] = {"id": "check_info", "title": "Info about the note", "attr": {"hx-get": "/action?action=check_info", "hx-target": "#row-{record_id}"}, "icon": "mdi-information-outline"}
 ACTIONS['recursive_search'] = {"id": "recursive_search", "title": "List all notes related with this entry", "attr": {"hx-get": "/action?action=recursive_search", "hx-target": "#main-table"}, "icon": "mdi-archive-search-outline"}
 ACTIONS['edit_record'] = {"id": "edit_record", "title": "Edit", "attr": {"hx-get": "/action?action=edit", "hx-target": "#modal-content-target", "onclick": "openModal()"}, "icon": "mdi-email-edit", "perms": []}
+ACTIONS['edit_targets'] = {"id": "edit_targets", "title": "Edit targets", "attr": {"hx-get": "/action?action=edit_targets", "hx-target": "#modal-content-target", "onclick": "openModal()"}, "icon": "mdi-account-group"}
 ACTIONS['delete_record'] = {"id": "delete_record", "title": "Delete", "attr": {"hx-get": "/action?action=delete", "hx-target": "#row-{record_id}", "hx-confirm": "Are you sure you want to delete the record?"}, "icon": "mdi-delete-circle-outline", "extra_class": "has-text-danger"}
 
 
@@ -110,6 +111,7 @@ class RecordMethod(object):
         if (not quick_access or self.title == '') and (current_actor.admin or self.flow == 'outbound' and self.stage == 'draft' or self.flow == 'internal_cr' and self.sender_id == current_actor.id):
             actions.append(ActionGroup(title="Edit", items=[]))
             actions[-1].items.append(Action(record_id=self.id,**ACTIONS['edit_record']))
+            actions[-1].items.append(Action(record_id=self.id,**ACTIONS['edit_targets']))
             actions[-1].items.append(Action(record_id=self.id,**ACTIONS['delete_record']))
 
 

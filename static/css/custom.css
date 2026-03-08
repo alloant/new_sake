@@ -202,8 +202,6 @@ div.hero-search, {
   color: var(--sidebar-color-hover);
 }
 
-
-
 /* keep hover/active styles by matching Bulma's states */
 nav.sidebar-panel .menu a:hover,
 nav.sidebar-panel .menu a.is-hovered {
@@ -217,7 +215,6 @@ nav.sidebar-panel .menu .menu-link a.is-active:hover {
   background: var(--sidebar-background-active);
 }
 
-
 .sidebar-section {
   font-size: 1.2em;
 }
@@ -229,38 +226,11 @@ nav.sidebar-section .item a.is-active {
   background-color: var(--sidebar-background-active) !important;
 }
 
-.icon-bordered {
-  border: 1px solid currentColor;
-  border-radius: 0.1rem;
-  padding: 1.25rem;
-}
-
 .columns.no-stack {
   flex-wrap: nowrap;
 }
 .columns.no-stack .column {
   min-width: 0; /* prevents overflow from forcing wrap */
-}
-
-.box.no-border {
-  box-shadow: none !important;
-  border: 1px solid currentColor;
-}
-
-.collapsible {
-  background-color: #777;
-  color: white;
-  cursor: pointer;
-  padding: 18px;
-  width: 100%;
-  border: none;
-  text-align: left;
-  outline: none;
-  font-size: 15px;
-}
-
-.active, .collapsible:hover {
-  background-color: #555;
 }
 
 .content {
@@ -270,28 +240,50 @@ nav.sidebar-section .item a.is-active {
   background-color: #f1f1f1;
 }
 
-/* The container for the content you want to reveal */
-.expandable-content {
-    max-height: 0;          /* Collapsed by default */
-    opacity: 0;             /* Invisible by default */
-    overflow: hidden;       /* Hide the 'extra' content */
-    transition: all 0.2s ease-in-out; /* Smooth sliding effect */
-    background-color: var(--records-hidden-row);
-}
-
 .tag.dropdown-trigger:hover {
     filter: brightness(90%);
     cursor: pointer;
 }
 
-/* Allow the dropdown to be visible outside the cell */
-.table-container, 
-.table td, 
-.table th {
-  overflow: visible !important;
-}
-
 /* Ensure the dropdown menu stays on top of other rows */
 .dropdown.is-active {
   z-index: 20;
+}
+
+/* Shared item styling for both columns */
+.user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+
+.sortable-item {
+    cursor: grab;
+}
+
+.sortable-item:active {
+    cursor: grabbing;
+}
+
+/* Center the main title */
+.main-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Control Row (Search + Button) */
+.controls-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+.controls-row input {
+    flex-grow: 1; /* Search takes up remaining space */
+    padding: 8px;
 }

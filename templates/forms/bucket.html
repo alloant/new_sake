@@ -1,0 +1,72 @@
+<h3 class="main-title">Select Targets</h3>
+
+<div style="max-width: 1000px; margin: 0 auto;">
+    
+    <div class="controls-row">
+        <input class="input is-mediumish is-rounded" type="text" name="q" placeholder="Search available targets..." 
+               hx-get="/users/search" 
+               hx-target="#available-list"
+               hx-trigger="keyup changed delay:500ms">
+        
+        <button type="button" 
+                hx-get="/users/select-all" 
+                hx-target="#selected-users" 
+                hx-swap="beforeend">
+            Select All Filtered
+        </button>
+    </div>
+
+    <div style="display: flex; gap: 20px;">
+        
+        <div style="flex: 1;">
+            <p style="font-weight: bold; text-align: center;">Available</p>
+            <div class="bucket-container">
+                <ul id="available-list" style="list-style: none; padding: 0;">
+                  {% include 'forms/bucket_targets.html' %}
+                </ul>
+            </div>
+        </div>
+
+        <div style="flex: 1;">
+            <p style="font-weight: bold; text-align: center;">Target List (Orderable)</p>
+            <form id="target-form" hx-post="/send-email" hx-target="#response">
+                <div class="bucket-container">
+                    <ul id="selected-users" class="sortable-list" style="list-style: none; padding: 0;">
+                        {% for target in selected_targets %}
+                        <li class="user-item sortable-item">
+                            <span>{{ target.alias }}</span>
+                            <input type="hidden" name="user_ids" value="{{ target.id }}">
+                            <button type="button" onclick="this.parentElement.remove()">×</button>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <button type="submit" style="margin-top: 10px; width: 100%; padding: 10px; cursor: pointer;">
+                    Send to Targets
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<div id="response" style="margin-top: 20px;"></div>
+<script>
+// Initialize Sortable
+const el = document.getElementById('selected-users');
+new Sortable(el, {
+    animation: 150,
+    ghostClass: 'bg-blue-100',
+    onEnd: function (evt) {
+        // Optional: Trigger an auto-save via HTMX when order changes
+        // hx.trigger("#target-form", "orderChanged");
+    }
+});
+
+// If you ever replace the WHOLE list, re-initialize on htmx:afterSettled
+document.body.addEventListener('htmx:afterSettled', function(evt) {
+    if (evt.detail.target.id === 'selected-users') {
+        // Sortable usually maintains its grip, but this is a safety net
+    }
+});
+</script>

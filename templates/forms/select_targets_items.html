@@ -1,0 +1,15 @@
+<div id="listWithHandle">
+    {% for target in available_targets %}
+    <div class="panel-block is-active sortable-item field is-grouped handle-move p-1">
+        <span class="icon is-small mr-3 has-text-grey-light" style="cursor: grab;">
+            <i class="iconify" data-icon="mdi-arrow-split-horizontal"></i>
+        </span>
+        
+        <label class="checkbox is-flex-grow-1">
+            <input type="checkbox" name="user_ids" value="{{ target.id }}" class="mr-2" {{ 'checked' if target.id in checked_targets }}>
+            {{ target.alias }}
+        </label>
+    </div>
+    {% endfor %}
+</div>
+

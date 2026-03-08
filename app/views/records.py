@@ -1,5 +1,5 @@
 import math
-from app.crud import get_record_by_id, get_records, get_record_actor, get_record_actor_by_id, get_actor_registers
+from app.crud import get_record_by_id, get_records, get_record_actor, get_record_actor_by_id, get_actor_registers, get_ctrs
 
 def pagination(num_records: int, page: int, limit_records: int):
     num_pages = math.ceil(num_records / limit_records)
@@ -40,11 +40,7 @@ async def records_table_view(page: int = None, search = None, section: str = Non
 
 async def action_view(record_id,status_id, action, db, current_actor):
     record = get_record_by_id(record_id, db = db)
-    if status_id:
-        status = get_record_actor_by_id(record_actor_id = status_id, db = db)
-    else:
-        status = get_record_actor(record_id = record_id, actor_id = current_actor.id, db = db)
-
+     
     if action == "mark_read":
         status.handled = "read"
     elif action == "mark_unread":
@@ -55,7 +51,16 @@ async def action_view(record_id,status_id, action, db, current_actor):
         record.state = "active"
     elif action == "edit":
         registers = get_actor_registers(current_actor.scopes,db)
-        return "forms/record.html", {'record': record, 'status': status, 'registers': registers}
+        return "forms/record.html", {'record': record, 'registers': registers}
+    elif action == "edit_targets":
+        available_targets = get_ctrs(db)
+        selected_targets = record.targets
+        return "forms/select_targets.html", {'record': record, 'available_targets': available_targets, 'selected_targets': selected_targets}
+
+    if status_id:
+        status = get_record_actor_by_id(record_actor_id = status_id, db = db)
+    else:
+        status = get_record_actor(record_id = record_id, actor_id = current_actor.id, db = db)
 
     if action in ['mark_read','mark_unread']:
         db.add(status); db.commit(); db.refresh(status)

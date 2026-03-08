@@ -1,0 +1,39 @@
+<nav class="panel">
+    <p class="panel-heading has-text-centered">
+        Select & Order Targets
+    </p>
+
+    <div class="panel-block">
+        <p class="control has-icons-left">
+            <input class="input" type="text" name="q" placeholder="Search targets..."
+                   hx-get="/users/search" 
+                   hx-target="#sortable-targets" 
+                   hx-include="#sortable-targets"
+                   hx-trigger="keyup changed delay:300ms">
+            <span class="icon is-small is-left">
+                <i class="iconify" data-icon="mdi-magnify"></i>
+            </span>
+        </p>
+    </div>
+
+    <form hx-post="/send-email" hx-target="#response-area">
+        <div id="sortable-targets" style="height: 60vh; overflow-y: auto;">
+            {% include "forms/select_targets_items.html" %}
+        </div>
+
+        <div class="panel-block">
+            <button type="submit" class="button is-fullwidth">
+                Send to Targets in This Order
+            </button>
+        </div>
+    </form>
+</nav>
+
+<script>
+Sortable.create(listWithHandle, {
+  handle: '.handle-move',
+  animation: 150
+});
+</script>
+
+

@@ -10,7 +10,6 @@ from authx import TokenPayload
 
 from app.core.auth import auth, get_current_actor_alias_from_cookie, get_payload_from_cookie
 from app.core.database import get_db
-from app.core.htmx import add_hx_trigger_header_on_success
 
 from app.crud import get_records, get_register_by_alias, get_actor_by_id
 from app.views.records import records_view, records_table_view, action_view

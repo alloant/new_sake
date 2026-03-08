@@ -1,0 +1,13 @@
+{% for target in available_targets %}
+<li class="user-item">
+    <span>{{ target.alias }}</span>
+    <button type="button" 
+            hx-get="/users/{{ target.id }}/render-selected" 
+            hx-target="#selected-users" 
+            hx-swap="beforeend">
+      <i class="iconify" data-icon="mdi-arrow-right-thin"></i>
+    </button>
+</li>
+{% endfor %}
+
+
