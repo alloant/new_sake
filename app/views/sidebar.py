@@ -1,3 +1,4 @@
+from fastapi_babel import _
 from pydantic import BaseModel, computed_field
 from app.crud import get_registers, get_actor_registers, has_permission, get_actor_ctrs
 

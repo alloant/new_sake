@@ -2,6 +2,10 @@ from fastapi import FastAPI, Request, Depends, HTTPException
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
+from fastapi_babel import _
+from fastapi_babel import Babel, BabelConfigs
+from fastapi_babel import BabelMiddleware
+
 from sqlmodel import create_engine, SQLModel
 
 from authx.exceptions import JWTDecodeError, MissingTokenError, TokenError, RevokedTokenError
@@ -26,6 +30,25 @@ app.add_middleware(
     max_age=0,
     session_cookie="sid",
     session_object="session",
+)
+babel_configs = BabelConfigs(
+    ROOT_DIR=__file__,
+    BABEL_DEFAULT_LOCALE="en",
+    BABEL_TRANSLATION_DIRECTORY="lang",
+)
+
+#templates = Jinja2Templates(directory="templates")
+from app.routers.main import templates
+templates.env.globals.update(_=_)
+
+def locale_selector(request: Request) -> str:
+    return request.cookies.get("locale") or "en" # Fallback to "en" if no cookie is set
+
+app.add_middleware(
+    BabelMiddleware,
+    babel_configs=babel_configs,
+    jinja2_templates=templates,
+    locale_selector=locale_selector,
 )
 
 auth.handle_errors(app)
