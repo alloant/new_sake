@@ -1,5 +1,8 @@
+from fastapi import FastAPI
+
 from fastapi_babel import Babel, BabelConfigs, BabelMiddleware
 
+app = FastAPI()
 configs = BabelConfigs(
     ROOT_DIR=__file__,
     BABEL_DEFAULT_LOCALE="en",

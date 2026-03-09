@@ -1,0 +1,5 @@
+#!/usr/bin/sh
+poetry run python3 babel.py extract -d .
+
+poetry run python3 babel.py init -l ja
+

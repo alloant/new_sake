@@ -20,6 +20,9 @@ from app.models import Register, Record, Actor, RecordActor, File, RecordRecord
 
 from app.crud.transfer import transfer_notes, transfer_users, transfer_actors, transfer_registers, transfer_note_user, transfer_tags, transfer_record_tag, transfer_depts, transfer_find_depts, transfer_files, transfer_references
 
+
+from app.routers.main import templates
+
 # Initialize FastAPI
 app = FastAPI(title="Sake")
 app.add_middleware(
@@ -31,17 +34,15 @@ app.add_middleware(
     session_cookie="sid",
     session_object="session",
 )
+
 babel_configs = BabelConfigs(
     ROOT_DIR=__file__,
     BABEL_DEFAULT_LOCALE="en",
     BABEL_TRANSLATION_DIRECTORY="lang",
 )
 
-#templates = Jinja2Templates(directory="templates")
-from app.routers.main import templates
-templates.env.globals.update(_=_)
-
 def locale_selector(request: Request) -> str:
+    return "ja"
     return request.cookies.get("locale") or "en" # Fallback to "en" if no cookie is set
 
 app.add_middleware(
@@ -88,5 +89,3 @@ app.include_router(router)
 if __name__ == '__main__':
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
-

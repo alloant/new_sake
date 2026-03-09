@@ -3,13 +3,15 @@ from fastapi import APIRouter, Request, Depends, status
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 
+from fastapi_babel import _
+
 from authx import TokenPayload
 from sqlmodel import Session
 
 from app.core.database import get_db
 from app.core.auth import auth, get_payload_from_cookie, get_current_actor_alias_from_cookie
 
-from app.crud import get_actor_by_id, get_record_by_id, get_record_actor_by_id
+from app.crud import get_actor_by_id, get_record_by_id
 
 from app.models.actor import Kind
 from app.views.sidebar import get_sections, get_panel, get_sidebar
@@ -39,6 +41,7 @@ router = APIRouter()
 
 #templates = Jinja2Templates(directory="templates")
 templates = AppTemplates(directory="templates")
+templates.env.globals.update(_=_)
 
 @router.get("/", name="homepage")
 async def home(request: Request, section: str | None = "board", panel: str | None = None, search: str = "", db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
@@ -50,7 +53,6 @@ async def home(request: Request, section: str | None = "board", panel: str | Non
                 panel = 'cg-in'
             case 'sccr':
                 panel = 'mail'
-
     sidebar = get_sidebar(payload,section,panel,db)
     current_actor = get_actor_by_id(payload.uid, db)
     theme = current_actor.get_setting('theme') 

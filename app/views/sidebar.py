@@ -1,4 +1,3 @@
-from fastapi_babel import _
 from pydantic import BaseModel, computed_field
 from app.crud import get_registers, get_actor_registers, has_permission, get_actor_ctrs
 
@@ -15,17 +14,19 @@ class MenuSection(BaseModel):
     def link(self) -> str:
         return f"/sidebar?section={self.id}"
 
-SECTIONS = [
-    MenuSection(id='board',title='Dashboard',icon='mdi-bulletin-board',perms=['user']),
-    MenuSection(id='register',title='Registers',icon='mdi-file-cabinet',perms=['user']),
-    MenuSection(id='sccr',title='Secretary',icon='mdi-mail',perms=['sccr']),
-    MenuSection(id='pages',title='Pages',icon='mdi-folder-information',perms=['user']),
-]
+def SECTIONS():
+    from fastapi_babel import _
+    return [
+        MenuSection(id='board',title=_('Dashboard'),icon='mdi-bulletin-board',perms=['user']),
+        MenuSection(id='register',title=_('Registers'),icon='mdi-file-cabinet',perms=['user']),
+        MenuSection(id='sccr',title=_('Secretary'),icon='mdi-mail',perms=['sccr']),
+        MenuSection(id='pages',title=_('Pages'),icon='mdi-folder-information',perms=['user'])
+    ]
 
 def get_sections(actor_perms,active_section: str):
     sections = []
     
-    for section in SECTIONS:
+    for section in SECTIONS():
         if has_permission(actor_perms,section.perms):
             section.active = 'is-link' if section.id == active_section else ''
             sections.append(section)
@@ -50,90 +51,94 @@ class MenuGroup(BaseModel):
 
 # Your master menu definition
 
-FULL_MENU = {}
-FULL_MENU['board'] = [
-    MenuGroup(
-        title="Despacho",
-        items=[
-            MenuItem(id="despacho", title="Despacho", link="/?section=board&panel=despacho", icon="mdi-briefcase", perms=["despacho"], show_count=True),
-        ],
-    ),
-    MenuGroup(
-        title="My inbox",
-        items=[
-            MenuItem(id="inbox", title="Inbox", link="/?section=board&panel=inbox", icon="mdi-inbox-arrow-down", perms=["user"], show_count=True,hx_trigger=",record_state_changed from:body"),
-            MenuItem(id="inbox-snooze", title="Snooze", link="/?section=board&panel=inbox-snooze", icon="mdi-alarm-snooze", perms=["user"], show_count=True),
-            MenuItem(id="inbox-archived", title="Archived", link="/?section=board&panel=inbox-archived", icon="mdi-archive", perms=["user"]),
-        ],
-    ),
+def FULLMENU(section):
+    from fastapi_babel import _
+    FULL_MENU = {}
+    FULL_MENU['board'] = [
+        MenuGroup(
+            title="Despacho",
+            items=[
+                MenuItem(id="despacho", title=_("Despacho"), link="/?section=board&panel=despacho", icon="mdi-briefcase", perms=["despacho"], show_count=True),
+            ],
+        ),
+        MenuGroup(
+            title="My inbox",
+            items=[
+                MenuItem(id="inbox", title=_("Inbox"), link="/?section=board&panel=inbox", icon="mdi-inbox-arrow-down", perms=["user"], show_count=True,hx_trigger=",record_state_changed from:body"),
+                MenuItem(id="inbox-snooze", title=_("Snooze"), link="/?section=board&panel=inbox-snooze", icon="mdi-alarm-snooze", perms=["user"], show_count=True),
+                MenuItem(id="inbox-archived", title=_("Archived"), link="/?section=board&panel=inbox-archived", icon="mdi-archive", perms=["user"]),
+            ],
+        ),
 
-    MenuGroup(
-        title="My outbox",
-        items=[
-            MenuItem(id="outbox-drafts", title="Drafts", link="/?section=board&panel=outbox-drafts", icon="mdi-note-edit", perms=["user"], show_count=True),
-            MenuItem(id="outbox-sent", title="Sent", link="/?section=board&panel=outbox-sent", icon="mdi-email-fast", perms=["user"]),
-        ]
-    ),
-    MenuGroup(
-        title="Proposals",
-        items=[
-            MenuItem(id="incoming-proposals-to-sign", title="To sign", link="/?section=board&panel=incoming-proposals-to-sign", icon="mdi-file-outline", perms=["user"], show_count=True),
-            MenuItem(id="incoming-proposals-signed", title="Signed", link="/?section=board&panel=incoming-proposals-signed", icon="mdi-file-sign", perms=["user"]),
-        ]
-    ),
-    MenuGroup(
-        title="My proposals",
-        items=[
-            MenuItem(id="outcoming-proposals-drafts", title="Drafts", link="/?section=board&panel=outcoming-proposals-drafts", icon="mdi-note-edit", perms=["user"], show_count=True, hx_trigger=",record_state_changed from:body"),
-            MenuItem(id="outcoming-proposals-circulating", title="Circulating", link="/?section=board&panel=outcoming-proposals-circulating", icon="mdi-account-arrow-right-outline", perms=["user"], show_count=True),
-            MenuItem(id="outcoming-proposals-done", title="Aproved", link="/?section=board&panel=outcoming-proposals-done", icon="mdi-check-circle-outline", perms=["user"], show_count=True, hx_trigger=",record_state_changed from:body"),
-            MenuItem(id="outcoming-proposals-snooze", title="Snooze", link="/?section=board&panel=outcoming-proposals-snooze", icon="mdi-alarm-snooze", perms=["user"], show_count=True, hx_trigger=",record_state_changed from:body"),
-            MenuItem(id="outcoming-proposals-archived", title="Archived", link="/?section=board&panel=outcoming-proposals-archived", icon="mdi-archive", perms=["user"]),
-        ]
-    ),
-]
+        MenuGroup(
+            title="My outbox",
+            items=[
+                MenuItem(id="outbox-drafts", title=_("Drafts"), link="/?section=board&panel=outbox-drafts", icon="mdi-note-edit", perms=["user"], show_count=True),
+                MenuItem(id="outbox-sent", title=_("Sent"), link="/?section=board&panel=outbox-sent", icon="mdi-email-fast", perms=["user"]),
+            ]
+        ),
+        MenuGroup(
+            title="Proposals",
+            items=[
+                MenuItem(id="incoming-proposals-to-sign", title=_("To sign"), link="/?section=board&panel=incoming-proposals-to-sign", icon="mdi-file-outline", perms=["user"], show_count=True),
+                MenuItem(id="incoming-proposals-signed", title=_("Signed"), link="/?section=board&panel=incoming-proposals-signed", icon="mdi-file-sign", perms=["user"]),
+            ]
+        ),
+        MenuGroup(
+            title="My proposals",
+            items=[
+                MenuItem(id="outcoming-proposals-drafts", title=_("Drafts"), link="/?section=board&panel=outcoming-proposals-drafts", icon="mdi-note-edit", perms=["user"], show_count=True, hx_trigger=",record_state_changed from:body"),
+                MenuItem(id="outcoming-proposals-circulating", title=_("Circulating"), link="/?section=board&panel=outcoming-proposals-circulating", icon="mdi-account-arrow-right-outline", perms=["user"], show_count=True),
+                MenuItem(id="outcoming-proposals-done", title=_("Aproved"), link="/?section=board&panel=outcoming-proposals-done", icon="mdi-check-circle-outline", perms=["user"], show_count=True, hx_trigger=",record_state_changed from:body"),
+                MenuItem(id="outcoming-proposals-snooze", title=_("Snooze"), link="/?section=board&panel=outcoming-proposals-snooze", icon="mdi-alarm-snooze", perms=["user"], show_count=True, hx_trigger=",record_state_changed from:body"),
+                MenuItem(id="outcoming-proposals-archived", title=_("Archived"), link="/?section=board&panel=outcoming-proposals-archived", icon="mdi-archive", perms=["user"]),
+            ]
+        ),
+    ]
 
-FULL_MENU['sccr'] = [
-    MenuGroup(
-        title="Import",
-        items=[
-            MenuItem(id="mail", title="Import mail", link="/?section=sccr&panel=mail", icon="mdi-mailbox", perms=["sccr"]),
-        ]
-    ),
-    MenuGroup(
-        title="Mailbox",
-        items=[
-            MenuItem(id="inbox-sccr", title="Inbox", link="/?section=sccr&panel=inbox-sccr", icon="mdi-inbox-arrow-down", perms=["sccr"]),
-            MenuItem(id="outbox-sccr", title="Outbox", link="/?section=sccr&panel=outbox-sccr", icon="mdi-email-fast", perms=["sccr"]),
-        ]
-    ),
-    MenuGroup(
-        title="Others",
-        items=[
-            MenuItem(id="sensitive", title="Sensitive", link="/?section=sccr&panel=sensitive", icon="mdi-incognito-circle", perms=["sccr"]),
-        ]
-    ),
+    FULL_MENU['sccr'] = [
+        MenuGroup(
+            title="Import",
+            items=[
+                MenuItem(id="mail", title=_("Import mail"), link="/?section=sccr&panel=mail", icon="mdi-mailbox", perms=["sccr"]),
+            ]
+        ),
+        MenuGroup(
+            title="Mailbox",
+            items=[
+                MenuItem(id="inbox-sccr", title=_("Inbox"), link="/?section=sccr&panel=inbox-sccr", icon="mdi-inbox-arrow-down", perms=["sccr"]),
+                MenuItem(id="outbox-sccr", title=_("Outbox"), link="/?section=sccr&panel=outbox-sccr", icon="mdi-email-fast", perms=["sccr"]),
+            ]
+        ),
+        MenuGroup(
+            title="Others",
+            items=[
+                MenuItem(id="sensitive", title=_("Sensitive"), link="/?section=sccr&panel=sensitive", icon="mdi-incognito-circle", perms=["sccr"]),
+            ]
+        ),
 
-]
+    ]
 
-FULL_MENU['pages'] = [
-    MenuGroup(
-        title="Import",
-        items=[
-        ]
-    ),
-]
+    FULL_MENU['pages'] = [
+        MenuGroup(
+            title=_("Import"),
+            items=[
+            ]
+        ),
+    ]
 
-FULL_MENU['settings'] = [
+    FULL_MENU['settings'] = [
 
-]
+    ]
+
+    return FULL_MENU[section]
 
 def get_panel(actor_perms,section,panel,db):
     if section == 'register':
         return get_panel_register(actor_perms,panel,db)
     
     filtered_menu = []
-    for group in FULL_MENU[section]:
+    for group in FULLMENU(section):
         allowed_items = []
         # Check which items the actor is allowed to see
         for item in group.items:
