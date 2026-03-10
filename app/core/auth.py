@@ -38,6 +38,25 @@ async def get_current_actor_alias_from_cookie(request: Request):
     
     return alias
 
+async def get_current_actor_lang_from_cookie(request: Request):
+    """Get current actor from cookie token (for HTMX endpoints)"""
+    token = request.cookies.get("access_token")
+    
+    if not token:
+        return "en"
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = jwt.decode(token, config.JWT_SECRET_KEY, algorithms=["HS256"])
+        lang = payload.get("lang")
+
+        if lang is None:
+            lang = "en"
+    except JWTError:
+        #raise HTTPException(status_code=401, detail="Invalid token")
+        lang = "en"
+    
+    return lang
+
 async def get_payload_from_cookie(request: Request):
     token = request.cookies.get("access_token")
     if not token:

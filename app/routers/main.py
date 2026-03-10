@@ -53,6 +53,7 @@ async def home(request: Request, section: str | None = "board", panel: str | Non
                 panel = 'cg-in'
             case 'sccr':
                 panel = 'mail'
+            
     sidebar = get_sidebar(payload,section,panel,db)
     current_actor = get_actor_by_id(payload.uid, db)
     theme = current_actor.get_setting('theme') 
@@ -131,6 +132,7 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
         "uid": current_actor.id,
         "alias": current_actor.alias,
         "provider": provider,
+        "lang": settings['lang'],
         "data": {"kind": "user"},
     }
     

@@ -186,6 +186,7 @@ async def callback(request: Request, db: Session, code: str = None, state: str =
         "uid": actor.id,
         "alias": alias,
         "provider": provider,
+        "lang": actor.get_setting('lang'),
         "data": {"kind": actor.kind.value},
     }
     

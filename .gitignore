@@ -3,7 +3,6 @@ run
 run_https
 *.key
 *.crt
-lang/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

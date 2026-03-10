@@ -1,0 +1,72 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-03-10 18:55+0530\n"
+"PO-Revision-Date: 2026-03-10 18:55+0530\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ja <LL@li.org>\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Mark as read"
+msgstr "既読としてマークする"
+
+msgid "Dashboard"
+msgstr "ダッシュボード"
+
+msgid "Registers"
+msgstr "レジスター"
+
+msgid "Secretary"
+msgstr "秘書"
+
+msgid "Pages"
+msgstr "ページ"
+
+msgid "Despacho"
+msgstr "デスパチョ"
+
+msgid "Inbox"
+msgstr "受信箱"
+
+msgid "Snooze"
+msgstr "スヌーズ"
+
+msgid "Archived"
+msgstr "アーカイブ済み"
+
+msgid "Drafts"
+msgstr "下書き"
+
+msgid "Sent"
+msgstr "送信済み"
+
+msgid "To sign"
+msgstr "署名するには"
+
+msgid "Signed"
+msgstr "署名済み"
+
+msgid "Circulating"
+msgstr "循環"
+
+msgid "Aproved"
+msgstr "承認済み"
+
+msgid "Import mail"
+msgstr "メールをインポートする"
+
+msgid "Outbox"
+msgstr "送信ボックス"
+
+msgid "Sensitive"
+msgstr "センシティブ"
+
+msgid "Import"
+msgstr "輸入"

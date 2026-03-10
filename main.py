@@ -8,8 +8,10 @@ from fastapi_babel import BabelMiddleware
 
 from sqlmodel import create_engine, SQLModel
 
+from authx import TokenPayload
 from authx.exceptions import JWTDecodeError, MissingTokenError, TokenError, RevokedTokenError
 from authx_extra.session import SessionMiddleware
+#from starlette.middleware.sessions import SessionMiddleware
 
 from app.core.database import init_db # Import the table creation hook
 from app.core.auth import auth
@@ -22,18 +24,33 @@ from app.crud.transfer import transfer_notes, transfer_users, transfer_actors, t
 
 
 from app.routers.main import templates
+from jose import JWTError, jwt
+from app.core.config import settings
 
-# Initialize FastAPI
-app = FastAPI(title="Sake")
-app.add_middleware(
-    SessionMiddleware,
-    secret_key="my-secret-key",
-    http_only=True,
-    secure=False,
-    max_age=0,
-    session_cookie="sid",
-    session_object="session",
-)
+def locale_selector(request: Request):
+    # 1. Try to get the raw cookie that holds your token
+    # Adjust "access_token" to whatever your authx cookie name is
+    token = request.cookies.get("access_token")
+    
+    if token:
+        try:
+            # 2. Manually decode the token (Use your SAME secret key and algorithm)
+            # This is what 'get_payload_from_cookie' does behind the scenes
+            payload = jwt.decode(
+                token, 
+                settings.SECRET_KEY, 
+                algorithms=["HS256"]
+            )
+            # 3. Grab the lang from the payload
+            return payload.get("lang", "en")
+        except Exception as e:
+            print(f"Error decoding token in selector: {e}")
+            return "ja"
+            
+    # Fallback if no cookie is found
+    return "ja"
+
+
 
 babel_configs = BabelConfigs(
     ROOT_DIR=__file__,
@@ -41,15 +58,24 @@ babel_configs = BabelConfigs(
     BABEL_TRANSLATION_DIRECTORY="lang",
 )
 
-def locale_selector(request: Request) -> str:
-    return "ja"
-    return request.cookies.get("locale") or "en" # Fallback to "en" if no cookie is set
+# Initialize FastAPI
+app = FastAPI(title="Sake")
 
 app.add_middleware(
     BabelMiddleware,
     babel_configs=babel_configs,
     jinja2_templates=templates,
     locale_selector=locale_selector,
+)
+
+app.add_middleware(
+    SessionMiddleware,
+    secret_key="my-secret-key",
+    http_only=True,
+    secure=False,
+    max_age=36000,
+    session_cookie="sid",
+    session_object="session",
 )
 
 auth.handle_errors(app)

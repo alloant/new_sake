@@ -23,22 +23,26 @@ class ActionGroup(BaseModel):
     items: list[Action]
 
 
-ACTIONS = {}
-ACTIONS['mark_read'] = {"id": "mark_read", "title": "Mark as read", "attr": {"hx-get": "/action?action=mark_read", "hx-target": "#row-{record_id}"}, "icon": "mdi-email-check"}
-ACTIONS['mark_unread'] = {"id": "mark_read", "title": "Mark as unread", "attr": {"hx-get": "/action?action=mark_unread", "hx-target": "#row-{record_id}"}, "icon": "mdi-email-open-outline"}
-ACTIONS['enable_snooze'] = {"id": "enable_snooze", "title": "Snooze", "attr": {"hx-post": "/action?action=enable_snooze", "hx-prompt": "Due date (dd/mm/yyyy)", "hx-target": "#row-{record_id}"}, "icon": "mdi-alarm-snooze"}
-ACTIONS['disable_snooze'] = {"id": "disable_snooze", "title": "Disable snooze", "attr": {"hx-get": "/action?action=disable_snooze", "hx-target": "#row-{record_id}"}, "icon": "mdi-weather-sunset"}
-ACTIONS['archive'] = {"id": "archive", "title": "Archive", "attr": {"hx-get": "/action?action=archive", "hx-target": "#row-{record_id}"}, "icon": "mdi-archive-arrow-down"}
-ACTIONS['restore'] = {"id": "restore", "title": "Restore", "attr": {"hx-get": "/action?action=restore", "hx-target": "#row-{record_id}"}, "icon": "mdi-archive-arrow-up-outline"}
+def ACTIONS():
+    from fastapi_babel import _
+    ACTIONS = {}
+    ACTIONS['mark_read'] = {"id": "mark_read", "title": _("Mark as read"), "attr": {"hx-get": "/action?action=mark_read", "hx-target": "#row-{record_id}"}, "icon": "mdi-email-check"}
+    ACTIONS['mark_unread'] = {"id": "mark_read", "title": _("Mark as unread"), "attr": {"hx-get": "/action?action=mark_unread", "hx-target": "#row-{record_id}"}, "icon": "mdi-email-open-outline"}
+    ACTIONS['enable_snooze'] = {"id": "enable_snooze", "title": _("Hold"), "attr": {"hx-post": "/action?action=enable_snooze", "hx-prompt": "Due date (dd/mm/yyyy)", "hx-target": "#row-{record_id}"}, "icon": "mdi-alarm-snooze"}
+    ACTIONS['disable_snooze'] = {"id": "disable_snooze", "title": _("Unhold"), "attr": {"hx-get": "/action?action=disable_snooze", "hx-target": "#row-{record_id}"}, "icon": "mdi-weather-sunset"}
+    ACTIONS['archive'] = {"id": "archive", "title": _("Archive"), "attr": {"hx-get": "/action?action=archive", "hx-target": "#row-{record_id}"}, "icon": "mdi-archive-arrow-down"}
+    ACTIONS['restore'] = {"id": "restore", "title": _("Restore"), "attr": {"hx-get": "/action?action=restore", "hx-target": "#row-{record_id}"}, "icon": "mdi-archive-arrow-up-outline"}
 
-ACTIONS['check_info'] = {"id": "check_info", "title": "Info about the note", "attr": {"hx-get": "/action?action=check_info", "hx-target": "#row-{record_id}"}, "icon": "mdi-information-outline"}
-ACTIONS['recursive_search'] = {"id": "recursive_search", "title": "List all notes related with this entry", "attr": {"hx-get": "/action?action=recursive_search", "hx-target": "#main-table"}, "icon": "mdi-archive-search-outline"}
-ACTIONS['edit_record'] = {"id": "edit_record", "title": "Edit", "attr": {"hx-get": "/action?action=edit", "hx-target": "#modal-content-target", "onclick": "openModal()"}, "icon": "mdi-email-edit", "perms": []}
-ACTIONS['edit_targets'] = {"id": "edit_targets", "title": "Edit targets", "attr": {"hx-get": "/action?action=edit_targets", "hx-target": "#modal-content-target", "onclick": "openModal()"}, "icon": "mdi-account-group"}
-ACTIONS['delete_record'] = {"id": "delete_record", "title": "Delete", "attr": {"hx-get": "/action?action=delete", "hx-target": "#row-{record_id}", "hx-confirm": "Are you sure you want to delete the record?"}, "icon": "mdi-delete-circle-outline", "extra_class": "has-text-danger"}
+    ACTIONS['check_info'] = {"id": "check_info", "title": _("Info about the note"), "attr": {"hx-get": "/action?action=check_info", "hx-target": "#row-{record_id}"}, "icon": "mdi-information-outline"}
+    ACTIONS['recursive_search'] = {"id": "recursive_search", "title": _("List all notes related with this entry"), "attr": {"hx-get": "/action?action=recursive_search", "hx-target": "#main-table"}, "icon": "mdi-archive-search-outline"}
+    ACTIONS['edit_record'] = {"id": "edit_record", "title": _("Edit"), "attr": {"hx-get": "/action?action=edit", "hx-target": "#modal-content-target", "onclick": "openModal()"}, "icon": "mdi-email-edit", "perms": []}
+    ACTIONS['edit_targets'] = {"id": "edit_targets", "title": _("Edit targets"), "attr": {"hx-get": "/action?action=edit_targets", "hx-target": "#modal-content-target", "onclick": "openModal()"}, "icon": "mdi-account-group"}
+    ACTIONS['delete_record'] = {"id": "delete_record", "title": _("Delete"), "attr": {"hx-get": "/action?action=delete", "hx-target": "#row-{record_id}", "hx-confirm": "Are you sure you want to delete the record?"}, "icon": "mdi-delete-circle-outline", "extra_class": "has-text-danger"}
 
 
-ACTIONS['sign_record'] = {"id": "sign_record", "title": "Sign and pass", "attr": {"hx-get": "/action?action=sign_record", "hx-target": "#row-{record_id}"}, "icon": "mdi-file-sign"}
+    ACTIONS['sign_record'] = {"id": "sign_record", "title": _("Sign and pass"), "attr": {"hx-get": "/action?action=sign_record", "hx-target": "#row-{record_id}"}, "icon": "mdi-file-sign"}
+
+    return ACTIONS
 
 class RecordMethod(object):
     @property
@@ -83,40 +87,41 @@ class RecordMethod(object):
 
 
     def get_actions(self, state, current_actor, section, panel, quick_access = False):
+        all_actions = ACTIONS()
         actions = []
         if self.flow == 'inbound':
             actions.append(ActionGroup(title="Read",items=[]))
             if not state or state.handled == 'unread':
-                actions[-1].items.append(Action(record_id=self.id,**ACTIONS['mark_read']))
+                actions[-1].items.append(Action(record_id=self.id,**all_actions['mark_read']))
             else:
-                actions[-1].items.append(Action(record_id=self.id,**ACTIONS['mark_unread']))
+                actions[-1].items.append(Action(record_id=self.id,**all_actions['mark_unread']))
         
         if self.flow == 'inbound' or self.flow == 'internal_cr' and self.sender_id == current_actor.id:
             actions.append(ActionGroup(title="Inbox",items=[]))
             if self.state != 'snooze':
-                actions[-1].items.append(Action(record_id=self.id,**ACTIONS['enable_snooze']))
+                actions[-1].items.append(Action(record_id=self.id,**all_actions['enable_snooze']))
             else:
-                actions[-1].items.append(Action(record_id=self.id,**ACTIONS['disable_snooze']))
+                actions[-1].items.append(Action(record_id=self.id,**all_actions['disable_snooze']))
         
             if self.state != 'archived':
-                actions[-1].items.append(Action(record_id=self.id,**ACTIONS['archive']))
+                actions[-1].items.append(Action(record_id=self.id,**all_actions['archive']))
             else:
-                actions[-1].items.append(Action(record_id=self.id,**ACTIONS['restore']))
+                actions[-1].items.append(Action(record_id=self.id,**all_actions['restore']))
 
         if not quick_access:
             actions.append(ActionGroup(title="Info", items=[]))
-            actions[-1].items.append(Action(record_id=self.id,**ACTIONS['check_info']))
-            actions[-1].items.append(Action(record_id=self.id,**ACTIONS['recursive_search']))
+            actions[-1].items.append(Action(record_id=self.id,**all_actions['check_info']))
+            actions[-1].items.append(Action(record_id=self.id,**all_actions['recursive_search']))
         
         if (not quick_access or self.title == '') and (current_actor.admin or self.flow == 'outbound' and self.stage == 'draft' or self.flow == 'internal_cr' and self.sender_id == current_actor.id):
             actions.append(ActionGroup(title="Edit", items=[]))
-            actions[-1].items.append(Action(record_id=self.id,**ACTIONS['edit_record']))
-            actions[-1].items.append(Action(record_id=self.id,**ACTIONS['edit_targets']))
-            actions[-1].items.append(Action(record_id=self.id,**ACTIONS['delete_record']))
+            actions[-1].items.append(Action(record_id=self.id,**all_actions['edit_record']))
+            actions[-1].items.append(Action(record_id=self.id,**all_actions['edit_targets']))
+            actions[-1].items.append(Action(record_id=self.id,**all_actions['delete_record']))
 
 
         if self.flow == 'internal_cr' and current_actor.id in self.targets_id:
             actions.append(ActionGroup(title="Proposals", items=[]))
-            actions[-1].items.append(Action(record_id=self.id,**ACTIONS['sign_record']))
+            actions[-1].items.append(Action(record_id=self.id,**all_actions['sign_record']))
 
         return actions

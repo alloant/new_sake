@@ -21,6 +21,8 @@ class ActorSettings(object):
                 return 'light'
             case 'admin_active':
                 return True
+            case 'lang':
+                return 'en'
 
     @property
     def admin(self):
