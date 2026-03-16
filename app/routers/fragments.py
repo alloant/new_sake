@@ -2,6 +2,7 @@ import json
 
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import HTMLResponse
+from fastapi import UploadFile, File
 #from fastapi.templating import Jinja2Templates
 
 from sqlmodel import Session
@@ -109,3 +110,9 @@ async def records_global_search(request: Request, section: str = None, panel: st
     response = templates.TemplateResponse(template, {'request': request, 'section': 'register', 'panel': 'all', 'sidebar': sidebar, 'search':search} | rst)
 
     return response
+
+# The post is only for updload files and thinks like that
+@router.post("/records/{record_id}/upload_files", response_class=HTMLResponse)
+async def records_files(request: Request, record_id: int, files: List[UploadFile] = File(...), db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
+    print(record_id,'vamos','$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+    return ""

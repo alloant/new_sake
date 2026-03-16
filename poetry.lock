@@ -179,6 +179,27 @@ files = [
 dev = ["backports.zoneinfo ; python_version < \"3.9\"", "freezegun (>=1.0,<2.0)", "jinja2 (>=3.0)", "pytest (>=6.0)", "pytest-cov", "pytz", "setuptools", "tzdata ; sys_platform == \"win32\""]
 
 [[package]]
+name = "broadcaster"
+version = "0.3.1"
+description = "Simple broadcast channels."
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "broadcaster-0.3.1-py3-none-any.whl", hash = "sha256:433023ab6b6b4a8da9cbba95910eff52b1e767141419659be287cfd49f2a3ecb"},
+    {file = "broadcaster-0.3.1.tar.gz", hash = "sha256:35d1e174a98346d184cc6558979548340e877ae841c65c7e354153a84fe675d6"},
+]
+
+[package.dependencies]
+anyio = ">=3.4.0,<5"
+
+[package.extras]
+kafka = ["aiokafka"]
+postgres = ["asyncpg"]
+redis = ["redis"]
+test = ["pytest", "pytest-asyncio"]
+
+[[package]]
 name = "certifi"
 version = "2026.1.4"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -2404,4 +2425,4 @@ h11 = ">=0.16.0,<1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.14,<4.0"
-content-hash = "93b23b4aa19b5f3078968a36422cb61b9176e5fe0adaff0b1d682ba87615aada"
+content-hash = "e934c8ffb84ddafd40e04b8a5fd3657816a96500baf064deb0afc801f3bb67f2"

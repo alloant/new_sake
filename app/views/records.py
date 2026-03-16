@@ -40,7 +40,11 @@ async def records_table_view(page: int = None, search = None, section: str = Non
 
 async def action_view(record_id,status_id, action, db, current_actor):
     record = get_record_by_id(record_id, db = db)
-     
+    if status_id:
+        status = get_record_actor_by_id(record_actor_id = status_id, db = db)
+    else:
+        status = get_record_actor(record_id = record_id, actor_id = current_actor.id, db = db)
+    
     if action == "mark_read":
         status.handled = "read"
     elif action == "mark_unread":
@@ -56,11 +60,6 @@ async def action_view(record_id,status_id, action, db, current_actor):
         available_targets = get_ctrs(db)
         selected_targets = record.targets
         return "forms/select_targets.html", {'record': record, 'available_targets': available_targets, 'selected_targets': selected_targets}
-
-    if status_id:
-        status = get_record_actor_by_id(record_actor_id = status_id, db = db)
-    else:
-        status = get_record_actor(record_id = record_id, actor_id = current_actor.id, db = db)
 
     if action in ['mark_read','mark_unread']:
         db.add(status); db.commit(); db.refresh(status)

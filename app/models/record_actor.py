@@ -4,14 +4,17 @@ from sqlmodel import SQLModel, Field, Relationship, Column
 
 class HandledStatus(str, Enum):
     NONE = ""
+    # Notes
     READ = "read"
     UNREAD = "unread"
     MUSTREAD = "mustread"
+    # Notes cl when the ctr is the actor
     PENDING = "pending"
+    DONE = "done"
+    # Proposals
     RETURN = "return"
     DENY = "deny"
     APPROVED = "approved"
-    DONE = "done"
     
 
 class RecordActor(SQLModel, table=True):

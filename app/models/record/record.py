@@ -67,7 +67,7 @@ class Record(SQLModel, RecordMethod, table=True):
     dept: "Dept" = Relationship()
     register: "Register" = Relationship()
     files: list["File"] = Relationship()
-    actors: list["RecordActor"] = Relationship(back_populates="record")
+    actors: list["RecordActor"] = Relationship(back_populates="record", sa_relationship_kwargs={"order_by": "RecordActor.target"})
 
 
     references: list["Record"] = Relationship(

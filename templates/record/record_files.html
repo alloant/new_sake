@@ -3,7 +3,7 @@
         style="width: 8rem; font-size: 0.8rem; justify-content: flex-start; padding-left: 0.5rem !important; background-color: inherit;">
     <a href="{{ record.files[0].link }}" 
        class="m-0 p-0" 
-       target="_blank" onclick="markAsRead('{{ status.id }}')"
+       target="_blank"
        style="text-decoration: none; color: inherit; width: 100%; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
       {{ record.files[0].html_name_short | safe }}
     </a>
@@ -51,11 +51,49 @@
             {% endfor %}
 
             <hr class="dropdown-divider">
-            <a  class="dropdown-item has-text-primary" 
+            
+            <form hx-encoding='multipart/form-data' hx-post='/records/{{record.id}}/upload_files'
+              _='on htmx:xhr:progress(loaded, total) set #progress.value to (loaded/total)*100'>
+              <input type='file' name='files' multiple='multiple'>
+              <button class="dropdown-item">
+                <i class="iconify" data-icon="mdi-file-upload-outline"></i> Upload files from computer
+              </button>
+              <progress id='progress' value='0' max='100'></progress>
+            </form>
+
+            <a  class="dropdown-item"
                 hx-get="/records/{{ record.id }}/add-file" 
                 hx-target="#modals-here">
-                  + Upload New
+                <i class="iconify" data-icon="mdi-content-copy"></i> Copy from team-folders
             </a>
+            <a  class="dropdown-item"
+                hx-get="/records/{{ record.id }}/add-file"
+                hx-target="">
+                <i class="iconify" data-icon="mdi-file-plus-outline"></i> New file from template
+            </a>
+
+<a class="dropdown is-hoverable is-right">
+    <div class="dropdown-trigger">
+        <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+            <span>New file from template</span>
+            <span class="icon is-small"><i class="fas fa-angle-right"></i></span>
+        </button>
+    </div>
+    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+        <div class="dropdown-content" 
+             hx-get="/records/templates-list" 
+             hx-trigger="intersect once">
+             <div class="dropdown-item">Loading templates...</div>
+        </div>
+    </div>
+</a>
+
+
+
+
+
+
+
           </div> <!-- End dropdown content -->
         </div> <!-- End dropdown-menu -->
       </div> <!-- dropdown -->

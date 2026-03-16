@@ -58,7 +58,7 @@ async def home(request: Request, section: str | None = "board", panel: str | Non
     current_actor = get_actor_by_id(payload.uid, db)
     theme = current_actor.get_setting('theme') 
     
-    return templates.TemplateResponse("index.html", {"request": request, "theme": theme, "sidebar": sidebar, "section": section, "panel": panel, "search": search})
+    return templates.TemplateResponse("index.html", {"request": request, "theme": theme, "actor_role": current_actor.role, "sidebar": sidebar, "section": section, "panel": panel, "search": search})
 
 # Here is only for all_search. It will always have a section and panel
 @router.post("/", name="homepage_search")
@@ -72,7 +72,7 @@ async def home_search(request: Request, section: str | None = "board", panel: st
     search = data.get("all_search")
     
     #return RedirectResponse(url=f"/?section={section}&panel={panel}&search={search}", status_code=status.HTTP_303_SEE_OTHER)
-    return templates.TemplateResponse("index.html", {"request": request, "theme": theme, "sidebar": sidebar, "section": section, "panel": panel, "search": search})
+    return templates.TemplateResponse("index.html", {"request": request, "theme": theme, "actor_role": current_actor.role, "sidebar": sidebar, "section": section, "panel": panel, "search": search})
 
 
 ## Settings/profile part
@@ -81,7 +81,7 @@ async def settings(request: Request, db: Session = Depends(get_db), payload: Tok
     sidebar = get_sidebar(payload,'settings','', db)
     current_actor = get_actor_by_id(payload.uid, db)
     theme = current_actor.get_setting('theme') 
-    return templates.TemplateResponse("settings.html", {"request": request, "theme": theme, "sidebar": sidebar,"actor": current_actor,"settings": get_settings_form(current_actor, db)})
+    return templates.TemplateResponse("settings.html", {"request": request, "theme": theme, "actor_role": current_actor.role, "sidebar": sidebar,"actor": current_actor,"settings": get_settings_form(current_actor, db)})
 
 @router.post("/settings", name="settings")
 async def settings_post(request: Request, db: Session = Depends(get_db), payload = Depends(get_payload_from_cookie)):
@@ -148,14 +148,3 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
         max_age=cookie_duration
     )
     return response
-
-
-@router.post("/api/mark-as-read/{status_id}")
-async def mark_as_read(status_id: int, db: Session = Depends(get_db), payload = Depends(get_payload_from_cookie)):
-    status = get_record_actor_by_id(record_actor_id = status_id, db = db)
-    status.handled = 'read'
-    db.add(status); db.commit(); db.refresh(status)
-    return {"status": "success", "message": f"Record {status_id} updated"}
-    
-    return {"status": "no_change", "message": "Already marked as read"}
-

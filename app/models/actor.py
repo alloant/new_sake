@@ -40,5 +40,13 @@ class Actor(SQLModel, ActorSettings, table=True):
     scopes: list[str] = Field(sa_column=Column(JSON, nullable=False), default_factory=list)
     settings: dict[str, object] = Field(sa_column=Column(JSON, nullable=False), default_factory=dict)
     created_at: datetime = Field(default_factory=datetime.utcnow)
-
+    
+    @property
+    def role(self):
+        if 'dr' in self.scopes:
+            return 'dr'
+        elif 'of' in self.scopes:
+            return 'of'
+        else:
+            return 'cl'
     #records: list["Record"] = Relationship(back_populates="sender")

@@ -34,7 +34,11 @@
         <span class="tag sender ml-1 is-hidden-mobile">{{ record.sender.alias }}</span>
       {% else %}
         {% for target in record.targets %}
-          <span class="tag sender ml-1 is-hidden-mobile">{{ target.actor.alias }}</span>
+          {% if target.handled == 'approved' %}
+            <span class="tag sender is-success ml-1 is-hidden-mobile">{{ target.actor.alias }}</span>
+          {% else %}
+            <span class="tag sender ml-1 is-hidden-mobile">{{ target.actor.alias }}</span>
+          {% endif %}
         {% endfor %}
       {% endif %}
     </div>
