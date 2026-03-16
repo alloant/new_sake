@@ -12,6 +12,7 @@ class HandledStatus(str, Enum):
     PENDING = "pending"
     DONE = "done"
     # Proposals
+    UNSIGNED = "unsigned"
     RETURN = "return"
     DENY = "deny"
     APPROVED = "approved"

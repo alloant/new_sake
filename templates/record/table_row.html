@@ -33,13 +33,17 @@
       {% if record.flow == 'outbound' %}
         <span class="tag sender ml-1 is-hidden-mobile">{{ record.sender.alias }}</span>
       {% else %}
-        {% for target in record.targets %}
-          {% if target.handled == 'approved' %}
-            <span class="tag sender is-success ml-1 is-hidden-mobile">{{ target.actor.alias }}</span>
-          {% else %}
-            <span class="tag sender ml-1 is-hidden-mobile">{{ target.actor.alias }}</span>
-          {% endif %}
-        {% endfor %}
+        {% with current_target = record.current_target %}
+          {% for target in record.targets %}
+            {% if target.handled == 'approved' %}
+              <span class="tag target-success ml-1 is-hidden-mobile">{{ target.actor.alias }}</span>
+            {% elif target.target == current_target %}
+              <span class="tag target-current ml-1 is-hidden-mobile">{{ target.actor.alias }}</span>
+            {% else %}
+              <span class="tag target ml-1 is-hidden-mobile">{{ target.actor.alias }}</span>
+            {% endif %}
+          {% endfor %}
+        {% endwith %}
       {% endif %}
     </div>
     <div class="action-buttons is-hidden-mobile is-rounded">

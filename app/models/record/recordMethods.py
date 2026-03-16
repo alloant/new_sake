@@ -68,6 +68,14 @@ class RecordMethod(object):
     def targets_id(self):
         return [target.actor.id for target in self.actors if target.target > 0]
 
+    @property
+    def current_target(self):
+        missing_targets = [target.target for target in self.actors if target.target > 0 and target.handled == 'pending']
+        if missing_targets:
+            return min(missing_targets)
+        else:
+            return 0
+
     def link(self, idx: int) -> str:
         if idx <= len(self.files) + 1:
             return self.files[idx].link

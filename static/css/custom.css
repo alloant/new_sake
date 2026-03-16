@@ -9,6 +9,10 @@
   --row-alternate: #eeeeee;
   --button-files-hover: #eeeeee;
   --records-hidden-row: #eeeeee;
+  --target-color: #666666;
+  --target-border: #666666;
+  --target-current-background: #cccccc;
+  --target-success-background: #D1FAE5;
 }
 
 /* Dark Theme */
@@ -22,6 +26,10 @@
   --row-alternate: #222222;
   --button-files-hover: #111111;
   --records-hidden-row: #111111;
+  --target-color: #dddddd;
+  --target-border: #666666;
+  --target-current-background: #111111;
+  --target-success-background: #01400D;
 }
 
 @media screen and (max-width: 768px) {
@@ -51,6 +59,25 @@ html, body {
   font-size: 0.65rem;
   background-color: transparent;
   border: 1px dashed var(--sidebar-background-hover);
+}
+
+.target {
+  font-size: 0.65rem;
+  background-color: transparent;
+  border: 1px dashed var(--target-color);
+}
+
+.target-current {
+  font-size: 0.65rem;
+  background-color: var(--target-current-background);
+  border: 1px solid var(--target-color);
+}
+
+.target-success {
+  font-size: 0.65rem;
+  color: var(--target-color);
+  background-color: var(--target-success-background);
+  border: 1px dashed var(--target-border);
 }
 
 .truncate {
