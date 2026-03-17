@@ -6,6 +6,9 @@ from authx import TokenPayload
 from broadcaster import Broadcast
 
 from app.core.auth import auth
+from app.core.database import get_db
+
+from app.crud import get_actor_by_alias
 
 import asyncio
 
@@ -15,12 +18,14 @@ router = APIRouter()
 broadcast = Broadcast("redis://localhost:6379")
 app = FastAPI(on_startup=[broadcast.connect], on_shutdown=[broadcast.disconnect])
 
-@router.websocket("/ws/{channel_name}")
-async def websocket_endpoint(websocket: WebSocket, channel_name: str):
+"""
+@router.websocket("/ws/{actor_alias}")
+async def websocket_endpoint(websocket: WebSocket, actor_alias: str, db: Session = Depends(get_db)):
     await websocket.accept()
-    
+    current_actor = get_actor_by_alias(actor_alias, db)
+    channels = [f'actor_{current_actor.alias}',f'role_{current_actor.role}']
     # We use actor_{channel_name} to match your connection logic
-    async with broadcast.subscribe(channel=f'actor_{channel_name}') as subscriber:
+    async with broadcast.subscribe(channels=channels) as subscriber:
         async def message_sender():
             try:
                 async for event in subscriber:
@@ -57,6 +62,61 @@ async def websocket_endpoint(websocket: WebSocket, channel_name: str):
             
             # This is the magic line that unblocks the "Reloading..." process
             await asyncio.gather(*[sender_task, receiver_task], return_exceptions=True)
+"""
+
+@router.websocket("/ws/{actor_alias}")
+async def websocket_endpoint(websocket: WebSocket, actor_alias: str, db: Session = Depends(get_db)):
+    await websocket.accept()
+    current_actor = get_actor_by_alias(actor_alias, db)
+    
+    # Define the channels we want to listen to
+    channels = [f'actor_{current_actor.alias}', f'role_{current_actor.role}']
+
+    # 1. Helper function to handle a single channel subscription
+    async def listen_to_channel(channel_name: str):
+        try:
+            # Note the singular "channel=" here
+            async with broadcast.subscribe(channel=channel_name) as subscriber:
+                async for event in subscriber:
+                    await websocket.send_text(event.message)
+        except asyncio.CancelledError:
+            # This happens when the connection drops and we cancel the task
+            return
+
+    # 2. Receiver to detect when the user disconnects
+    async def message_receiver():
+        try:
+            while True:
+                await websocket.receive_text()
+        except WebSocketDisconnect:
+            # Triggered when the user leaves/refreshes
+            raise 
+
+    # 3. Create a list of tasks
+    # Generate one sender task per channel
+    sender_tasks = [asyncio.create_task(listen_to_channel(ch)) for ch in channels]
+    receiver_task = asyncio.create_task(message_receiver())
+    
+    # Combine them all into one list
+    all_tasks = sender_tasks + [receiver_task]
+
+    try:
+        # Wait for ANY task to finish (e.g., receiver raises WebSocketDisconnect)
+        done, pending = await asyncio.wait(
+            all_tasks,
+            return_when=asyncio.FIRST_COMPLETED,
+        )
+    except Exception as e:
+        print(f"Socket Task Error: {e}")
+    finally:
+        # CLEANUP: Cancel everything still running to unblock the server
+        for task in all_tasks:
+            if not task.done():
+                task.cancel()
+        
+        # This is the magic line that unblocks the "Reloading..." process
+        await asyncio.gather(*all_tasks, return_exceptions=True)
+
 
 async def broadcast_all_channels(actor_alias: str, role: str, msg: str = ""):
     # We send the HTMX trigger snippet directly into the Redis pipe
