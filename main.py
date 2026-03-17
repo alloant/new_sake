@@ -27,6 +27,10 @@ from app.routers.main import templates
 from jose import JWTError, jwt
 from app.core.config import settings
 
+from contextlib import asynccontextmanager
+from app.core.redis_bus import broadcast # Import the shared instance
+
+
 def locale_selector(request: Request):
     # 1. Try to get the raw cookie that holds your token
     # Adjust "access_token" to whatever your authx cookie name is
@@ -59,7 +63,17 @@ babel_configs = BabelConfigs(
 )
 
 # Initialize FastAPI
-app = FastAPI(title="Sake")
+#app = FastAPI(title="Sake")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # This connects the shared instance
+    await broadcast.connect()
+    yield
+    # This closes it gracefully
+    await broadcast.disconnect()
+
+app = FastAPI(title="Sake", lifespan=lifespan)
 
 app.add_middleware(
     BabelMiddleware,

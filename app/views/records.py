@@ -1,5 +1,6 @@
 import math
 from app.crud import get_record_by_id, get_records, get_record_actor, get_record_actor_by_id, get_actor_registers, get_ctrs
+from app.routers.websocket import broadcast_channels
 
 def pagination(num_records: int, page: int, limit_records: int):
     num_pages = math.ceil(num_records / limit_records)
@@ -60,6 +61,8 @@ async def action_view(record_id,status_id, action, db, current_actor):
         available_targets = get_ctrs(db)
         selected_targets = record.targets
         return "forms/select_targets.html", {'record': record, 'available_targets': available_targets, 'selected_targets': selected_targets}
+    elif action == "sign_record":
+        await broadcast_channels(['actor_antonio'], 'sake', 'dr', 'Patata')
 
     if action in ['mark_read','mark_unread']:
         db.add(status); db.commit(); db.refresh(status)

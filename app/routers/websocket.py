@@ -1,10 +1,9 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, APIRouter, Depends
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, APIRouter, Depends, Request, Response
 from fastapi.responses import HTMLResponse
 
 from authx import TokenPayload
 
-from broadcaster import Broadcast
-
+from app.core.redis_bus import broadcast
 from app.core.auth import auth
 from app.core.database import get_db
 
@@ -13,56 +12,7 @@ from app.crud import get_actor_by_alias
 import asyncio
 
 router = APIRouter()
-# 1. Initialize Broadcast with your Redis URL
-# In production, use an environment variable for the URL
-broadcast = Broadcast("redis://localhost:6379")
-app = FastAPI(on_startup=[broadcast.connect], on_shutdown=[broadcast.disconnect])
 
-"""
-@router.websocket("/ws/{actor_alias}")
-async def websocket_endpoint(websocket: WebSocket, actor_alias: str, db: Session = Depends(get_db)):
-    await websocket.accept()
-    current_actor = get_actor_by_alias(actor_alias, db)
-    channels = [f'actor_{current_actor.alias}',f'role_{current_actor.role}']
-    # We use actor_{channel_name} to match your connection logic
-    async with broadcast.subscribe(channels=channels) as subscriber:
-        async def message_sender():
-            try:
-                async for event in subscriber:
-                    await websocket.send_text(event.message)
-            except asyncio.CancelledError:
-                # This happens when the receiver stops and cancels this task
-                return
-
-        async def message_receiver():
-            try:
-                while True:
-                    await websocket.receive_text()
-            except WebSocketDisconnect:
-                # When the user refreshes/leaves, this triggers
-                raise 
-
-        # Create the tasks
-        sender_task = asyncio.create_task(message_sender())
-        receiver_task = asyncio.create_task(message_receiver())
-
-        try:
-            # Wait for either to finish. If one dies, we kill the other.
-            done, pending = await asyncio.wait(
-                [sender_task, receiver_task],
-                return_when=asyncio.FIRST_COMPLETED,
-            )
-        except Exception as e:
-            print(f"Socket Task Error: {e}")
-        finally:
-            # CLEANUP: Cancel anything still running to unblock the server
-            for task in [sender_task, receiver_task]:
-                if not task.done():
-                    task.cancel()
-            
-            # This is the magic line that unblocks the "Reloading..." process
-            await asyncio.gather(*[sender_task, receiver_task], return_exceptions=True)
-"""
 
 @router.websocket("/ws/{actor_alias}")
 async def websocket_endpoint(websocket: WebSocket, actor_alias: str, db: Session = Depends(get_db)):
@@ -72,16 +22,15 @@ async def websocket_endpoint(websocket: WebSocket, actor_alias: str, db: Session
     # Define the channels we want to listen to
     channels = [f'actor_{current_actor.alias}', f'role_{current_actor.role}']
 
-    # 1. Helper function to handle a single channel subscription
     async def listen_to_channel(channel_name: str):
+        print(f"DEBUG: Listener started for channel: '{channel_name}'")
         try:
-            # Note the singular "channel=" here
             async with broadcast.subscribe(channel=channel_name) as subscriber:
                 async for event in subscriber:
+                    print(f"DEBUG: Received on {channel_name}: {event.message}")
                     await websocket.send_text(event.message)
-        except asyncio.CancelledError:
-            # This happens when the connection drops and we cancel the task
-            return
+        except Exception as e:
+            print(f"DEBUG: Listener Error: {e}")
 
     # 2. Receiver to detect when the user disconnects
     async def message_receiver():
@@ -118,25 +67,40 @@ async def websocket_endpoint(websocket: WebSocket, actor_alias: str, db: Session
         await asyncio.gather(*all_tasks, return_exceptions=True)
 
 
-async def broadcast_all_channels(actor_alias: str, role: str, msg: str = ""):
+async def broadcast_channels(channels: list[str], actor_alias: str, role: str, msg: str = ""):
     # We send the HTMX trigger snippet directly into the Redis pipe
-    message = f"{actor_alias}|msg"
-    trigger_html = f'<div id="sock_id"><span hx-get="/socket-updated?message={message}" hx-trigger="load" hx-swap="outerHTML"></span></div>'
-    await broadcast.publish(channel=f"actor_{role}", message=trigger_html)
+    print('channels:',channels)
+    message = f"{actor_alias}|{msg}"
+    trigger_html = f'<div id="sock_id" hx-swap-oob="true"><span hx-get="/socket-updated?message={message}" hx-trigger="load" hx-swap="outerHTML"></span></div>'
+
+    for channel in channels:
+        print(channel)
+        await broadcast.publish(channel=channel, message=trigger_html)
+    print("DEBUG: Publish complete.")
 
 
 @router.get("/socket-updated", response_class=HTMLResponse)
-async def socket_updated(request: Request, message: str, payload: TokenPayload = Depends(auth.access_token_required)):
-    actor_alias, content = message.split('|')
-    if actor_alias != payload.alias and content:
-        notification = f"'{content}'"
-        response = make_response(f'<span hx-on:htmx:load="sendNotification({notification})" hx-trigger="load"></span>')
-    else:
-        response = make_response(f'<span></span>')
+async def socket_updated(
+    message: str, 
+    response: Response, # Use this to set headers
+    # payload: TokenPayload = Depends(auth.access_token_required) # Temporarily comment this out to test
+):
+    print(f'Socket update triggered with message: {message}')
+    
+    try:
+        actor_alias, content = message.split('|')
+    except ValueError:
+        return "<span>Invalid message format</span>"
 
+    # For now, let's just return the notification trigger
+    notification = f"'{content}'"
+    
+    # Set the HTMX Trigger header
     response.headers['HX-Trigger'] = 'socket-updated'
     
-    return response
+    # Return the HTML that triggers your JS function
+    return f'<span hx-on:htmx:load="sendNotification({notification})" hx-trigger="load"></span>'
+
 
 """
 import redis

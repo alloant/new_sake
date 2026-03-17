@@ -42,3 +42,29 @@ document.addEventListener('click', function (event) {
 });
 
 
+// Request permission on page load
+if (Notification.permission !== "granted") {
+    Notification.requestPermission().then(permission => {
+        console.log("Notification permission:", permission);
+    });
+}
+
+function sendNotification(msg) {
+    console.log("Function sendNotification called with:", msg);
+    
+    if (Notification.permission === "granted") {
+        var myNotification = new Notification("Sake", {
+            "body": msg,
+            "icon": '/static/icons/sake.svg', // Ensure the leading slash for absolute path
+        });
+        
+        myNotification.onclick = (e) => {
+            window.focus(); // Good practice: focus the tab when clicked
+            myNotification.close();
+        };
+    } else {
+        console.warn("Notifications are blocked or not yet granted.");
+        // Fallback: use a standard alert so you can at least see it's working
+        alert("Notification: " + msg);
+    }
+}
