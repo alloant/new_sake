@@ -51,11 +51,11 @@ if (Notification.permission !== "granted") {
 
 function sendNotification(msg) {
     console.log("Function sendNotification called with:", msg);
-    
+
     if (Notification.permission === "granted") {
         var myNotification = new Notification("Sake", {
             "body": msg,
-            "icon": '/static/icons/sake.svg', // Ensure the leading slash for absolute path
+            "icon": "/static/icons/sake.png", // Ensure the leading slash for absolute path
         });
         
         myNotification.onclick = (e) => {

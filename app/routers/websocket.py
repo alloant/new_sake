@@ -23,11 +23,9 @@ async def websocket_endpoint(websocket: WebSocket, actor_alias: str, db: Session
     channels = [f'actor_{current_actor.alias}', f'role_{current_actor.role}']
 
     async def listen_to_channel(channel_name: str):
-        print(f"DEBUG: Listener started for channel: '{channel_name}'")
         try:
             async with broadcast.subscribe(channel=channel_name) as subscriber:
                 async for event in subscriber:
-                    print(f"DEBUG: Received on {channel_name}: {event.message}")
                     await websocket.send_text(event.message)
         except Exception as e:
             print(f"DEBUG: Listener Error: {e}")
@@ -67,26 +65,20 @@ async def websocket_endpoint(websocket: WebSocket, actor_alias: str, db: Session
         await asyncio.gather(*all_tasks, return_exceptions=True)
 
 
-async def broadcast_channels(channels: list[str], actor_alias: str, role: str, msg: str = ""):
-    # We send the HTMX trigger snippet directly into the Redis pipe
-    print('channels:',channels)
+async def broadcast_channels(channels: list[str], actor_alias: str, msg: str = ""):
     message = f"{actor_alias}|{msg}"
     trigger_html = f'<div id="sock_id" hx-swap-oob="true"><span hx-get="/socket-updated?message={message}" hx-trigger="load" hx-swap="outerHTML"></span></div>'
 
     for channel in channels:
-        print(channel)
         await broadcast.publish(channel=channel, message=trigger_html)
-    print("DEBUG: Publish complete.")
 
 
 @router.get("/socket-updated", response_class=HTMLResponse)
 async def socket_updated(
     message: str, 
-    response: Response, # Use this to set headers
-    # payload: TokenPayload = Depends(auth.access_token_required) # Temporarily comment this out to test
+    response: Response,
+    payload: TokenPayload = Depends(auth.access_token_required)
 ):
-    print(f'Socket update triggered with message: {message}')
-    
     try:
         actor_alias, content = message.split('|')
     except ValueError:
@@ -94,11 +86,13 @@ async def socket_updated(
 
     # For now, let's just return the notification trigger
     notification = f"'{content}'"
-    
+
     # Set the HTMX Trigger header
     response.headers['HX-Trigger'] = 'socket-updated'
-    
-    # Return the HTML that triggers your JS function
+
+    if payload.alias == actor_alias:
+        return ''
+
     return f'<span hx-on:htmx:load="sendNotification({notification})" hx-trigger="load"></span>'
 
 

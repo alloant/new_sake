@@ -30,10 +30,11 @@
 </nav>
 
 <script>
-Sortable.create(listWithHandle, {
-  handle: '.handle-move',
-  animation: 150
-});
+    Sortable.create(listWithHandle, {
+      handle: '.handle-move',
+      ghostClass: 'blue-background-class',
+      animation: 150,
+      forceFallback: true,
+      fallbackClass: 'sortable-fallback'
+    });
 </script>
-
-

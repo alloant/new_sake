@@ -62,9 +62,11 @@ async def action_view(record_id,status_id, action, db, current_actor):
         selected_targets = record.targets
         return "forms/select_targets.html", {'record': record, 'available_targets': available_targets, 'selected_targets': selected_targets}
     elif action == "sign_record":
-        await broadcast_channels(['actor_antonio'], 'sake', 'dr', 'Patata')
+        status.handled = "approved"
+        sock_targets = [f'actor_{alias}' for alias in record.current_targets_alias]
+        await broadcast_channels(channels = sock_targets, actor_alias = current_actor.alias, msg = f'New proposal to sign {record.protocol}')
 
-    if action in ['mark_read','mark_unread']:
+    if action in ['mark_read','mark_unread','sign_record']:
         db.add(status); db.commit(); db.refresh(status)
     elif action in ['archive','restore']:
         db.add(record); db.commit(); db.refresh(record)

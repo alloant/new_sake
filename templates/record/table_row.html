@@ -33,7 +33,7 @@
       {% if record.flow == 'outbound' %}
         <span class="tag sender ml-1 is-hidden-mobile">{{ record.sender.alias }}</span>
       {% else %}
-        {% with current_target = record.current_target %}
+        {% with current_target = record.current_target_sequence %}
           {% for target in record.targets %}
             {% if target.handled == 'approved' %}
               <span class="tag target-success ml-1 is-hidden-mobile">{{ target.actor.alias }}</span>

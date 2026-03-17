@@ -314,3 +314,16 @@ nav.sidebar-section .item a.is-active {
     flex-grow: 1; /* Search takes up remaining space */
     padding: 8px;
 }
+
+.blue-background-class {
+    background-color: #ebf5ff !important; /* Light blue */
+    border: 2px dashed #3182ce !important; /* Dashed border looks better for a ghost */
+    opacity: 0.5;
+}
+
+.sortable-fallback {
+    opacity: 1 !important;
+    display: block !important;
+    /* Add a little shadow to make it look like it's "lifted" */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}

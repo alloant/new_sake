@@ -23,7 +23,7 @@ class RecordActor(SQLModel, table=True):
     actor_id: int = Field(foreign_key="actor.id")
     record_id: int = Field(foreign_key="record.id")
 
-    handled: HandledStatus = Field()
+    handled: HandledStatus = Field(default="")
     target: int = Field(default=0) # 0 means not involve. > 0 means involved. The number marks the order
     
     params: dict[str,str] = Field(sa_column=Column(JSON, nullable=False), default_factory=dict)
