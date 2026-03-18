@@ -69,8 +69,17 @@ babel_configs = BabelConfigs(
 async def lifespan(app: FastAPI):
     # This connects the shared instance
     await broadcast.connect()
-    yield
-    # This closes it gracefully
+
+    # Init database
+    init_db()
+    #transfer_record_tag()
+    #transfer_all()
+    # Function to transfer data
+
+
+    yield # --- The app is now running and "open" for business ---
+    
+    print("🛑 Shutting down: Disconnecting broadcast...")
     await broadcast.disconnect()
 
 app = FastAPI(title="Sake", lifespan=lifespan)
@@ -99,31 +108,29 @@ auth.handle_errors(app)
 @app.exception_handler(RevokedTokenError)
 @app.exception_handler(JWTDecodeError)
 @app.exception_handler(MissingTokenError)
+
 async def auth_exception_handler(request: Request, exc: Exception):
     return RedirectResponse(url="/login")
 
-@app.on_event("startup")
-def on_startup():
-    # This creates all tables when the app first starts
-    init_db()
-    #transfer_find_depts()
-    if False:
-        transfer_registers()
-        transfer_users()
-        transfer_notes()
-        transfer_note_user()
-        transfer_tags()
-        transfer_record_tag()
-        transfer_depts()
-        transfer_find_depts()
-        transfer_files()
-        transfer_references()
 # Mount Static Files
 app.mount("/static", StaticFiles(directory="static", html=True), name="static")
 
 # Include Routers
 # Use the main router defined in app/routers/main.py
 app.include_router(router)
+
+def transfer_all():
+    transfer_registers()
+    transfer_users()
+    transfer_notes()
+    transfer_note_user()
+    transfer_tags()
+    transfer_record_tag()
+    transfer_depts()
+    transfer_find_depts()
+    transfer_files()
+    transfer_references()
+
 
 # To run: uvicorn main:app --reload
 if __name__ == '__main__':

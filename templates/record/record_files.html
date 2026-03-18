@@ -1,25 +1,22 @@
-  {% if record.files %}
-  <div  class="tag button p-0"
-        style="width: 8rem; font-size: 0.8rem; justify-content: flex-start; padding-left: 0.5rem !important; background-color: inherit;">
-    <a href="{{ record.files[0].link }}" 
-       class="m-0 p-0" 
-       target="_blank"
-       style="text-decoration: none; color: inherit; width: 100%; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-      {{ record.files[0].html_name_short | safe }}
-    </a>
-  </div>
-  {% endif %}
+{% if record.files %}
+<a href="{{ record.files[0].link }}" 
+    target="_blank" 
+    class="is-block p-0 file-link-button is-rounded"> 
+  {{ record.files[0].html_name_short | safe }}
+</a>
+{% endif %}
+
   <div class="field p-0 m-0">
     <div class="control p-0 m-0">
       <div class="dropdown is-right mr-4">
         <div class="dropdown-trigger">
-          <button class="button-files button is-rounded is-small p-1" aria-haspopup="true" aria-controls="dropdown-{{ record.id }}" style="border: 0px;">
-            <span class="p-0" style="position: relative;">
-              <i class="iconify is-size-6 p-0 has-text-warning" data-icon="mdi-folder"></i>
-              <span class="p-0" style="position: absolute; top: 15%; left: 15%; color: black; font-size: 0.6rem;">{{ record.files|length }}</span>
+          <button class="button-files button is-rounded is-small mx-1 p-1" aria-haspopup="true" aria-controls="dropdown-{{ record.id }}" style="border: 0px;">
+            <span class="" style="position: relative;">
+              <i class="iconify is-size-6 has-text-warning" data-icon="mdi-folder"></i>
+              <span class="" style="position: absolute; top: 15%; left: 15%; color: black; font-size: 0.6rem;">{{ record.files|length }}</span>
             </span>
-            <span class="icon is-small p-0">
-              <i class="iconify p-0" data-icon="mdi-chevron{{'-double' if record.references else ''}}-down"></i>
+            <span class="icon">
+              <i class="iconify" data-icon="mdi-chevron{{'-double' if record.references else ''}}-down"></i>
             </span>
           </button>
         </div>

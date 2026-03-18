@@ -5,6 +5,8 @@
   --sidebar-color-hover: #eeeeee;
   --sidebar-background-hover: #666666;
   --sidebar-background-active: hsl(229, 53%, 53%);
+  --file-link-hover-color: #bbbbbb;
+  --file-link-hover-background: #222222;
   --row-hover: #cccccc;
   --row-alternate: #eeeeee;
   --button-files-hover: #eeeeee;
@@ -22,6 +24,8 @@
   --sidebar-color-hover: #111111;
   --sidebar-background-hover: #afafaf;
   --sidebar-background-active: var(--bulma-link);
+  --file-link-hover-color: #bbbbbb;
+  --file-link-hover-background: #222222;
   --row-hover: #050505;
   --row-alternate: #222222;
   --button-files-hover: #111111;
@@ -98,6 +102,36 @@ html, body {
   background: var(--button-files-hover);
 }
 
+.file-link-button {
+/* Layout & Dimensions */
+    display: inline-flex;
+    align-items: center;
+    width: 8rem;
+    padding: 0.25rem 0.75rem; /* Equivalent to py-1 px-3 */
+    
+    /* Typography */
+    font-size: 0.8rem;
+    color: inherit;
+    text-decoration: none;
+    
+    /* The "Tag" Shape */
+    border-radius: 100px;
+    background-color: transparent;
+    
+    /* Truncation (The "...") */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
+    /* Animation */
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.file-link-button:hover {
+    background-color: var(--file-link-hover-background); 
+    color: var(--file-link-hover-color);
+    text-decoration: none;
+}
 
 .hover-row {
     transition: background-color 0.2s ease;
@@ -132,7 +166,7 @@ html, body {
   /* Hide by default */
   opacity: 0;
   pointer-events: none;    /* Prevents clicking invisible buttons */
-  transition: none; /* opacity 0.2s ease-in-out;*/
+  transition: background-color 0.2s ease;
 }
 
 /* 2. Show them when the row (tr) is hovered */
@@ -327,3 +361,41 @@ nav.sidebar-section .item a.is-active {
     /* Add a little shadow to make it look like it's "lifted" */
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
+
+.tags-stack {
+  display: inline-flex;
+  flex-direction: column;
+  /* Set a total height so the 1/3 ratio has a base to work from */
+  height: 1.5rem !important;
+  width: 2rem;
+  vertical-align: middle;
+}
+
+.tags-stack .tag {
+  margin: 0 !important; /* Force remove Bulma's default gaps */
+  padding: 0 !important;
+  width: 100%;
+  justify-content: center;
+  border: none;
+}
+
+/* The Top Item (3/4 of total, making it 3x bigger than the bottom) */
+.is-top {
+  flex: 2;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+/* The Bottom Item (1/4 of total, making it 1/3 of the top) */
+.is-bottom {
+  flex: 1;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  /* Since it's 1/3 height, we usually need smaller text to fit */
+  font-size: 0.45rem; 
+  line-height: 1;
+}
+
+

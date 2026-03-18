@@ -31,6 +31,13 @@ class State(str, Enum):
     ARCHIVED = "archived"
     SNOOZE = "snooze"
 
+class Area(str, Enum):
+    AES = "aes"
+    ASO = "#FF7675"
+    ASMO = "#58D68D"
+    IND = "#5DADE2"
+    J = "#F1C40F"
+
 class RecordTag(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     record_id: int = Field(foreign_key="record.id")
@@ -48,15 +55,16 @@ class RecordRecord(SQLModel, table=True):
 
 class Record(SQLModel, RecordMethod, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    state: State = Field()
-    stage: Stage = Field()
+    state: State = Field(max_length=20)
+    stage: Stage = Field(max_length=20)
     title: str | None = Field(max_length=500, default="")
     register_id: int | None = Field(default=None, foreign_key="register.id", description="Register")
-    flow: Flow = Field()
+    flow: Flow = Field(max_length=20)
     sequence: int = Field(description="Sequential number (nn)")
     year: int = Field(description="Year (yy)")
     sender_id: int | None = Field(default=None, foreign_key="actor.id", description="Actor sending/producing the note")
     dept_id: int | None = Field(default=None, foreign_key="dept.id", description="Department in charge of the record")
+    area: Area = Field(max_length=4, default="aes")
     params: dict[str,str] = Field(sa_column=Column(JSON, nullable=False), default_factory=dict)
     
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -91,7 +99,7 @@ class Record(SQLModel, RecordMethod, table=True):
             case "despacho":
                 return 'briefcase-outline'
             case "registered":
-                return 'file-outline'
+                return 'file'
             case "draft":
                 return 'progress-wrench'
             case "outbox":

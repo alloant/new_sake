@@ -1,0 +1,69 @@
+
+  <div class="column is-one-fifth-desktop is-half-mobile has-order-1-mobile">
+    <div class="is-flex is-justify-content-left is-align-items-center">
+      <span class="iconify p-0 has-text-grey" data-icon="mdi-{{ record.stage_icon }}"></span>
+      
+            
+      <span class="mx-2 p-0" style="white-space: nowrap;">
+        {{ record.protocol }}
+      </span>
+      {% for tag in record.tags %}
+        <span class="tag is-small py-0 mx-1 my-0 is-hidden-mobile" style="font-size: 0.65rem;">{{ tag.title }}</span>
+      {% endfor %}
+    </div>
+  </div> <!-- End first cell -->
+
+  <div class="column is-full-mobile has-order-3-mobile position-relative">
+    <div class="is-flex is-justify-content-left is-align-items-center">
+      {% if record.dept %}
+        <span class="tag is-bold has-text-black mx-2 p-0" style="width: 2rem; background-color: {{record.dept.color}};">
+          {{ record.dept.alias }}
+        </span>
+      {% else %}
+        <span class="tag is-bold has-text-black mx-2 p-0" style="width: 2rem;">
+          -
+        </span>
+      {% endif %}
+
+      <span class="{{ record.read_status_html(status,current_actor) if record.flow == 'inbound' else 'has-text-weight-semibold' }}">
+        {{ record.title }}
+      </span>
+  
+      <!-- targets or sender -->
+      {% if record.flow == 'outbound' %}
+        <span class="tag sender ml-1 is-hidden-mobile">{{ record.sender.alias }}</span>
+      {% else %}
+        {% with current_target = record.current_target_sequence %}
+          {% for target in record.targets %}
+            {% if target.handled == 'approved' %}
+              <span class="tag target-success ml-1 is-hidden-mobile">{{ target.actor.alias }}</span>
+            {% elif target.target == current_target %}
+              <span class="tag target-current ml-1 is-hidden-mobile">{{ target.actor.alias }}</span>
+            {% else %}
+              <span class="tag target ml-1 is-hidden-mobile">{{ target.actor.alias }}</span>
+            {% endif %}
+          {% endfor %}
+        {% endwith %}
+      {% endif %}
+    </div>
+    <div class="action-buttons is-hidden-mobile is-rounded">
+      {% include 'record/table_row_actions.html' %}
+    </div>
+  </div>
+
+
+
+  <div class="column is-one-fifth-desktop is-half-mobile has-order-2-mobile position-relative">
+    <div class="is-flex is-justify-content-space-between is-align-items-center">
+      
+      <div class="is-flex is-align-items-center">
+        {% include 'record/table_menu_actions.html' %}
+        {% include 'record/record_files.html' %}
+      </div>
+
+      <div class="ml-2" style="flex-shrink: 0;">
+        {{ record.date }}
+      </div>
+
+    </div> 
+  </div>

@@ -78,14 +78,17 @@ def transfer_find_depts():
         if record.dept_id:
             continue
 
+        old_record_id = record.params['old_id']
+        tags = get_old_data(f'SELECT tag.text from tag, note_tag where tag.id = note_tag.tag_id and note_tag.note_id = {old_record_id}')
+        print(tags)
         dept_found = False
-        for tag in record.tags:
-            if tag.title == 'desr':
-                dept = get_dept_by_alias(tag.title,db)
+        for tag in tags:
+            if tag['text'] == 'desr':
+                dept = get_dept_by_alias(tag['text'],db)
                 if not dept:
                     dept = get_dept_by_alias('pffer',db)
             else:
-                dept = get_dept_by_alias(tag.title,db)
+                dept = get_dept_by_alias(tag['text'],db)
             if dept:
                 record.dept_id = dept.id
                 db.add(record)
@@ -157,7 +160,7 @@ def transfer_users():
 
             print(row['alias'],row['email'], row['name'])
 
-            db_actor = Actor(alias=row['alias'],kind=kind,email=row['email'],full_name=row['name'],created_at=row['date'])
+            db_actor = Actor(alias=row['alias'],kind=kind,email=row['email'],full_name=row['name'],created_at=row['date'], scopes=[row['category']])
             db.add(db_actor)
             alias.append(row['alias'])
     db.commit()
@@ -308,10 +311,14 @@ def transfer_record_tag():
 
     for record in records:
         old_record_id = record.params['old_id']
-        tags = get_old_data(f"SELECT * FROM note_tag WHERE note_id = {old_record_id}")
+        tags = get_old_data(f"SELECT tag.text as tag_text, tag.id as tag_id FROM note_tag, tag WHERE note_tag.tag_id = tag.id AND note_tag.note_id = {old_record_id}")
         for tag in tags:
-            recordtag = RecordTag(record_id=record.id,tag_id=tag['tag_id'])
-            db.add(recordtag)
+            if tag['tag_text'] in ['Ind','J','Aso','Asmo']: # Is Area
+                record.area = tag['tag_text'].lower()
+                db.add(record)
+            elif record.dept and record.dept.alias != tag['tag_text']:
+                recordtag = RecordTag(record_id=record.id,tag_id=tag['tag_id'])
+                db.add(recordtag)
 
     db.commit()
 
