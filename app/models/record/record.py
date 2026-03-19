@@ -33,10 +33,10 @@ class State(str, Enum):
 
 class Area(str, Enum):
     AES = "aes"
-    ASO = "#FF7675"
-    ASMO = "#58D68D"
-    IND = "#5DADE2"
-    J = "#F1C40F"
+    ASO = "#c91c1c"
+    ASMO = "#26b52d"
+    IND = "#1136f0"
+    J = "#f0f011"
 
 class RecordTag(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)

@@ -84,16 +84,6 @@ html, body {
   border: 1px dashed var(--target-border);
 }
 
-.truncate {
-  white-space: nowrap;        /* keep single line */
-  overflow: hidden;           /* hide overflow */
-  text-overflow: ellipsis;    /* show "..." */
-}
-
-.popover .popover-content {
-    background-color: #000000 !important;
-}
-
 .button-files {
   background: transparent;
 }
@@ -367,6 +357,8 @@ nav.sidebar-section .item a.is-active {
   flex-direction: column;
   /* Set a total height so the 1/3 ratio has a base to work from */
   height: 1.5rem !important;
+  max-width: 2rem;
+  min-width: 2rem;
   width: 2rem;
   vertical-align: middle;
 }

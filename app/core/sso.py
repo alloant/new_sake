@@ -1,5 +1,6 @@
 import os
 import time
+from datetime import timedelta
 import json
 from urllib.parse import urlencode
 
@@ -190,8 +191,8 @@ async def callback(request: Request, db: Session, code: str = None, state: str =
         "data": {"kind": actor.kind.value},
     }
     
-    access_token = auth.create_access_token("sake",data=user_payload, scopes=actor.scopes)
     cookie_duration = 60 * 60 * 24 * 7 # 7 Days
+    access_token = auth.create_access_token("sake",data=user_payload, scopes=actor.scopes, expires_delta=timedelta(seconds=cookie_duration))
 
     response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(

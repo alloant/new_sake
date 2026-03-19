@@ -1,4 +1,6 @@
 # app/routers/main.py
+from datetime import timedelta
+
 from fastapi import APIRouter, Request, Depends, status
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
@@ -136,8 +138,8 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
         "data": {"kind": "user"},
     }
     
-    access_token = auth.create_access_token("sake",data=user_payload, scopes=current_actor.scopes)
     cookie_duration = 60 * 60 * 24 * 7 # 7 Days
+    access_token = auth.create_access_token("sake",data=user_payload, scopes=current_actor.scopes,expires_delta=timedelta(seconds=cookie_duration))
     response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(
         key="access_token",
