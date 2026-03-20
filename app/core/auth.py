@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from fastapi import Depends, HTTPException, Request
 from fastapi.security import SecurityScopes
 from authx import AuthX, AuthXConfig, RequestToken
@@ -16,7 +18,8 @@ config = AuthXConfig(
     JWT_SECRET_KEY = settings.SECRET_KEY,
     JWT_ACCESS_COOKIE_NAME="access_token",
     JWT_REFRESH_COOKIE_NAME="refresh_token",
-    JWT_TOKEN_LOCATION = ["cookies"]
+    JWT_TOKEN_LOCATION = ["cookies"],
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=7)
 )
 
 auth = AuthX(model=Actor,config=config)
@@ -28,7 +31,7 @@ async def get_current_actor_alias_from_cookie(request: Request):
         raise HTTPException(status_code=401, detail="Not authenticated")
     
     try:
-        payload = jwt.decode(token, config.JWT_SECRET_KEY, algorithms=["HS256"])
+        payload = jwt.decode(token, config.JWT_SECRET_KEY, algorithms=["HS256"], options={"leeway": 30})
         alias= payload.get("uid")
         if alias is None:
             raise HTTPException(status_code=401, detail="Invalid token")
@@ -46,7 +49,7 @@ async def get_current_actor_lang_from_cookie(request: Request):
         return "en"
         raise HTTPException(status_code=401, detail="Not authenticated")
     try:
-        payload = jwt.decode(token, config.JWT_SECRET_KEY, algorithms=["HS256"])
+        payload = jwt.decode(token, config.JWT_SECRET_KEY, algorithms=["HS256"], options={"leeway": 30})
         lang = payload.get("lang")
 
         if lang is None:
@@ -63,7 +66,7 @@ async def get_payload_from_cookie(request: Request):
         raise HTTPException(status_code=401, detail="Not authenticated")
     
     try:
-        raw_payload = jwt.decode(token, config.JWT_SECRET_KEY, algorithms=["HS256"])
+        raw_payload = jwt.decode(token, config.JWT_SECRET_KEY, algorithms=["HS256"], options={"leeway": 30})
         payload = SimpleNamespace(**raw_payload)
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")

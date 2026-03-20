@@ -1,100 +1,43 @@
-{% if record.files %}
-<a href="{{ record.files[0].link }}" 
-    target="_blank" 
-    class="is-block p-0 file-link-button is-rounded"> 
-  {{ record.files[0].html_name_short | safe }}
-</a>
-{% endif %}
+<div class="tags has-addons" style="flex-wrap: nowrap;">
+  {% if record.files %}
+    <span class="tag is-hoverable py-0 px-1">
+      <a href="{{ record.files[0].link }}" 
+        target="_blank" 
+        title="{{record.files[0].name}}"
+        class="">
+        {{ record.files[0].html_icon | safe }}
+      </a>
+    </span>
+  {% else %}
+    <span class="iconify has-text-grey" data-icon="mdi-document"></span>
+  {% endif %}
 
-  <div class="field p-0 m-0">
-    <div class="control p-0 m-0">
-      <div class="dropdown is-right mr-4">
-        <div class="dropdown-trigger">
-          <button class="button-files button is-rounded is-small mx-1 p-1" aria-haspopup="true" aria-controls="dropdown-{{ record.id }}" style="border: 0px;">
-            <span class="" style="position: relative;">
-              <i class="iconify is-size-6 has-text-warning" data-icon="mdi-folder"></i>
-              <span class="" style="position: absolute; top: 15%; left: 15%; color: black; font-size: 0.6rem;">{{ record.files|length }}</span>
-            </span>
-            <span class="icon">
-              <i class="iconify" data-icon="mdi-chevron{{'-double' if record.references else ''}}-down"></i>
-            </span>
-          </button>
+  <span class="tag is-hoverable py-0">
+    <div class="dropdown {{ 'is-up' if loop.index >= 15 }} is-right">
+      <div class="dropdown-trigger" aria-haspopup="true" aria-controls="dropdown-{{ record.id }}">
+        <span class="icon" style="position: relative; display: inline-flex; justify-content: center;">
+          <span class="iconify has-text-warning" 
+                data-icon="mdi:folder{{'-multiple' if record.references else ''}}" 
+                data-width="20">
+          </span>
+            
+          <span class="iconify has-text-black" 
+                data-icon="mdi:numeric-{{ '9-plus' if record.files|length > 9 else record.files|length }}" 
+                data-width="20" 
+                style="position: absolute; top: 10%; left: 0%;">
+          </span>
+        </span>
+      </div> <!-- End trigger -->
+
+      <div class="dropdown-menu" id="dropdown-{{ record.id }}" role="menu" style="width: auto; min-width: 25rem">
+        <div class="dropdown-content">
+          {% include 'record/record_files_files.html' %}
+          <hr class="dropdown-divider">
+          {% include 'record/record_files_actions.html' %}
         </div>
+      </div>
+    </div> <!-- End dropdown -->
 
-        <div class="dropdown-menu" id="dropdown-{{ record.id }}" role="menu" style="width: auto; min-width: 25rem">
-          <div class="dropdown-content" style="width: auto;">
-            
-            {% if record.files %}
-              {% for file in record.files %}
-                <a href="{{ file.link }}" class="dropdown-item m-0" target="_blank">
-                  {{ file.html_name | safe }}
-                </a>
-              {% endfor %}
-            {% else %}
-              <div class="dropdown-item p-0 m-0">No files found</div>
-            {% endif %}
-            
-            {% if record.references %}
-            <hr class="dropdown-divider p-0 m-0">
-            {% endif %}
-            
-            {% for reference in record.references %}
-                <div class="dropdown-item has-text-grey m-0">{{ reference.protocol }} {{ reference.title }}</div>
-                {% for file in reference.files %}
-                  <a class="dropdown-item pl-4 py-1 m-0" target="_blank" href="{{ file.link }}">
-                    {{ file.html_name | safe }}
-                  </a>
-                {% endfor %}
-            {% endfor %}
-
-            <hr class="dropdown-divider">
-            
-            <form hx-encoding='multipart/form-data' hx-post='/records/{{record.id}}/upload_files'
-              _='on htmx:xhr:progress(loaded, total) set #progress.value to (loaded/total)*100'>
-              <input type='file' name='files' multiple='multiple'>
-              <button class="dropdown-item">
-                <i class="iconify" data-icon="mdi-file-upload-outline"></i> Upload files from computer
-              </button>
-              <progress id='progress' value='0' max='100'></progress>
-            </form>
-
-            <a  class="dropdown-item"
-                hx-get="/records/{{ record.id }}/add-file" 
-                hx-target="#modals-here">
-                <i class="iconify" data-icon="mdi-content-copy"></i> Copy from team-folders
-            </a>
-            <a  class="dropdown-item"
-                hx-get="/records/{{ record.id }}/add-file"
-                hx-target="">
-                <i class="iconify" data-icon="mdi-file-plus-outline"></i> New file from template
-            </a>
-
-<a class="dropdown is-hoverable is-right">
-    <div class="dropdown-trigger">
-        <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
-            <span>New file from template</span>
-            <span class="icon is-small"><i class="fas fa-angle-right"></i></span>
-        </button>
-    </div>
-    <div class="dropdown-menu" id="dropdown-menu" role="menu">
-        <div class="dropdown-content" 
-             hx-get="/records/templates-list" 
-             hx-trigger="intersect once">
-             <div class="dropdown-item">Loading templates...</div>
-        </div>
-    </div>
-</a>
-
-
-
-
-
-
-
-          </div> <!-- End dropdown content -->
-        </div> <!-- End dropdown-menu -->
-      </div> <!-- dropdown -->
-    </div> <!-- control -->
-  </div> <!-- end has addons -->
-
+  </span>
+</div>
 

@@ -47,7 +47,13 @@ def ACTIONS():
 class RecordMethod(object):
     @property
     def protocol(self):
-        return f'{self.code} {self.sequence}/{str(self.year)[2:]}'
+        if self.sequence == 0:
+            if self.references:
+                return f'Ref {self.references[0].protocol}'
+            else:
+                return 'Ref'
+        else:
+            return f'{self.code} {self.sequence}/{str(self.year)[2:]}'
 
     @property
     def code(self):

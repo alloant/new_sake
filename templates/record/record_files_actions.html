@@ -1,0 +1,34 @@
+<!-- 
+<form hx-encoding='multipart/form-data' hx-post='/records/{{record.id}}/upload_files'
+  _='on htmx:xhr:progress(loaded, total) set #progress.value to (loaded/total)*100'>
+  <input type='file' name='files' multiple='multiple'>
+  <button class="dropdown-item">
+    <i class="iconify" data-icon="mdi-file-upload-outline"></i> Upload files from computer
+  </button>
+  <progress id='progress' value='0' max='100'></progress>
+</form>
+
+<form  hx-post='/records/{{record.id}}/upload_files'>
+  <input class="file-input" type='file' name='files' multiple='multiple'>
+  <a class="dropdown-item">
+    <i class="iconify" data-icon="mdi-file-upload"></i> Upload a files…
+  </a>
+
+</form>
+
+
+-->
+<a  class="dropdown-item"
+    hx-get="/records/{{ record.id }}/add-file" 
+    hx-target="#modals-here">
+    <i class="iconify" data-icon="mdi-content-copy"></i> Copy from team-folders
+</a>
+
+<a  class="dropdown-item"
+    hx-get="/records/{{ record.id }}/add-file"
+    hx-target="">
+    <i class="iconify" data-icon="mdi-file-plus-outline"></i> New file from template
+</a>
+
+
+

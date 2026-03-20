@@ -4,7 +4,7 @@
       <button class="px-1 is-small has-tooltip-arrow" data-tooltip="{{ action.title }}"
         {% for attr in action.attr %}
           {% if attr in ['hx-get','hx-post'] %}
-            {{ attr }}="{{ action.attr[attr] }}&record_id={{ record.id }}&recordactor_id={{ is_true(status,'id') }}&section={{section}}&panel={{panel}}"
+            {{ attr }}="{{ action.attr[attr] }}&record_id={{ record.id }}&recordactor_id={{ is_true(status,'id') }}&section={{section}}&panel={{panel}}&loop_index={{loop.index}}"
           {% else %}
             {{ attr }}="{{ action.attr[attr] }}"
           {% endif %}

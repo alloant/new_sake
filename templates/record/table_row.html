@@ -18,7 +18,7 @@
       {% if record.area != 'aes' %}
         <div class="tags-stack mr-2">
           <span class="tag is-top has-text-weight-bold has-text-black" style="background-color: {{ record.dept.color }}">{{ record.dept.alias }}</span>
-          <span class="tag is-bottom has-text-weight-bold is-link has-text-black" style="background-color: {{ record.area.value }};">{{ record.area.name.capitalize() }}</span>
+          <span class="tag is-bottom has-text-weight-bold has-text-black" style="background-color: {{ record.area.value }};">{{ record.area.name.capitalize() }}</span>
         </div>
       {% else %}
         <span class="tag has-text-weight-bold has-text-black mr-2"

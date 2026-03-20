@@ -35,7 +35,7 @@ def transfer_registers():
         {'id':7, 'alias': 'dg', 'full_name': 'Delegate', 'active': 1, 'protocol': {"inbound": "getattr(getattr(self,'sender'),'alias')","outbound": "'dg'"}},
         {'id':8, 'alias': 'cc', 'full_name': 'cc', 'active': 1, 'protocol': {"inbound": "getattr(getattr(self,'sender'),'alias')","outbound": "'cc'"}},
         {'id':9, 'alias': 'desr', 'full_name': 'Preffect', 'active': 1, 'protocol': {"inbound": "getattr(getattr(self,'sender'),'alias')","outbound": "'pffer'"}},
-        {'id':10, 'alias': 'mat', 'full_name': 'Proposals', 'active': 1, 'protocol': {"internal_cr": "getattr(getattr(self,'sender'),'alias')","outbound": "''"}}
+        {'id':10, 'alias': 'prop', 'full_name': 'Proposals', 'active': 1, 'protocol': {"internal_cr": "getattr(getattr(self,'sender'),'alias')","outbound": "''"}}
     ]
 
     for reg in regs:
@@ -59,6 +59,7 @@ def transfer_depts():
         'sr':{'full_name': 'St Raphael', 'color': '#7986CB'},
         'sg':{'full_name': 'St Gabriel', 'color': '#9575CD'},
         'ar':{'full_name': 'Administrator', 'color': '#F06292'},
+        'dest':{'full_name': 'Prefecto', 'color': '#02D581'},
         'pffer':{'full_name': 'Prefecto', 'color': '#AED581'},
         'aop':{'full_name': 'Apostolate public opinion', 'color': '#90A4AE'}
     }
@@ -84,9 +85,9 @@ def transfer_find_depts():
         dept_found = False
         for tag in tags:
             if tag['text'] == 'desr':
-                dept = get_dept_by_alias(tag['text'],db)
-                if not dept:
-                    dept = get_dept_by_alias('pffer',db)
+                dept = get_dept_by_alias('pffer',db)
+            elif tag['text'] == 'stgr':
+                dept = get_dept_by_alias('dest',db)
             else:
                 dept = get_dept_by_alias(tag['text'],db)
             if dept:

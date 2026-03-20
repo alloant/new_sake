@@ -63,6 +63,15 @@ class File(SQLModel, table=True):
         return rst
 
     @property
+    def html_icon(self):
+        rst = f"""
+            <span class="icon">
+                <span class="iconify has-text-{self.icon[0]}" data-icon="mdi-{self.icon[1]}"></span>
+            </span>
+              """
+        return rst
+
+    @property
     def shorter_name(self):
         limit = 14
         if len(self.name) > limit:

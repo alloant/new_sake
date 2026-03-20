@@ -13,7 +13,8 @@
   --records-hidden-row: #eeeeee;
   --target-color: #666666;
   --target-border: #666666;
-  --target-current-background: #cccccc;
+  --target-current-color: #ffffff;
+  --target-current-background: #777777;
   --target-success-background: #D1FAE5;
 }
 
@@ -32,7 +33,8 @@
   --records-hidden-row: #111111;
   --target-color: #dddddd;
   --target-border: #666666;
-  --target-current-background: #111111;
+  --target-current-color: #000000;
+  --target-current-background: #dddddd;
   --target-success-background: #01400D;
 }
 
@@ -73,6 +75,7 @@ html, body {
 
 .target-current {
   font-size: 0.65rem;
+  color: var(--target-current-color);
   background-color: var(--target-current-background);
   border: 1px solid var(--target-color);
 }
@@ -376,7 +379,7 @@ nav.sidebar-section .item a.is-active {
   flex: 2;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   line-height: 1;
 }
 
@@ -386,7 +389,7 @@ nav.sidebar-section .item a.is-active {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   /* Since it's 1/3 height, we usually need smaller text to fit */
-  font-size: 0.45rem; 
+  font-size: 0.5rem; 
   line-height: 1;
 }
 

@@ -1,4 +1,5 @@
 import json
+from pydantic import BaseModel
 
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import HTMLResponse
@@ -12,7 +13,7 @@ from authx import TokenPayload
 from app.core.auth import auth, get_current_actor_alias_from_cookie, get_payload_from_cookie
 from app.core.database import get_db
 
-from app.crud import get_records, get_register_by_alias, get_actor_by_id
+from app.crud import get_records, get_register_by_alias, get_actor_by_id, get_record_actor, get_record_by_id, get_dept_by_alias
 from app.views.records import records_view, records_table_view, action_view
 from app.views.sidebar import get_sidebar
 
@@ -68,9 +69,14 @@ async def records_hidden_row(request: Request, section: str, panel: str, db: Ses
     return f'<span class="tag is-secondary has-text-secondary is-rounded py-0 px-1" style="font-size: 0.6rem;">{num}</span>'
 
 
+class Loop(BaseModel):
+    index: int
+
 @router.get("/action", response_class=HTMLResponse)
-async def action(request: Request, record_id: int, recordactor_id: str, action: str, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
+async def action(request: Request, record_id: int, recordactor_id: str, action: str, loop_index: int, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
     current_actor = get_actor_by_id(payload.uid, db)
+    loop = Loop
+    loop.index = loop_index
     if action == 'recursive_search':
         page = 1
         template, rst = await records_table_view(page, f'all_off:{record_id}', 'register', 'all', db, current_actor)
@@ -79,9 +85,8 @@ async def action(request: Request, record_id: int, recordactor_id: str, action: 
         response = templates.TemplateResponse(template, {'request': request, 'section': 'register', 'panel': 'all', 'sidebar': sidebar, 'search':f'all_off:{record_id}'} | rst)
 
         return response
-   
     template, rst = await action_view(record_id, recordactor_id, action, db, current_actor)
-    response = templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel, 'current_actor': current_actor} | rst)
+    response = templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel, 'current_actor': current_actor, 'loop': loop} | rst)
 
     if action in ['mark_read','mark_unread']:
         response.headers['HX-Trigger'] = 'read_state_changed'
@@ -90,6 +95,33 @@ async def action(request: Request, record_id: int, recordactor_id: str, action: 
 
     return response
 
+@router.post("/modify_record", response_class=HTMLResponse)
+async def modify_record(request: Request, record_id: int, loop_index: int, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
+    loop = Loop
+    loop.index = loop_index
+    form = await request.form()
+    data = dict(form)
+    current_actor = get_actor_by_id(actor_id = payload.uid, db = db)
+    record = get_record_by_id(record_id, db = db)
+    status = get_record_actor(record_id = record_id, actor_id = payload.uid, db = db)
+
+    record.title = data['title']
+    record.sequence = data['sequence']
+    record.year = data['year']
+
+    dept = get_dept_by_alias(data['department'], db = db)
+    if dept:
+        record.dept_id = dept.id
+    
+    register = get_register_by_alias(data['register'], db = db)
+    if register:
+        record.register_id = register.id
+
+    db.add(record)
+    db.commit()
+    
+    return templates.TemplateResponse('record/table_row.html', {'request': request, 'record': record, 'status': status, 'current_actor': current_actor, 'loop': loop})
+    return f"record/table_row.html", {"record": record, "status": status}
 
 @router.post("/global_search", response_class=HTMLResponse)
 async def records_global_search(request: Request, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
