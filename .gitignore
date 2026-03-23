@@ -3,6 +3,7 @@ run
 run_https
 run_babel
 run_imap
+run_query
 *.key
 *.crt
 
