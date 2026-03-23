@@ -40,8 +40,7 @@
     {% else %}
       {% with current_target = record.current_target_sequence %}
         {% for target in record.targets %}
-          {# Streamlined the if/else block using a Jinja set for cleaner HTML #}
-          {% set target_class = 'target-success' if target.handled == 'approved' else ('target-current' if target.target == current_target else 'target') %}
+          {% set target_class = 'target' if record.stage == 'sketch' else 'target-success' if target.handled == 'approved' else ('target-current' if target.target == current_target else 'target') %}
           <span class="tag {{ target_class }} ml-1 is-hidden-mobile">{{ target.actor.alias }}</span>
         {% endfor %}
       {% endwith %}

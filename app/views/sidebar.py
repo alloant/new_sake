@@ -80,18 +80,18 @@ def FULLMENU(section):
         MenuGroup(
             title="Proposals",
             items=[
-                MenuItem(id="incoming-proposals-to-sign", title=_("To sign"), link="/?section=board&panel=incoming-proposals-to-sign", icon="mdi-file-outline", perms=["user"], show_count=True),
+                MenuItem(id="incoming-proposals-to-sign", title=_("To sign"), link="/?section=board&panel=incoming-proposals-to-sign", icon="mdi-file-outline", perms=["user"], show_count=True, hx_trigger=",proposal_sign_changed from:body"),
                 MenuItem(id="incoming-proposals-signed", title=_("Signed"), link="/?section=board&panel=incoming-proposals-signed", icon="mdi-file-sign", perms=["user"]),
             ]
         ),
         MenuGroup(
             title="My proposals",
             items=[
-                MenuItem(id="outcoming-proposals-drafts", title=_("Drafts"), link="/?section=board&panel=outcoming-proposals-drafts", icon="mdi-note-edit", perms=["user"], show_count=True, hx_trigger=",record_state_changed from:body"),
-                MenuItem(id="outcoming-proposals-circulating", title=_("Circulating"), link="/?section=board&panel=outcoming-proposals-circulating", icon="mdi-account-arrow-right-outline", perms=["user"], show_count=True),
-                MenuItem(id="outcoming-proposals-done", title=_("Aproved"), link="/?section=board&panel=outcoming-proposals-done", icon="mdi-check-circle-outline", perms=["user"], show_count=True, hx_trigger=",record_state_changed from:body"),
-                MenuItem(id="outcoming-proposals-snooze", title=_("Snooze"), link="/?section=board&panel=outcoming-proposals-snooze", icon="mdi-alarm-snooze", perms=["user"], show_count=True, hx_trigger=",record_state_changed from:body"),
-                MenuItem(id="outcoming-proposals-archived", title=_("Archived"), link="/?section=board&panel=outcoming-proposals-archived", icon="mdi-archive", perms=["user"]),
+                MenuItem(id="outcoming-proposals-drafts", title=_("Drafts"), link="/?section=board&panel=outcoming-proposals-drafts", icon="mdi-note-edit", perms=["user"], show_count=True, hx_trigger=",proposal_state_changed from:body"),
+                MenuItem(id="outcoming-proposals-circulating", title=_("Circulating"), link="/?section=board&panel=outcoming-proposals-circulating", icon="mdi-account-arrow-right-outline", perms=["user"], show_count=True, hx_trigger=",proposal_state_changed from:body"),
+                MenuItem(id="outcoming-proposals-done", title=_("Aproved"), link="/?section=board&panel=outcoming-proposals-done", icon="mdi-check-circle-outline", perms=["user"], show_count=True, hx_trigger=",proposal_state_changed from:body"),
+                MenuItem(id="outcoming-proposals-snooze", title=_("Snooze"), link="/?section=board&panel=outcoming-proposals-snooze", icon="mdi-alarm-snooze", perms=["user"], show_count=True, hx_trigger=",proposal_state_changed from:body"),
+                MenuItem(id="outcoming-proposals-archived", title=_("Archived"), link="/?section=board&panel=outcoming-proposals-archived", icon="mdi-archive", perms=["user"], hx_trigger=",proposal_state_changed from:body"),
             ]
         ),
     ]
@@ -175,7 +175,7 @@ def get_panel_register(actor_perms,panel,db):
             menu.append(MenuGroup(title=register.full_name, items=items))
 
     ctrs = get_actor_ctrs(actor_perms, db)
-    print('ctrs:',ctrs,actor_perms)
+
     for ctr in ctrs:
         items = []
         items.append(MenuItem(id=f"{ctr}-in",title=f"Inbox {ctr}",link=f"/?section=register&panel={ctr}-in_ctr",icon="mdi-inbox-arrow-down"))

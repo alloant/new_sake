@@ -10,7 +10,7 @@
           {% endif %}
         {% endfor %}
       >
-        <i class="iconify" data-icon="{{ action.icon }}"></i>
+        <i class="iconify {{ action.extra_class }}" data-icon="{{ action.icon }}"></i>
       </button>
     {% endfor %}
   </span>

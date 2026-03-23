@@ -24,7 +24,8 @@ dependencies = [
     "synology-drive-api @ git+https://github.com/alloant/synology-drive-api.git@1.0.14",
     "fastapi-babel (>=1.0.0,<2.0.0)",
     "broadcaster (>=0.3.1,<0.4.0)",
-    "websockets (>=16.0,<17.0)"
+    "websockets (>=16.0,<17.0)",
+    "imap-tools (>=1.11.1,<2.0.0)"
 ]
 
 [tool.poetry]

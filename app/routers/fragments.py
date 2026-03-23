@@ -66,7 +66,8 @@ async def records_hidden_row(request: Request, section: str, panel: str, db: Ses
     num = get_records(db = db, actor = current_actor, section = section, panel = panel, just_number = True)
     if num == 0:
         return ''
-    return f'<span class="tag is-secondary has-text-secondary is-rounded py-0 px-1" style="font-size: 0.6rem;">{num}</span>'
+
+    return f'<span class="tag is-dark is-rounded py-0 px-2" style="font-size: 0.6rem;">{num}</span>'
 
 
 class Loop(BaseModel):
@@ -92,6 +93,10 @@ async def action(request: Request, record_id: int, recordactor_id: str, action: 
         response.headers['HX-Trigger'] = 'read_state_changed'
     elif action in ['archive','restore']:
         response.headers['HX-Trigger'] = 'record_state_changed'
+    elif action in ['sign_record']:
+        response.headers['HX-Trigger'] = 'proposal_sign_changed'
+    elif action in ['start_circulation','stop_circulation']:
+        response.headers['HX-Trigger'] = 'proposal_state_changed'
 
     return response
 

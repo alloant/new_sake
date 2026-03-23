@@ -40,6 +40,8 @@ def ACTIONS():
     ACTIONS['delete_record'] = {"id": "delete_record", "title": _("Delete"), "attr": {"hx-get": "/action?action=delete", "hx-target": "#row-{record_id}", "hx-confirm": "Are you sure you want to delete the record?"}, "icon": "mdi-delete-circle-outline", "extra_class": "has-text-danger"}
 
 
+    ACTIONS['start_circulation'] = {"id": "start_circulation", "title": _("Start circulation"), "attr": {"hx-get": "/action?action=start_circulation", "hx-target": "#row-{record_id}"}, "icon": "mdi-file-send"}
+    ACTIONS['stop_circulation'] = {"id": "stop_circulation", "title": _("Stop circulation"), "attr": {"hx-get": "/action?action=stop_circulation", "hx-target": "#row-{record_id}"}, "icon": "mdi-file-cancel", "extra_class": "has-text-danger"}
     ACTIONS['sign_record'] = {"id": "sign_record", "title": _("Sign and pass"), "attr": {"hx-get": "/action?action=sign_record", "hx-target": "#row-{record_id}"}, "icon": "mdi-file-sign"}
 
     return ACTIONS
@@ -127,7 +129,18 @@ class RecordMethod(object):
             else:
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['mark_unread']))
         
-        if self.flow == 'inbound' or self.flow == 'internal_cr' and self.sender_id == current_actor.id:
+        if self.flow == 'internal_cr':
+            actions.append(ActionGroup(title="Proposals", items=[]))
+            if current_actor.id in self.targets_id:
+                actions[-1].items.append(Action(record_id=self.id,**all_actions['sign_record']))
+            elif self.sender_id == current_actor.id:
+                if self.stage == 'sketch':
+                    actions[-1].items.append(Action(record_id=self.id,**all_actions['start_circulation']))
+                elif self.stage == 'shared':
+                    actions[-1].items.append(Action(record_id=self.id,**all_actions['stop_circulation']))
+
+
+        if self.flow == 'inbound' or self.flow == 'internal_cr' and self.sender_id == current_actor.id and self.stage != 'shared':
             actions.append(ActionGroup(title="Inbox",items=[]))
             if self.state != 'snooze':
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['enable_snooze']))
@@ -150,9 +163,5 @@ class RecordMethod(object):
             actions[-1].items.append(Action(record_id=self.id,**all_actions['edit_targets']))
             actions[-1].items.append(Action(record_id=self.id,**all_actions['delete_record']))
 
-
-        if self.flow == 'internal_cr' and current_actor.id in self.targets_id:
-            actions.append(ActionGroup(title="Proposals", items=[]))
-            actions[-1].items.append(Action(record_id=self.id,**all_actions['sign_record']))
 
         return actions
