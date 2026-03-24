@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div hx-get="/records?section={{section}}&panel={{panel}}&search={{search}}" hx-trigger="load" hx-indicator="#progress-indicator">
-    </div>
+    {% if section == 'sccr' %}
+        <div hx-get="/sccr?section={{section}}&panel={{panel}}&search={{search}}" hx-trigger="load" hx-indicator="#progress-indicator">
+        </div>
+    {% else %}
+        <div hx-get="/records?section={{section}}&panel={{panel}}&search={{search}}" hx-trigger="load" hx-indicator="#progress-indicator">
+        </div>
+    {% endif%}
 {% endblock %}

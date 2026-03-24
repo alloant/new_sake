@@ -1,0 +1,24 @@
+<div id="table-search" class="is-flex is-justify-content-space-between is-align-items-center top-level pr-2">
+    <div class="is-flex-grow-1 mr-2">
+      <div class="field">
+        <div class="control has-icons-left">
+          <input class="input is-mediumish is-rounded" type="search" placeholder="Search" name="search" id="search" {{ 'value=search' if search else ''}}
+            hx-post="/records/table?section={{section}}&panel={{panel}}"
+            hx-trigger="input changed delay:500ms, search"
+            hx-indicator="#progress-indicator"
+            hx-target="#main-table"/>
+          <span class="icon is-small is-left"><i class="iconify" data-icon="mdi-magnify"></i></span>
+        </div>
+      </div> <!-- end field -->
+    </div> <!-- end level item -->
+  <div class="">
+    <div id="level_pagination" class="level-item">
+      {% include 'sccr/pagination.html' %}
+    </div>
+  </div> <!-- End level right -->
+</div>
+
+<div id="main-table" class="container-flush p-2">
+  {% include 'sccr/table.html' %}
+</div>
+

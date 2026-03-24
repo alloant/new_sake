@@ -11,10 +11,12 @@ from sqlmodel import Session
 from authx import TokenPayload
 
 from app.core.auth import auth, get_current_actor_alias_from_cookie, get_payload_from_cookie
+from app.core.imap import get_unseen_mails, get_all_mails, add_mails_db, get_last_mails
 from app.core.database import get_db
 
-from app.crud import get_records, get_register_by_alias, get_actor_by_id, get_record_actor, get_record_by_id, get_dept_by_alias
+from app.crud import get_records, get_register_by_alias, get_actor_by_id, get_record_actor, get_record_by_id, get_dept_by_alias, add_mail, get_last_uid
 from app.views.records import records_view, records_table_view, action_view
+from app.views.mails import mails_view, mails_table_view
 from app.views.sidebar import get_sidebar
 
 # Initialize the router and templates
@@ -151,5 +153,23 @@ async def records_global_search(request: Request, section: str = None, panel: st
 # The post is only for updload files and thinks like that
 @router.post("/records/{record_id}/upload_files", response_class=HTMLResponse)
 async def records_files(request: Request, record_id: int, files: List[UploadFile] = File(...), db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
-    print(record_id,'vamos','$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
     return ""
+
+@router.get("/sccr", response_class=HTMLResponse)
+async def records(request: Request, search: str = None, page: int = None, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
+    current_actor = get_actor_by_id(payload.uid, db)
+    limit_records = current_actor.get_setting('limit_records')
+    print(panel,'####')
+    if panel == "new_mail":
+        last_uid = get_last_uid()
+        new_mails = get_last_mails()
+        for mail in new_mails:
+            add_mail(uid=mail.uid, subject=mail.subject, date=mail.date, from_=mail.from_, text=mail.text, db=db)
+    elif panel == "inbox_cardumen":
+        template, rst = await mails_view(page, search, section, panel, db, current_actor)
+    else:
+        mails = []
+
+    return templates.TemplateResponse(template,{'request': request, 'section': section, 'panel': panel} | rst)
+
+

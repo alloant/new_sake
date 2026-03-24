@@ -54,7 +54,7 @@ async def home(request: Request, section: str | None = "board", panel: str | Non
             case 'register':
                 panel = 'cg-in'
             case 'sccr':
-                panel = 'mail'
+                panel = 'new_mail'
             
     sidebar = get_sidebar(payload,section,panel,db)
     current_actor = get_actor_by_id(payload.uid, db)

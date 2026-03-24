@@ -98,9 +98,10 @@ def FULLMENU(section):
 
     FULL_MENU['sccr'] = [
         MenuGroup(
-            title="Import",
+            title="Cardumen mail",
             items=[
-                MenuItem(id="mail", title=_("Import mail"), link="/?section=sccr&panel=mail", icon="mdi-mailbox", perms=["sccr"]),
+                MenuItem(id="new_mail", title=_("New mail"), link="/?section=sccr&panel=new_mail", icon="mdi-mailbox-up", perms=["sccr"]),
+                MenuItem(id="inbox_cardumen", title=_("Inbox"), link="/?section=sccr&panel=inbox_cardumen", icon="mdi-mailbox-open", perms=["sccr"]),
             ]
         ),
         MenuGroup(
