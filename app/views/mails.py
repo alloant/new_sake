@@ -24,17 +24,17 @@ def pagination(num_records: int, page: int, limit_records: int):
 def get_title(section,panel):
     return panel.replace('-',' ').title()
 
-async def mails_view(page: int = None, search: str = None, section: str = None, panel: str = None, db = None, current_actor = None):
+async def mails_view(page: int = None, search: str = None, section: str = None, panel: str = None, db = None, current_actor = None, downloaded = True):
     limit_records = current_actor.get_setting('limit_records')
-    records, num_records = get_mails(db=db,section=section,panel=panel,search=search,limit=limit_records,offset=page)
+    records, num_records = get_mails(db=db, section=section, panel=panel, search=search, limit=limit_records, offset=page, downloaded = downloaded)
     
     return f"sccr/main.html", {"mails": records, "pagination": pagination(num_records,page,limit_records), "title": get_title(section,panel), 'num_records': num_records, "current_actor": current_actor}
 
 
-async def mails_table_view(page: int = None, search = None, section: str = None, panel: str = None, db = None, current_actor = None):
+async def mails_table_view(page: int = None, search = None, section: str = None, panel: str = None, db = None, current_actor = None, downloaded = True):
     limit_records = current_actor.get_setting('limit_records')
     offset = (page - 1)*limit_records if page else None
-    records, num_records = get_mails(db=db,section=section,panel=panel,search=search,limit=limit_records,offset=offset)
+    records, num_records = get_mails(db=db, section=section, panel=panel, search=search, limit=limit_records, offset=offset, downloaded = downloaded)
 
     return f"sccr/table.html", {"mails": records, "pagination": pagination(num_records,page,limit_records), "title": get_title(section,panel), 'num_records': num_records, "current_actor": current_actor}
 

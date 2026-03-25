@@ -2,7 +2,9 @@
 </div>
 
 {% for mail in mails %}
-  <div id="row-{{mail.id}}" class="columns is-mobile is-multiline is-gapless m-0 p-1 is-align-items-center {{ loop.cycle('hover-row-alternate', 'hover-row') }}" style="border-bottom: 1px solid #333;">
+  <div id="row-{{mail.id}}" class="columns {{ '' if mail.downloaded else 'has-text-weight-bold' }} is-mobile is-multiline is-gapless m-0 p-1 is-align-items-center {{ loop.cycle('hover-row-alternate', 'hover-row') }}" style="border-bottom: 1px solid #333;">
+      <div class="column is-2"> {{ mail.from_ }}</div>
       <div class="column"> {{ mail.subject }}</div>
+      <div class="column is-2"> {{ mail.date }}</div>
   </div>
 {% endfor %}

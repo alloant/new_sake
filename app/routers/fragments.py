@@ -156,20 +156,30 @@ async def records_files(request: Request, record_id: int, files: List[UploadFile
     return ""
 
 @router.get("/sccr", response_class=HTMLResponse)
-async def records(request: Request, search: str = None, page: int = None, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
+async def mails(request: Request, search: str = None, page: int = None, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
     current_actor = get_actor_by_id(payload.uid, db)
     limit_records = current_actor.get_setting('limit_records')
-    print(panel,'####')
+
     if panel == "new_mail":
-        last_uid = get_last_uid()
-        new_mails = get_last_mails()
+        last_uid = get_last_uid(db)
+        new_mails = get_last_mails(last_uid)
         for mail in new_mails:
             add_mail(uid=mail.uid, subject=mail.subject, date=mail.date, from_=mail.from_, text=mail.text, db=db)
-    elif panel == "inbox_cardumen":
-        template, rst = await mails_view(page, search, section, panel, db, current_actor)
-    else:
-        mails = []
+
+    template, rst = await mails_view(page, search, section, panel, db, current_actor, downloaded = False if panel == 'new_mail' else True)
 
     return templates.TemplateResponse(template,{'request': request, 'section': section, 'panel': panel} | rst)
+
+@router.post("/sccr/table", response_class=HTMLResponse)
+async def mails_table(request: Request, page: int = None, last_search = None, section: str = None, panel: str = None, db: Session = Depends(get_db), current_actor_id: str = Depends(get_current_actor_alias_from_cookie)):
+    current_actor = get_actor_by_id(current_actor_id, db)
+    form = await request.form()
+    data = dict(form)
+    search = last_search if last_search else data.get("search")
+    
+    template, rst = await mails_table_view(page, search, section, panel, db, current_actor, downloaded = False if panel == 'new_mail' else True)
+    template = f"sccr/table_pagination.html"
+    
+    return templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel, 'search': search} | rst)
 
 

@@ -23,7 +23,7 @@ def get_all_mails(limit: int):
 
 def get_last_mails(last_uid: str):
     with MailBox(SERVER).login(USER, PASS) as mailbox:
-        return list(mailbox.fetch(mark_seen=True, headers_only=True, reverse=True))
+        return list(mailbox.fetch(criteria=AND(uid=f'{last_uid}:*'),mark_seen=True, headers_only=True, reverse=True))
 
     return []
 

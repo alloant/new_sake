@@ -3,7 +3,7 @@
       <div class="field">
         <div class="control has-icons-left">
           <input class="input is-mediumish is-rounded" type="search" placeholder="Search" name="search" id="search" {{ 'value=search' if search else ''}}
-            hx-post="/records/table?section={{section}}&panel={{panel}}"
+            hx-post="/sccr/table?section={{section}}&panel={{panel}}"
             hx-trigger="input changed delay:500ms, search"
             hx-indicator="#progress-indicator"
             hx-target="#main-table"/>
