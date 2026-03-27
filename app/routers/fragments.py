@@ -1,20 +1,31 @@
 import json
+import io
+import base64
+import asyncio
+import time
+
 from pydantic import BaseModel
 
 from fastapi import APIRouter, Request, Depends
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi import UploadFile, File
 #from fastapi.templating import Jinja2Templates
 
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from authx import TokenPayload
 
 from app.core.auth import auth, get_current_actor_alias_from_cookie, get_payload_from_cookie
-from app.core.imap import get_unseen_mails, get_all_mails, add_mails_db, get_last_mails
+from app.core.imap import get_unseen_mails, get_all_mails, add_mails_db, get_last_mails, add_last_mails_db
 from app.core.database import get_db
 
-from app.crud import get_records, get_register_by_alias, get_actor_by_id, get_record_actor, get_record_by_id, get_dept_by_alias, add_mail, get_last_uid
+from app.models.email import Attachment
+
+from app.services.synology import upload_path
+from app.services.synology_new import upload_bytes, convert_to_synology_office, get_info, get_link
+
+from app.crud import get_records, get_mails, get_register_by_alias, get_actor_by_id, get_record_actor, get_record_by_id, get_dept_by_alias, add_mail, get_last_uid, get_mail_by_uid
+
 from app.views.records import records_view, records_table_view, action_view
 from app.views.mails import mails_view, mails_table_view
 from app.views.sidebar import get_sidebar
@@ -161,11 +172,8 @@ async def mails(request: Request, search: str = None, page: int = None, section:
     limit_records = current_actor.get_setting('limit_records')
 
     if panel == "new_mail":
-        last_uid = get_last_uid(db)
-        new_mails = get_last_mails(last_uid)
-        for mail in new_mails:
-            add_mail(uid=mail.uid, subject=mail.subject, date=mail.date, from_=mail.from_, text=mail.text, db=db)
-
+        add_last_mails_db(db)
+    
     template, rst = await mails_view(page, search, section, panel, db, current_actor, downloaded = False if panel == 'new_mail' else True)
 
     return templates.TemplateResponse(template,{'request': request, 'section': section, 'panel': panel} | rst)
@@ -182,4 +190,55 @@ async def mails_table(request: Request, page: int = None, last_search = None, se
     
     return templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel, 'search': search} | rst)
 
+@router.get("/sccr/number", response_class=HTMLResponse)
+async def sccr_hidden_row(request: Request, section: str, panel: str, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
+    num = get_mails(db = db, section = section, panel = panel, just_number = True, downloaded = False if panel == 'new_mail' else True)
+    if num == 0:
+        return ''
 
+    return f'<span class="tag is-dark is-rounded py-0 px-2" style="font-size: 0.6rem;">{num}</span>'
+
+@router.get("/sccr/action", response_class=HTMLResponse)
+async def sccr_action(request: Request, mail_uid: int, action: str, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
+    mail = get_mail_by_uid(mail_uid, db)
+    
+    if action == 'add_to_sake':
+        for att in mail.attachments:
+            try:
+                rst = upload_bytes(att.file_data,att.name,"/docker")
+                link = None
+                while not link:
+                    time.sleep(0.5)
+                    link = await get_link(f"/docker/{att.name}")
+                success = await convert_to_synology_office(f"link:{link}")
+            except Exception as e:
+                print(f"Workflow failed: {e}")
+
+    elif action == 'mark_as_downloaded':
+        mail.downloaded = True
+        for att in mail.attachments:
+            att.file_data = b""
+            db.add(att)
+        db.add(mail); db.commit(); db.refresh(mail)
+
+    return templates.TemplateResponse('sccr/table_row.html', {'request': request, 'mail': mail})
+
+@router.get("/sccr/download/{attachment_id}")
+async def download_attachment(attachment_id: int, db: Session = Depends(get_db)):
+    # 1. Get the record from the database
+    statement = select(Attachment).where(Attachment.id == attachment_id)
+    attachment = db.exec(statement).one()
+    
+    if not attachment:
+        return {"error": "File not found"}
+
+    # 2. Use BytesIO to turn bytes into a "file-like" object
+    file_stream = io.BytesIO(attachment.file_data)
+    
+    # 3. Return a StreamingResponse
+    # 'Content-Disposition' forces the browser to download the file instead of viewing it
+    headers = {
+        'Content-Disposition': f'attachment; filename="{attachment.name}"'
+    }
+    
+    return StreamingResponse(file_stream, media_type="application/octet-stream", headers=headers)

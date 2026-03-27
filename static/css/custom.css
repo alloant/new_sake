@@ -393,4 +393,36 @@ nav.sidebar-section .item a.is-active {
   line-height: 1;
 }
 
+/* 1. The Main Wrapper (Hidden by default by HTMX) */
+.htmx-indicator {
+    display: none;
+}
 
+/* 2. When HTMX is active, show the overlay */
+.htmx-indicator.htmx-request, 
+.htmx-request .htmx-indicator {
+    display: block;
+}
+
+/* 3. The Dark Untouchable Backdrop */
+.overlay-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6); /* Darken screen */
+    z-index: 9998; /* Just below the progress bar */
+    cursor: not-allowed;
+}
+
+/* 4. The Progress Bar at the bottom */
+.progress-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    z-index: 9999; /* Topmost layer */
+    background: #1a1a1a; /* Optional: solid background for the bar area */
+}

@@ -1,0 +1,18 @@
+<div id="uid-{{mail.uid}}" class="columns {{ '' if mail.downloaded else 'has-text-weight-bold' }} is-mobile is-multiline is-gapless m-0 p-1 is-align-items-center hover-row" style="border-bottom: 1px solid #333;">
+    <div class="column is-2"> {{ mail.from_ }}</div>
+    <div class="column">
+      {{ mail.subject }} 
+      {% for att in mail.attachments %}
+        <a class="px-1 is-small has-tooltip-arrow"
+            href="/sccr/download/{{att.id}}">
+          {{ att.html_icon|safe }}
+        </a>
+      {% endfor %}
+    </div>
+    <div class="column is-2 has-text-right position-relative">
+      {{ mail.date }}
+      <div class="action-buttons is-hidden-mobile is-rounded">
+        {% include 'sccr/table_row_actions.html' %}
+      </div>
+    </div>
+</div>

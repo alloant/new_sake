@@ -4,6 +4,29 @@ from datetime import datetime
 
 from app.core.config import settings
 
+def get_class_icon(name):
+    match Path(name).suffix:
+        case '.osheet':
+            return 'primary','file-excel'
+        case '.odoc':
+            return 'link','file-word'
+        case '.oslides':
+            return 'warning','file-powerpoint'
+        case '.pdf':
+            return 'danger','file-pdf'
+        case '': # Folder
+            return '',''
+        case '.doc' | '.docx' | '.ppt' | '.pptx' | '.xls' | '.xlsx':
+            return 'text','file-document'
+        case '.mp4' | '.mkv':
+            return 'info','file-video'
+        case '.mp3' | '.wav':
+            return 'info', 'file-music'
+        case '.jpg' | '.gif' | '.png':
+            return 'warning','file-image'
+        case _:
+            return 'secondary','file-document-online'
+
 class File(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     name: str = Field(max_length=200,default=None,description="Name file. Needed to show it in Sake")
@@ -21,27 +44,7 @@ class File(SQLModel, table=True):
 
     @property
     def icon(self):
-        match Path(self.name).suffix:
-            case '.osheet':
-                return 'primary','file-excel'
-            case '.odoc':
-                return 'link','file-word'
-            case '.oslides':
-                return 'warning','file-powerpoint'
-            case '.pdf':
-                return 'danger','file-pdf'
-            case '': # Folder
-                return '',''
-            case '.doc' | '.docx' | '.ppt' | '.pptx' | '.xls' | '.xlsx':
-                return 'text','file-document'
-            case '.mp4' | '.mkv':
-                return 'info','file-video'
-            case '.mp3' | '.wav':
-                return 'info', 'file-music'
-            case '.jpg' | '.gif' | '.png':
-                return 'warning','file-image'
-            case _:
-                return 'secondary','file-document-online'
+        return get_class_icon(self.name)
 
     @property
     def short_name(self):

@@ -64,7 +64,7 @@ def FULLMENU(section):
         MenuGroup(
             title="My inbox",
             items=[
-                MenuItem(id="inbox", title=_("Inbox"), link="/?section=board&panel=inbox", icon="mdi-inbox-arrow-down", perms=["user"], show_count=True,hx_trigger=",record_state_changed from:body"),
+                MenuItem(id="inbox", title=_("Inbox"), link="/?section=board&panel=inbox", icon="mdi-inbox-arrow-down", perms=["user"], show_count=True, hx_trigger=", record_state_changed from:body"),
                 MenuItem(id="inbox-snooze", title=_("Snooze"), link="/?section=board&panel=inbox-snooze", icon="mdi-alarm-snooze", perms=["user"], show_count=True),
                 MenuItem(id="inbox-archived", title=_("Archived"), link="/?section=board&panel=inbox-archived", icon="mdi-archive", perms=["user"]),
             ],
@@ -100,7 +100,7 @@ def FULLMENU(section):
         MenuGroup(
             title="Cardumen mail",
             items=[
-                MenuItem(id="new_mail", title=_("New mail"), link="/?section=sccr&panel=new_mail", icon="mdi-mailbox-up", perms=["sccr"]),
+                MenuItem(id="new_mail", title=_("New mail"), link="/?section=sccr&panel=new_mail", icon="mdi-mailbox-up", perms=["sccr"], show_count=True),
                 MenuItem(id="inbox_cardumen", title=_("Inbox"), link="/?section=sccr&panel=inbox_cardumen", icon="mdi-mailbox-open", perms=["sccr"]),
             ]
         ),

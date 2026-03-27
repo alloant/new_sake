@@ -1,0 +1,17 @@
+
+<button class="px-1 is-small has-tooltip-arrow"
+        data-tooltip="Mark as downloaded"
+        hx-swap="outerHTML"
+        hx-target="#uid-{{mail.uid}}"
+        hx-get="/sccr/action?action=mark_as_downloaded&mail_uid={{mail.uid}}">
+  <i class="iconify" data-icon="mdi-progress-download"></i>
+</button>
+
+<button class="px-1 is-small has-tooltip-arrow"
+        data-tooltip="Add to Sake"
+        hx-swap="outerHTML"
+        hx-target="#uid-{{mail.uid}}"
+        hx-get="/sccr/action?action=add_to_sake&mail_uid={{mail.uid}}">
+  <i class="iconify" data-icon="mdi-database-arrow-down-outline"></i>
+</button>
+

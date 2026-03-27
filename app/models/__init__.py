@@ -4,4 +4,4 @@ from .record_actor import RecordActor
 from .register import Register
 from .dept import Dept
 from .file import File
-from .email import Mail
+from .email import Mail, Attachment
