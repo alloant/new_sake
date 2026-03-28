@@ -167,12 +167,15 @@ async def mails(request: Request, search: str = None, page: int = None, section:
     current_actor = get_actor_by_id(payload.uid, db)
     limit_records = current_actor.get_setting('limit_records')
 
-    #if panel == "new_mail":
-    #    add_last_mails_db(db)
-    
     template, rst = await mails_view(page, search, section, panel, db, current_actor, downloaded = False if panel == 'new_mail' else True)
+    
+    if panel == 'new_mail':
+        response.headers['HX-Trigger'] = 'cardumen_state_changed'
+    
+    response = templates.TemplateResponse(template,{'request': request, 'section': section, 'panel': panel} | rst)
 
-    return templates.TemplateResponse(template,{'request': request, 'section': section, 'panel': panel} | rst)
+    return response
+
 
 @router.post("/sccr/table", response_class=HTMLResponse)
 async def mails_table(request: Request, page: int = None, last_search = None, section: str = None, panel: str = None, db: Session = Depends(get_db), current_actor_id: str = Depends(get_current_actor_alias_from_cookie)):

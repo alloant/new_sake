@@ -7,7 +7,7 @@
     </span>
     
     {% for tag in record.tags %}
-      <span class="tag is-small mx-0 is-hidden-mobile" style="font-size: 0.65rem;">{{ tag.title }}</span>
+      <span class="tag mx-0 is-hidden-mobile" style="font-size: 0.65rem;">{{ tag.title }}</span>
     {% endfor %}
   </div>
 </div>
@@ -41,7 +41,7 @@
       {% with current_target = record.current_target_sequence %}
         {% for target in record.targets %}
           {% set target_class = 'target' if record.stage == 'sketch' else 'target-success' if target.handled == 'approved' else ('target-current' if target.target == current_target else 'target') %}
-          <span class="tag {{ target_class }} ml-1 is-hidden-mobile">{{ target.actor.alias }}</span>
+          <span class="tag {{ target_class }} mr-1 is-hidden-mobile px-1 py-0">{{ target.actor.alias }}</span>
         {% endfor %}
       {% endwith %}
     {% endif %}
