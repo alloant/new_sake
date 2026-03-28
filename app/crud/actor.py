@@ -27,3 +27,9 @@ def get_ctrs(db: Session, filter: str = "") -> list(Actor):
     if filter:
         return db.exec(select(Actor).where(and_(or_(Actor.alias.contains(filter),Actor.full_name.contains(filter)),Actor.kind=='ctr',Actor.is_active==1))).all()
     return db.exec(select(Actor).where(and_(Actor.kind=='ctr',Actor.is_active==1))).all()
+
+def get_all_deps(db: Session):
+    return select(Actor).where(and_(Actor.active,Actor.kind=='dep')).all()
+
+def get_all_alias_deps(db: Session):
+    return db.exec(select(Actor.alias).where(and_(Actor.is_active,Actor.kind=='dep'))).all()

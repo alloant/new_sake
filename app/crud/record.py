@@ -235,7 +235,7 @@ def get_records(db: Session, actor = None, section = None, panel = None, search:
     stmt = stmt.options(
         joinedload(Record.sender),
         joinedload(Record.register),
-        joinedload(Record.dept),
+        joinedload(Record.unit),
         selectinload(Record.tags),
         selectinload(Record.actors),
         selectinload(Record.files),

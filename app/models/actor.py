@@ -8,6 +8,7 @@ class Kind(str, Enum): # Roles of users
     USER = "user"
     CONTACT = "contact"
     CTR = "ctr"
+    DEP = "dep"
 
 class ActorSettings(object):
     def get_setting(self,setting):
@@ -37,6 +38,7 @@ class Actor(SQLModel, ActorSettings, table=True):
     email: str = Field(max_length=200, default=None)
     kind: Kind = Field()
     is_active: bool = True
+    color: str | None = Field(max_length=10, default=None)
     scopes: list[str] = Field(sa_column=Column(JSON, nullable=False), default_factory=list)
     settings: dict[str, object] = Field(sa_column=Column(JSON, nullable=False), default_factory=dict)
     created_at: datetime = Field(default_factory=datetime.utcnow)

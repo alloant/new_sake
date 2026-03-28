@@ -14,16 +14,16 @@
 
 <div class="column is-full-mobile has-order-3-mobile position-relative">
   <div class="is-flex is-align-items-center">
-    {% if record.dept %}
+    {% if record.unit %}
       {% if record.area != 'aes' %}
         <div class="tags-stack mr-2">
-          <span class="tag is-top has-text-weight-bold has-text-black" style="background-color: {{ record.dept.color }}">{{ record.dept.alias }}</span>
+          <span class="tag is-top has-text-weight-bold has-text-black" style="background-color: {{ record.unit.color }}">{{ record.unit.alias }}</span>
           <span class="tag is-bottom has-text-weight-bold has-text-black" style="background-color: {{ record.area.value }};">{{ record.area.name.capitalize() }}</span>
         </div>
       {% else %}
         <span class="tag has-text-weight-bold has-text-black mr-2"
-          style="width: 2rem; min-width: 2rem; max-width: 2rem; background-color: {{record.dept.color}};">
-          {{ record.dept.alias }}
+          style="width: 2rem; min-width: 2rem; max-width: 2rem; background-color: {{record.unit.color}};">
+          {{ record.unit.alias }}
         </span>
 
       {% endif %}

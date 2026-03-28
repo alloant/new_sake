@@ -26,7 +26,7 @@ def get_class_icon(name):
 
 class Mail(SQLModel, table=True):
     id: int | None = Field(default = None, primary_key = True)
-    uid: str = Field(max_length = 10)
+    uid: str = Field(unique=True, max_length = 10)
     from_: str = Field(max_length = 100)
     subject: str = Field(max_length = 500, default = None)
     text: str = Field(max_length = 500, default = None)

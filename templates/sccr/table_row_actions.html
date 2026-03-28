@@ -1,4 +1,4 @@
-
+{% if not mail.downloaded %}
 <button class="px-1 is-small has-tooltip-arrow"
         data-tooltip="Mark as downloaded"
         hx-swap="outerHTML"
@@ -14,4 +14,5 @@
         hx-get="/sccr/action?action=add_to_sake&mail_uid={{mail.uid}}">
   <i class="iconify" data-icon="mdi-database-arrow-down-outline"></i>
 </button>
+{% endif %}
 

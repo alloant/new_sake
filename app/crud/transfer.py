@@ -2,13 +2,12 @@ from sqlmodel import Session
 
 from app.core.database import engine, get_old_data
 
-from app.models import Actor, Record, RecordActor, Register, Dept, File, RecordRecord
+from app.models import Actor, Record, RecordActor, Register, File, RecordRecord
 from app.models.record.record import Tag, RecordTag
 
 from app.crud.actor import get_actor_by_alias, get_actors
 from app.crud.register import get_register_by_alias
 from app.crud.record import create_record, get_all_records, get_record_by_params
-from app.crud.dept import get_dept_by_alias, get_dept_by_actor_id
 
 
 def transfer_registers_old():
@@ -45,38 +44,12 @@ def transfer_registers():
 
     db.commit()
 
-def transfer_depts():
-    print('Transfer depts')
-    db = Session(engine)
-
-    departments = {
-        'vcr':{'full_name': 'Regional vicar', 'color': '#E57373'},
-        'vc':{'full_name': 'Vicars', 'color': '#FF8A65'},
-        'df':{'full_name': 'Defensor', 'color': '#FFB74D'},
-        'dg':{'full_name': 'Delegate', 'color': '#81C784'},
-        'sccr':{'full_name': 'Secretary', 'color': '#4DB6AC'},
-        'sm':{'full_name': 'St Michael', 'color': '#64B5F6'},
-        'sr':{'full_name': 'St Raphael', 'color': '#7986CB'},
-        'sg':{'full_name': 'St Gabriel', 'color': '#9575CD'},
-        'ar':{'full_name': 'Administrator', 'color': '#F06292'},
-        'dest':{'full_name': 'Prefecto', 'color': '#02D581'},
-        'pffer':{'full_name': 'Prefecto', 'color': '#AED581'},
-        'aop':{'full_name': 'Apostolate public opinion', 'color': '#90A4AE'}
-    }
-    
-    for dept in departments:
-        print(dept)
-        db_dept = Dept(alias=dept,full_name=departments[dept]['full_name'],color=departments[dept]['color'])
-        db.add(db_dept)
-
-    db.commit()
-
 def transfer_find_depts():
     db = Session(engine)
     records = get_all_records(db)
 
     for record in records:
-        if record.dept_id:
+        if record.unit_id:
             continue
 
         old_record_id = record.params['old_id']
@@ -85,23 +58,23 @@ def transfer_find_depts():
         dept_found = False
         for tag in tags:
             if tag['text'] == 'desr':
-                dept = get_dept_by_alias('pffer',db)
+                dept = get_actor_by_alias('pffer',db)
             elif tag['text'] == 'stgr':
-                dept = get_dept_by_alias('dest',db)
+                dept = get_actor_by_alias('dest',db)
             else:
-                dept = get_dept_by_alias(tag['text'],db)
+                dept = get_actor_by_alias(tag['text'],db)
             if dept:
-                record.dept_id = dept.id
+                record.unit_id = dept.id
                 db.add(record)
                 dept_found = True
                 break
-        
+        """
         if not dept_found:
             print('/',record.sender,'/')
             dept = get_dept_by_actor_id(record.sender_id,db)
             print('++',dept,'++')
             if dept:
-                record.dept_id = dept.id
+                record.unit_id = dept.id
                 db.add(record)
                 print('#######',record)
                 dept_found = True
@@ -110,10 +83,11 @@ def transfer_find_depts():
                 for target in record.targets:
                     dept = get_dept_by_actor_id(target.actor.id,db)
                     if dept:
-                        record.dept_id = dept.id
+                        record.unit_id = dept.id
                         db.add(record)
                         dept_found = True
                         break
+        """
     db.commit()
 
 def transfer_files():
@@ -129,19 +103,6 @@ def transfer_files():
     db.commit()
 
 
-def transfer_actors():
-    db = Session(engine)
-    rows = get_old_data('SELECT * from user')
-    actors = []
-    for row in rows:
-        if not row['alias'] in actors:
-            kind = 'contact' if row['category'] == 'me' else row['category']
-            kind = 'user' if row['category'] in ['dr','of','cl'] else kind
-            print(row['alias'],kind)
-            db_actor = Actor(alias=row['alias'],kind=kind)
-            actors.append(row['alias'])
-            db.add(db_actor)
-    db.commit()
 
 def transfer_users():
     db = Session(engine)
@@ -164,6 +125,27 @@ def transfer_users():
             db_actor = Actor(alias=row['alias'],kind=kind,email=row['email'],full_name=row['name'],created_at=row['date'], scopes=[row['category']])
             db.add(db_actor)
             alias.append(row['alias'])
+
+    #Now deps
+    departments = {
+        'vcr':{'full_name': 'Regional vicar', 'color': '#E57373'},
+        'vc':{'full_name': 'Vicars', 'color': '#FF8A65'},
+        'df':{'full_name': 'Defensor', 'color': '#FFB74D'},
+        'dg':{'full_name': 'Delegate', 'color': '#81C784'},
+        'sccr':{'full_name': 'Secretary', 'color': '#4DB6AC'},
+        'sm':{'full_name': 'St Michael', 'color': '#64B5F6'},
+        'sr':{'full_name': 'St Raphael', 'color': '#7986CB'},
+        'sg':{'full_name': 'St Gabriel', 'color': '#9575CD'},
+        'ar':{'full_name': 'Administrator', 'color': '#F06292'},
+        'dest':{'full_name': 'Prefecto', 'color': '#02D581'},
+        'pffer':{'full_name': 'Prefecto', 'color': '#AED581'},
+        'aop':{'full_name': 'Apostolate public opinion', 'color': '#90A4AE'}
+    }
+
+    for dep, values in departments.items():
+        db_actor = Actor(alias=dep, kind='dep', email='', full_name=values['full_name'], scopes=[], color=values['color'])
+        db.add(db_actor)
+
     db.commit()
 
 def transfer_contacts():
@@ -317,7 +299,7 @@ def transfer_record_tag():
             if tag['tag_text'] in ['Ind','J','Aso','Asmo']: # Is Area
                 record.area = tag['tag_text'].lower()
                 db.add(record)
-            elif record.dept and record.dept.alias != tag['tag_text']:
+            elif record.unit and record.unit.alias != tag['tag_text']:
                 recordtag = RecordTag(record_id=record.id,tag_id=tag['tag_id'])
                 db.add(recordtag)
 

@@ -17,7 +17,7 @@
         <link rel="stylesheet" href="{{ url_for('static', path='css/bulma-tooltip.min.css') }}" />
         <link rel="stylesheet" href="{{ url_for('static', path='css/custom.css') }}" />
     </head>
-    <div id="progress-indicator" class="htmx-indicator">
+    <div id="progress-indicator-screen" class="htmx-indicator">
         <div class="overlay-backdrop"></div>
             <div class="progress-container">
             <progress class="progress is-primary is-small" max="100"></progress>
@@ -54,6 +54,7 @@
                     {% block content %}{% endblock %}
                 </div>
             </main>
+            <progress id="progress-indicator" class="progress htmx-indicator is-small" max="90" style="position: absolute; bottom:0%"></progress>
         </div>
         {% include 'sidepanel.html' %}
         <footer>

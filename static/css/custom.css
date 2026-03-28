@@ -162,6 +162,24 @@ html, body {
   transition: background-color 0.2s ease;
 }
 
+.hide-under-buttons {
+  opacity: 1;
+}
+
+.hover-row-alternate:hover .hide-under-buttons,
+.hover-row:hover .hide-under-buttons {
+  opacity: 0;
+}
+
+
+.hover-row-alternate:hover .action-buttons,
+.hover-row:hover .action-buttons {
+  opacity: 1;
+  pointer-events: auto;
+  background-color: var(--row-hover);
+}
+
+
 /* 2. Show them when the row (tr) is hovered */
 .hover-row-alternate:hover .action-buttons,
 .hover-row:hover .action-buttons {
@@ -172,6 +190,7 @@ html, body {
 
 
 /* custom size between small and medium */
+.button.is-mediumish,
 .input.is-mediumish {
   font-size: 0.85rem;      /* adjust */
   border-radius: 4px;      /* match Bulma if desired */

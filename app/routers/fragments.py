@@ -2,7 +2,6 @@ import json
 import io
 import base64
 import asyncio
-import time
 
 from pydantic import BaseModel
 
@@ -19,12 +18,11 @@ from app.core.auth import auth, get_current_actor_alias_from_cookie, get_payload
 from app.core.imap import get_unseen_mails, get_all_mails, add_mails_db, get_last_mails, add_last_mails_db
 from app.core.database import get_db
 
-from app.models.email import Attachment
+from app.models.mail import Attachment
 
-from app.services.synology import upload_path
-from app.services.synology_new import upload_bytes, convert_to_synology_office, get_info, get_link
+from app.services.synology import upload_bytes_and_convert
 
-from app.crud import get_records, get_mails, get_register_by_alias, get_actor_by_id, get_record_actor, get_record_by_id, get_dept_by_alias, add_mail, get_last_uid, get_mail_by_uid
+from app.crud import get_records, get_mails, get_register_by_alias, get_actor_by_id, get_record_actor, get_record_by_id, add_mail, get_last_uid, get_mail_by_uid, get_actor_by_alias
 
 from app.views.records import records_view, records_table_view, action_view
 from app.views.mails import mails_view, mails_table_view
@@ -33,8 +31,6 @@ from app.views.sidebar import get_sidebar
 # Initialize the router and templates
 router = APIRouter()
 
-#templates = Jinja2Templates(directory="templates")
-#templates = AppTemplates(directory="templates")
 from .main import templates
 
 ## SIDEBAR
@@ -127,9 +123,9 @@ async def modify_record(request: Request, record_id: int, loop_index: int, db: S
     record.sequence = data['sequence']
     record.year = data['year']
 
-    dept = get_dept_by_alias(data['department'], db = db)
-    if dept:
-        record.dept_id = dept.id
+    unit = get_actor_by_alias(data['department'], db = db)
+    if unit:
+        record.unit_id = unit.id
     
     register = get_register_by_alias(data['register'], db = db)
     if register:
@@ -171,8 +167,8 @@ async def mails(request: Request, search: str = None, page: int = None, section:
     current_actor = get_actor_by_id(payload.uid, db)
     limit_records = current_actor.get_setting('limit_records')
 
-    if panel == "new_mail":
-        add_last_mails_db(db)
+    #if panel == "new_mail":
+    #    add_last_mails_db(db)
     
     template, rst = await mails_view(page, search, section, panel, db, current_actor, downloaded = False if panel == 'new_mail' else True)
 
@@ -184,6 +180,10 @@ async def mails_table(request: Request, page: int = None, last_search = None, se
     form = await request.form()
     data = dict(form)
     search = last_search if last_search else data.get("search")
+
+    if panel.startswith('update_'):
+        add_last_mails_db(db)
+        panel = panel[7:]
     
     template, rst = await mails_table_view(page, search, section, panel, db, current_actor, downloaded = False if panel == 'new_mail' else True)
     template = f"sccr/table_pagination.html"
@@ -203,17 +203,17 @@ async def sccr_action(request: Request, mail_uid: int, action: str, db: Session 
     mail = get_mail_by_uid(mail_uid, db)
     
     if action == 'add_to_sake':
+        cont = 0
         for att in mail.attachments:
-            try:
-                rst = upload_bytes(att.file_data,att.name,"/docker")
-                link = None
-                while not link:
-                    time.sleep(0.5)
-                    link = await get_link(f"/docker/{att.name}")
-                success = await convert_to_synology_office(f"link:{link}")
-            except Exception as e:
-                print(f"Workflow failed: {e}")
-
+            rst = await upload_bytes_and_convert(att.file_data, att.name, '/docker')
+            if rst:
+                cont += 1
+                att.file_data = b""
+                db.add(att)
+        if cont == len(mail.attachments):
+            mail.downloaded = True
+            db.add(mail)
+        db.commit()
     elif action == 'mark_as_downloaded':
         mail.downloaded = True
         for att in mail.attachments:
@@ -221,7 +221,13 @@ async def sccr_action(request: Request, mail_uid: int, action: str, db: Session 
             db.add(att)
         db.add(mail); db.commit(); db.refresh(mail)
 
-    return templates.TemplateResponse('sccr/table_row.html', {'request': request, 'mail': mail})
+    response = templates.TemplateResponse('sccr/table_row.html', {'request': request, 'mail': mail})
+
+    if action in ['mark_as_downloaded','add_to_sake']:
+        response.headers['HX-Trigger'] = 'cardumen_state_changed'
+
+    return response
+
 
 @router.get("/sccr/download/{attachment_id}")
 async def download_attachment(attachment_id: int, db: Session = Depends(get_db)):

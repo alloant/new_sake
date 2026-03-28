@@ -3,10 +3,10 @@ from sqlmodel import Session, select, func
 from sqlalchemy import and_, or_, desc, cast, Integer
 
 from app.core.database import engine
-from app.models.email import Mail, Attachment
+from app.models.mail import Mail, Attachment
 
 def get_mail_by_uid(uid: str, db: Session) -> Mail | None:
-    return db.exec(select(Mail).where(Mail.uid==uid)).one()
+    return db.exec(select(Mail).where(Mail.uid==uid)).one_or_none()
 
 def get_last_uid(db: Session) -> str:
     return db.exec(select(Mail.uid).order_by(cast(Mail.uid, Integer).desc())).first()
@@ -39,8 +39,8 @@ def get_mails(db: Session, section = None, panel = None, search: str = None, lim
     stmt = stmt.where(*fn).limit(limit).offset(offset).order_by(desc(Mail.date))
     num_stmt = num_stmt.where(*fn) 
     if just_number:
-        return db.exec(num_stmt).one()
+        return db.exec(num_stmt).one_or_none()
     
-    return db.exec(stmt).all(), db.exec(num_stmt).one()
+    return db.exec(stmt).all(), db.exec(num_stmt).one_or_none()
 
 

@@ -20,7 +20,7 @@ from app.routers import router
 
 from app.models import Register, Record, Actor, RecordActor, File, RecordRecord
 
-from app.crud.transfer import transfer_notes, transfer_users, transfer_actors, transfer_registers, transfer_note_user, transfer_tags, transfer_record_tag, transfer_depts, transfer_find_depts, transfer_files, transfer_references
+from app.crud.transfer import transfer_notes, transfer_users, transfer_registers, transfer_note_user, transfer_tags, transfer_record_tag, transfer_find_depts, transfer_files, transfer_references
 
 
 from app.routers.main import templates
@@ -72,10 +72,7 @@ async def lifespan(app: FastAPI):
 
     # Init database
     init_db()
-    #transfer_record_tag()
     #transfer_all()
-    # Function to transfer data
-
 
     yield # --- The app is now running and "open" for business ---
     
@@ -126,7 +123,6 @@ def transfer_all():
     transfer_note_user()
     transfer_tags()
     transfer_record_tag()
-    transfer_depts()
     transfer_find_depts()
     transfer_files()
     transfer_references()

@@ -1,201 +1,130 @@
 import os
-import time
-import logging
-from tempfile import NamedTemporaryFile
-from pathlib import Path
+import json
+import tempfile
+import httpx
+import asyncio
 
-from synology_drive_api.drive import SynologyDrive
-from synochat.webhooks import IncomingWebhook
+from pathlib import PurePosixPath
+from urllib.parse import urlparse
 
+from synology_api import filestation
 
-INV_EXT = {'osheet':'xlsx','odoc':'docx'}
-EXT = {'xls':'osheet','xlsx':'osheet','docx':'odoc','rtf':'odoc'}
+USER = os.getenv("SYNOLOGY_SERVICE_USER")
+PASS = os.getenv("SYNOLOGY_SERVICE_PASSWD")
+IP = os.getenv("SYNOLOGY_SERVER")
+PORT = os.getenv("SYNOLOGY_PORT")
 
-def wrap_error(func, *args):
-    USER = os.getenv("SYNOLOGY_SERVICE_USER")
-    PASSWD = os.getenv("SYNOLOGY_SERVICE_PASSWD")
+fs = filestation.FileStation(IP, PORT, USER, PASS, secure=True, cert_verify=False, dsm_version=7, debug=True, otp_code=None)
+
+async def get_info(file_path: str):
+    return fs.get_file_info(file_path)
+
+# Custom exception for clarity (Optional but recommended)
+class UploadError(Exception):
+    pass
+
+async def upload_bytes(byte_content, target_filename, dest_folder):
     try:
-        with SynologyDrive(USER,PASSWD,"nas.prome.sg",dsm_version='7') as synd:
-            return func(synd,*args)
-        return None
-    except Exception as err:
-        if type(err).__name__ == 'SynologyException':
-            message = f"Synology error: {err.message} in {func.__name__} with parameters {args}"
-        else:
-            message = f"{err} in {func.__name__} with parameters {args}"
-        logging.warning(message)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            local_path = os.path.join(tmp_dir, target_filename)
+
+            with open(local_path, 'wb') as f:
+                f.write(byte_content)
+
+            # Await the upload if it's an async function
+            return fs.upload_file(dest_path=dest_folder, file_path=local_path, progress_bar=True)
+    except OSError as e:
+        # We catch it here to add context, then raise it again
+        print(f"File system error during upload setup: {e}")
+        raise UploadError(f"Failed to prepare file for upload: {e}")
+    except Exception as e:
+        print(f"Unexpected error in upload_bytes: {e}")
+        raise
 
 
-# Wrapped functions
+#############################################################
+### Mix methods #################################
+#########################################################
 
-def get_teams():
-    return wrap_error(_get_teams)
-
-def files_path(path:str):
-    return wrap_error(_files_path,path)
-
-def rename_path(path:str,new_name:str):
-    return wrap_error(_rename_path,new_name,path)
-
-def get_info(path:str,attr:str=None):
-    return wrap_error(_get_info,path,attr)
-
-def move_path(path:str,dest:str):
-    return wrap_error(_move_path,path,dest)
-
-def copy_path(path:str,dest:str):
-    return wrap_error(_copy_path,path,dest)
-
-def convert_office(path:str,delete:bool = False):
-    return wrap_error(_convert_office,path,delete)
-
-def download_path(path:str,dest=None):
-    return wrap_error(_download_path,path,dest)
-
-def upload_path(file,path_folder:str):
-    return wrap_error(_upload_path,file,path_folder)
-
-def create_folder(path:str,folder:str):
-    return wrap_error(_create_folder,path,folder)
-
-def upload_register(wb,name,dest):
-    return wrap_error(_upload_register,name,dest)
-
-def create_task(cal_id:str,summary:str):
-    return wrap_error(_create_task,cal_id,summary)
-
-# Original functions
-
-def _get_teams(synd):
-    return list(synd.get_teamfolder_info().keys())
-
-def _files_path(synd,path):
-    return synd.list_folder(path)['data']['items']
-
-def _rename_path(synd,new_name,path):
-    return synd.rename_path(new_name,path)
-
-def _get_info(synd,path,attr):
-    info =  synd.get_file_or_folder_info(path)
-    
-    if attr and 'data' in info and attr in info['data']:
-        if attr in info['data']:
-            return info['data'][attr]
-
-    return info
-
-
-def _move_path(synd,path,new_path):
-    rst = synd.move_path(path,new_path)
-    task_id = rst['data']['async_task_id']
-
-    rst = synd.get_task_status(task_id)
-
-    while(rst['data']['result'][0]['data']['progress'] < 100 or rst['data']['has_fail']):
-        time.sleep(0.2)
-        rst = synd.get_task_status(task_id)
-
-    rst_data = rst['data']['result'][0]['data']['result']
-
-    if not 'targets' in rst_data:
-        logging.error(f'Synology cannot move the file {path} to {new_path}')
-        return None
-    else:
-        if 'error' in rst_data['targets']:
-            logging.error(rst_data['targets']['error'])
-            return None
-        else:
-            return {'id':rst_data['targets'][0]['file_id'],'path':new_path}
-
-
-def _copy_path(synd,path,dest):
-    #if path.isdigit(): path = f"id:{path}"
-    #if Path(dest).suffix[1:] in INV_EXT:
-    #    return synd.copy(path,dest)
-    #else:
-    #    return synd.copy_drive(path,dest)
-    return synd.copy(path,dest)
-
-
-def _convert_office(synd,path,delete):
-    rst = synd.convert_to_online_office(path,delete_original_file=delete)
-    task_id = rst['data']['async_task_id']
-    
-    rst = synd.get_task_status(task_id)
-    while(not rst['data']['has_fail'] and rst['data']['result'][0]['data']['status'] == 'in_progress'):
-        time.sleep(1)
-        rst = synd.get_task_status(task_id)
-    
-    
-    file_path = synd.get_file_or_folder_info(path)['data']['display_path'] 
-    ext = Path(file_path).suffix[1:]
-    name = file_path.replace(ext,EXT[ext])
-
-    new_file = synd.get_file_or_folder_info(name)
-    new_file_id = new_file['data']['file_id']
-    new_permanent_link = new_file['data']['permanent_link']
-    new_file_path = new_file['data']['display_path']
-
-    return {'name':Path(name).name,'path':new_file_path,'id':new_file_id,'permanent_link':new_permanent_link}
-
-def _download_path(synd,path,dest):
-    if not path.isdigit():
-        name = get_info(path,attr='name')
-    else:
-        name = Path(path).name
-
-    ext = Path(name).suffix[1:]
-
-    # Could be a synology file or not
-    if ext in INV_EXT:
-        ext = INV_EXT[ext]
-        bio = synd.download_synology_office_file(path)
-    else:
-        bio = synd.download_file(path)
-    
-    # I could save it in dest or return the bytes
-    if dest:
-        with open(f'{dest}/{Path(name).stem}.{ext}','wb') as f:
-            f.write(bio.read())
-            return True
-        return False
-    else:
-        return bio
-    
-
-def _upload_path(synd, file, folder_path):
-    return synd.upload_file(file, dest_folder_path = folder_path)
-
-def _create_folder(synd,path,folder):
-    files = files_path(path)
-    folder_exists = False
-    for fl in files:
-        if fl['name'] == folder:
-            folder_exists = True
-            break
-    
-    if folder_exists:
-        folder_info = synd.get_file_or_folder_info(f"{path}/{folder}")['data']
-        folder_id = folder_info['file_id']
-        p_link = folder_info['permanent_link']
-    else:
-        rst = synd.create_folder(folder,path)
-
-        folder_id = rst['data']['file_id']
-        p_link = rst['data']['permanent_link']
-
-    return {'id':folder_id,'permanent_link':p_link}
-
-
-def send_message(rec,RECIPIENTS,message):
+async def upload_bytes_and_convert(byte_content, target_filename, dest_folder):
     try:
-        webhook = IncomingWebhook('nas.prome.sg', RECIPIENTS[rec]['token'], port=5001)
-        webhook.send(message)
-        return True
-    except Exception as err:
-        logging.error(err)
-        logging.error(f"Cannot send message to {rec}")
-        return False
+        # This will now catch errors from upload_bytes OR the logic below
+        await upload_bytes(byte_content, target_filename, dest_folder)
+        
+        link = None
+        attempts = 0
+        while not link and attempts < 10: # Added a safety timeout
+            await asyncio.sleep(0.5) # Use asyncio.sleep, NOT time.sleep
+            link = await get_link(f"{dest_folder}/{target_filename}")
+            attempts += 1
+            
+        if not link:
+            raise TimeoutError("Link generation timed out.")
 
-def _create_task(synd,cal_id,summary):
-    synd.create_task(cal_id,summary)
+        rst = await convert_to_synology_office(f"link:{link}")
+        return True if rst.get('success') else False
+
+    except UploadError as e:
+        print(f"Workflow stopped because upload failed: {e}")
+    except Exception as e:
+        print(f"Workflow failed at a later stage: {e}")
+
+################################################################
+## HERE DOWN THE DRIVE PART #################################################
+######################################################
+
+async def get_link(file_path: str):
+    full_syno_path = f"/team-folders{file_path}" if not file_path.startswith("/team-folders") else file_path
+    payload = {
+        "api": "SYNO.SynologyDrive.Sharing",
+        "method": "create_link",
+        "version": "1",
+        "path": full_syno_path
+    }
+
+    full_link = await connect(payload)
+    if 'data' in full_link:
+        path = urlparse(full_link['data']['url']).path
+        return PurePosixPath(path).name
+    return None
+
+async def convert_to_synology_office(file_path: str):
+    if file_path.startswith("link"):
+        full_syno_path = file_path
+    else:
+        full_syno_path = f"/team-folders{file_path}" if not file_path.startswith("/team-folders") else file_path
+    payload = {
+        "api": "SYNO.SynologyDrive.Files",
+        "method": "convert_office",
+        "version": "6",
+        "conflict_action": "autorename",
+        "files": json.dumps([{"path": full_syno_path}])
+    }
+
+    return await connect(payload)
+
+async def connect(payload: dict):
+    async with httpx.AsyncClient(verify=False) as client:
+        auth_url = f"https://{IP}:{PORT}/webapi/auth.cgi"
+        auth_params = {
+            "api": "SYNO.API.Auth", "method": "login", "version": "3",
+            "account": USER, "passwd": PASS, "session": "Drive", "format": "sid"
+        }
+        
+        auth_res = await client.get(auth_url, params=auth_params)
+        sid = auth_res.json()["data"]["sid"]
+        payload['_sid'] = sid
+
+        entry_url = f"https://{IP}:{PORT}/webapi/entry.cgi"
+        response = await client.post(entry_url, data=payload)
+        data = response.json()
+        return data
+        if data.get("success"):
+            targets = data.get("data", {}).get("targets", [{}])
+            if targets[0].get("success"):
+                return True, data
+            else:
+                return False, targets[0].get("error_code")
+        return False, data.get("error")
+
+

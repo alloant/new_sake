@@ -29,6 +29,7 @@ def get_last_mails(last_uid: str):
 
 def add_last_mails_db(db: Session):
     last_uid = get_last_uid(db)
+    last_uid = int(last_uid) + 1
     with MailBox(SERVER).login(USER, PASS) as mailbox:
         for mail in mailbox.fetch(criteria=AND(uid=f'{last_uid}:*'),mark_seen=True, reverse=True):
             add_mail(uid=mail.uid, subject=mail.subject, date=mail.date, from_=mail.from_, text=mail.text, db=db)

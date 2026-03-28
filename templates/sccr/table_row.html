@@ -10,8 +10,10 @@
       {% endfor %}
     </div>
     <div class="column is-2 has-text-right position-relative">
-      {{ mail.date }}
-      <div class="action-buttons is-hidden-mobile is-rounded">
+      <div class="hide-under-buttons">
+        {{ mail.date }}
+      </div>
+      <div class="action-buttons is-hidden-mobile is-rounded mr-2">
         {% include 'sccr/table_row_actions.html' %}
       </div>
     </div>

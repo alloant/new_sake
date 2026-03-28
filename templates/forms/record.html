@@ -16,7 +16,7 @@
       <div class="select">
         <select name="department">
           {% for department in departments %}
-              <option {{ 'selected' if department == record.dept.alias else '' }}>{{ department }}</option>
+              <option {{ 'selected' if department == record.unit.alias else '' }}>{{ department }}</option>
           {% endfor %}
         </select>
       </div>
