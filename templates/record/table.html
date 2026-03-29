@@ -2,7 +2,7 @@
 </div>
 
 {% for record, status, target_order in records %}
-  <div id="row-{{record.id}}" class="columns is-mobile is-multiline is-gapless m-0 p-1 is-align-items-center {{ loop.cycle('hover-row-alternate', 'hover-row') }}" style="border-bottom: 1px solid #333;">
+  <div id="row-{{record.id}}" class="columns parent-box is-mobile is-multiline is-gapless m-0 p-1 is-align-items-center {{ loop.cycle('hover-row-alternate', 'hover-row') }}" style="border-bottom: 1px solid #333;">
     {% include 'record/table_row.html' %}
   </div>  
 {% endfor %}

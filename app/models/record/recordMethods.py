@@ -165,3 +165,68 @@ class RecordMethod(object):
 
 
         return actions
+
+    @property
+    def progress(self):
+        if self.flow.startswith('internal'):
+            if not self.targets:
+                return "","account-off" # title, icon
+            else:
+                current = self.current_target_sequence
+                done = []
+                now = []
+                next = []
+                cont = 0
+                for target in self.targets:
+                    if target.handled == 'approved':
+                        cont += 1
+                        done.append(target.actor.alias)
+                    elif current == target.target:
+                        now.append(target.actor.alias)
+                    else:
+                        next.append(target.actor.alias)
+                
+                title = f"Done: {' - '.join(done)}&#10;Now: {' - '.join(now)} &#10;Next: {' - '.join(next)}"
+                if cont == 0:
+                    return title, "hexagon-outline"
+                else:
+                    progress = cont / len(self.targets)
+                    return title, f"hexagon-slice-{round(progress * 6)}"
+        return None, None
+
+    @property
+    def avatar_html(self):
+        match self.flow:
+            case 'inbound':
+                targets = self.targets
+                if not targets:
+                    rst = f"""<div class="avatar-circle is-flex is-align-items-center has-text-black is-justify-content-center mr-4" style="background-color: #dddddd;">
+                        <i class="iconify" data-icon="mdi-account"></i>
+                    </div>
+                    """
+                elif len(targets) == 1:
+                    rst = f"""<div class="avatar-circle is-flex is-align-items-center has-text-black is-justify-content-center mr-4" title="{targets[0].actor.alias}" style="background-color: {targets[0].actor.color};">
+                        <span style="font-size: 0.75rem;">{targets[0].actor.abbr}</span>
+                    </div>
+                    """
+                else:
+                    title = " - ".join([target.actor.alias for target in targets])
+                    rst = f"""<div class="avatar-circle is-flex is-align-items-center has-text-black is-justify-content-center mr-4" title="{title}" style="background-color: #dddddd;">
+                        <i class="iconify" data-icon="mdi-account-multiple"></i>
+                    </div>
+                    """
+            case 'outbound':
+                rst = f"""<div class="avatar-circle is-flex is-align-items-center has-text-black is-justify-content-center mr-4" title="{self.sender.alias}" style="background-color: {self.sender.color};">
+                        <span class="">{self.sender.abbr}</span>
+                    </div>
+                    """
+            case 'internal_cr' | 'internal_cl':
+                title, icon = self.progress
+                rst = f"""<div class="avatar-circle is-flex is-align-items-center has-text-black is-justify-content-center mr-4 has-tooltip-multiline has-tooltip-arrow" data-tooltip="{title}" style="background-color: #dddddd;">
+                    <i class="iconify" data-icon="mdi-{icon}"></i>
+                </div>
+                """
+            case _:
+                rst = ""
+
+        return rst

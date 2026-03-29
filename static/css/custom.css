@@ -38,6 +38,16 @@
   --target-success-background: #01400D;
 }
 
+@media (hover: none) {
+  .parent-box:hover .has-tooltip-multiline[data-tooltip]::before,
+  .parent-box:focus .has-tooltip-multiline[data-tooltip]::before,
+  .parent-box:hover .has-tooltip-multiline[data-tooltip]::after,
+  .parent-box:focus .has-tooltip-multiline[data-tooltip]::after {
+      opacity: 1 !important;
+      visibility: visible !important;
+  }
+}
+
 @media screen and (max-width: 768px) {
   .columns.is-mobile {
     display: flex !important; /* Ensures flex context is active */
@@ -45,6 +55,15 @@
   .has-order-1-mobile { order: 1; }
   .has-order-2-mobile { order: 2; }
   .has-order-3-mobile { order: 3; }
+}
+
+.has-tooltip-multiline::before {
+  white-space: pre-line !important;
+  text-align: left !important;
+  display: block !important;
+  min-width: 150px; /* Adjust this to fit your text */
+  content: attr(data-tooltip); /* Re-asserting the source */
+  border-radius: 5px !important; /* Bulma's standard for 'is-rounded' */
 }
 
 html, body {
@@ -323,6 +342,22 @@ nav.sidebar-section .item a.is-active {
   z-index: 20;
 }
 
+/* Custom class to center the dropdown menu */
+.dropdown.is-centered .dropdown-menu {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+}
+
+/* Ensure the 'is-up' logic still works with centering */
+.dropdown.is-up.is-centered .dropdown-menu {
+    /* Bulma is-up uses transform for positioning, 
+       so we combine the centering with the upward lift */
+    transform: translate(-50%, 0);
+    top: auto;
+    bottom: 100%;
+}
+
 /* Shared item styling for both columns */
 .user-item {
     display: flex;
@@ -444,4 +479,12 @@ nav.sidebar-section .item a.is-active {
     padding: 20px;
     z-index: 9999; /* Topmost layer */
     background: #1a1a1a; /* Optional: solid background for the bar area */
+}
+
+.avatar-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-weight: 600;
+    user-select: none; /* Prevents highlighting the letters */
 }

@@ -20,8 +20,18 @@
       {{ record.title }}
     </span>
 
+    {% if record.flow == 'outbound' %}
+      <span class="tag sender ml-2 is-hidden-mobile">{{ record.sender.alias }}</span>
+    {% else %}
+      {% with current_target = record.current_target_sequence %}
+        {% for target in record.targets %}
+          {% set target_class = 'target' if record.stage == 'sketch' else 'target-success' if target.handled == 'approved' else ('target-current' if target.target == current_target else 'target') %}
+          <span class="tag {{ target_class }} mr-1 is-hidden-mobile px-1 py-0">{{ target.actor.alias }}</span>
+        {% endfor %}
+      {% endwith %}
+    {% endif %}
   </div>
-
+  
   <div class="action-buttons is-hidden-mobile is-rounded">
     {% include 'record/table_row_actions.html' %}
   </div>
@@ -37,7 +47,7 @@
       {% include 'record/record_files.html' %}
     </div>
 
-    <div class="ml-2 is-hidden-mobile" style="white-space: nowrap;">
+    <div class="ml-2" style="white-space: nowrap;">
       {{ record.date }}
     </div>
 

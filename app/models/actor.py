@@ -34,6 +34,7 @@ class ActorSettings(object):
 class Actor(SQLModel, ActorSettings, table=True):
     id: int | None = Field(default=None, primary_key=True)
     alias: str = Field(unique=True, index=True, max_length=50)
+    abbr: str = Field(default="", max_length=2)
     full_name: str | None = Field(max_length=200, default=None)
     email: str = Field(max_length=200, default=None)
     kind: Kind = Field()
