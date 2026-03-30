@@ -107,19 +107,37 @@
           <p class="card-header-title">User Settings</p>
         </header>
         <div class="card-content">
-          {% for key in settings['settings'] %}
-          <div class="field is-horizontal">
-            <div class="field-label is-normal">
-              <label class="label">{{ key|capitalize }}</label>
-            </div>
-            <div class="field-body">
-              <div class="field">
-                <p class="control is-expanded">
-                  <input class="input" type="text" name="setting_{{ key }}" value="{{ actor.get_setting(key) }}">
-                </p>
+          {% for key, value in settings['settings'].items() %}
+            <div class="field is-horizontal">
+              <div class="field-label is-normal">
+                <label class="label">{{ key|capitalize }}</label>
+              </div>
+
+              <div class="field-body">
+                <div class="field">
+                  <p class="control is-expanded">
+                    {% if value['type'] == 'str' %}
+                      <input class="input" type="text" name="setting_{{ key }}" value="{{ actor.get_setting(key) }}">
+                    {% elif value['type'] == 'int' %}
+                      <input class="input" type="text" name="setting_{{ key }}" value="{{ actor.get_setting(key) }}">
+                    {% elif value['type'] == 'bool' %}
+                      <label class="checkbox">
+                        <input type="checkbox" name="setting_{{ key }}" {{ 'checked' if actor.get_setting(key) else '' }} autocomplete="off" />
+                      </label>
+                    {% elif value['type'] == 'select' %}
+                      <div class="select">
+                        <select name="setting_{{ key }}">
+                          {% for option in value['options']%}
+                              <option value="{{option}}" {{ 'selected' if actor.get_setting(key) == option else '' }}>{{option}}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+
+                    {% endif %}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
           {% endfor %}
         </div>
       </div>

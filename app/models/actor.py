@@ -27,7 +27,7 @@ class ActorSettings(object):
 
     @property
     def admin(self):
-        if 'admin' in self.scopes and self.get_setting('admin_active') and False:
+        if 'admin' in self.scopes and self.get_setting('admin_active'):
             return True
         return False
 

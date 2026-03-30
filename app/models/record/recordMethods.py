@@ -27,7 +27,7 @@ def ACTIONS():
     from fastapi_babel import _
     ACTIONS = {}
     ACTIONS['mark_read'] = {"id": "mark_read", "title": _("Mark as read"), "attr": {"hx-get": "/action?action=mark_read", "hx-target": "#row-{record_id}"}, "icon": "mdi-email-check"}
-    ACTIONS['mark_unread'] = {"id": "mark_read", "title": _("Mark as unread"), "attr": {"hx-get": "/action?action=mark_unread", "hx-target": "#row-{record_id}"}, "icon": "mdi-email-open-outline"}
+    ACTIONS['mark_unread'] = {"id": "mark_unread", "title": _("Mark as unread"), "attr": {"hx-get": "/action?action=mark_unread", "hx-target": "#row-{record_id}"}, "icon": "mdi-email-open-outline"}
     ACTIONS['enable_snooze'] = {"id": "enable_snooze", "title": _("Hold"), "attr": {"hx-post": "/action?action=enable_snooze", "hx-prompt": "Due date (dd/mm/yyyy)", "hx-target": "#row-{record_id}"}, "icon": "mdi-alarm-snooze"}
     ACTIONS['disable_snooze'] = {"id": "disable_snooze", "title": _("Unhold"), "attr": {"hx-get": "/action?action=disable_snooze", "hx-target": "#row-{record_id}"}, "icon": "mdi-weather-sunset"}
     ACTIONS['archive'] = {"id": "archive", "title": _("Archive"), "attr": {"hx-get": "/action?action=archive", "hx-target": "#row-{record_id}"}, "icon": "mdi-archive-arrow-down"}
@@ -124,7 +124,7 @@ class RecordMethod(object):
         actions = []
         if self.flow == 'inbound':
             actions.append(ActionGroup(title="Read",items=[]))
-            if not state or state.handled == 'unread':
+            if not state or (state.handled != 'read' and self.created_at > current_actor.created_at) or (state.handled == 'read' and self.created_at <= current_actor.created_at):
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['mark_read']))
             else:
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['mark_unread']))

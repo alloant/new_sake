@@ -45,11 +45,18 @@ async def action_view(record_id,status_id, action, db, current_actor):
         status = get_record_actor_by_id(record_actor_id = status_id, db = db)
     else:
         status = get_record_actor(record_id = record_id, actor_id = current_actor.id, db = db)
-    
+  
+    print(record.created_at, current_actor.created_at)
     if action == "mark_read":
-        status.handled = "read"
+        if record.created_at > current_actor.created_at:
+            status.handled = "read"
+        else:
+            status.handled = "unread"
     elif action == "mark_unread":
-        status.handled = "unread"
+        if record.created_at > current_actor.created_at:
+            status.handled = "unread"
+        else:
+            status.handled = "read"
     elif action == "archive":
         record.state = "archived"
     elif action == "restore":

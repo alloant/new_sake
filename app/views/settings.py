@@ -15,6 +15,11 @@ def get_settings_form(actor, db):
         else:
             ctrs_actor[ctr.alias] = ''
 
-    settings = ['limit_records','theme','admin_active','lang']
+    settings = {
+        'limit_records': {'type': 'int'},
+        'theme': {'type': 'select', 'options': ['light', 'dark']},
+        'admin_active': {'type': 'bool'},
+        'lang': {'type': 'select', 'options': ['en','ja']}
+    }
 
     return {'registers': clean_registers, 'ctrs':ctrs_actor, 'kind': actor.kind.value, 'scopes': actor.scopes, 'settings': settings}

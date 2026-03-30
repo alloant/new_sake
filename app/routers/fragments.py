@@ -169,10 +169,10 @@ async def mails(request: Request, search: str = None, page: int = None, section:
 
     template, rst = await mails_view(page, search, section, panel, db, current_actor, downloaded = False if panel == 'new_mail' else True)
     
+    response = templates.TemplateResponse(template,{'request': request, 'section': section, 'panel': panel} | rst)
+    
     if panel == 'new_mail':
         response.headers['HX-Trigger'] = 'cardumen_state_changed'
-    
-    response = templates.TemplateResponse(template,{'request': request, 'section': section, 'panel': panel} | rst)
 
     return response
 
