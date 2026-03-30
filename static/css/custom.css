@@ -52,6 +52,21 @@
   }
 }
 
+.has-tooltip-multiline::before {
+  /* 1. Allows the box to shrink to the text size */
+  width: auto !important; 
+  
+  /* 2. Set a maximum width so it doesn't get TOO wide on long strings */
+  min-width: 10rem !important; 
+  
+  /* 3. Ensures the box expands to the longest line of text */
+  white-space: pre-wrap !important; 
+  
+  content: attr(data-tooltip);
+  border-radius: 4px !important;
+}
+
+
 @media screen and (max-width: 768px) {
   .columns.is-mobile {
     display: flex !important; /* Ensures flex context is active */
@@ -59,15 +74,6 @@
   .has-order-1-mobile { order: 1; }
   .has-order-2-mobile { order: 2; }
   .has-order-3-mobile { order: 3; }
-}
-
-.has-tooltip-multiline::before {
-  white-space: pre-line !important;
-  text-align: left !important;
-  display: block !important;
-  min-width: 150px; /* Adjust this to fit your text */
-  content: attr(data-tooltip); /* Re-asserting the source */
-  border-radius: 5px !important; /* Bulma's standard for 'is-rounded' */
 }
 
 html, body {

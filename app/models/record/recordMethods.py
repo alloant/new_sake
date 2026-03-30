@@ -196,7 +196,7 @@ class RecordMethod(object):
                     else:
                         next.append(target.actor.alias)
                 
-                title = f"Done: {' - '.join(done)}&#10;Now: {' - '.join(now)} &#10;Next: {' - '.join(next)}"
+                title = f"Done:{'-'.join(done)}&#10;&#10;Now:{'-'.join(now)}&#10;&#10;Next:{'-'.join(next)}"
                 if cont == 0:
                     return title, "hexagon-outline"
                 else:
@@ -212,21 +212,26 @@ class RecordMethod(object):
 
                 if not targets:
                     title = ""
-                    avatar = '<i class="iconify" data-icon="mdi-account"></i>' 
+                    avatar = '<i class="iconify" data-icon="mdi-account"></i>'
+                    align = "center"
                 elif len(targets) == 1:
                     title = targets[0].actor.alias
                     avatar = f'<span style="font-size: 0.75rem;">{targets[0].actor.abbr}</span>'
+                    align = "center"
                 else:
                     title = " - ".join([target.actor.alias for target in targets])
                     avatar = '<i class="iconify" data-icon="mdi-account-multiple"></i>'
+                    align = "center"
             case 'outbound':
                 title = self.sender.alias
                 avatar = f'<span style="font-size: 0.75rem;">{self.sender.abbr}</span>'
+                align = "center"
             case 'internal_cr' | 'internal_cl':
                 title, icon = self.progress
                 avatar = f'<i class="iconify" data-icon="mdi-{icon}"></i>'
+                align = "left"
             case _:
                 return ''
         
-        return f'<div class="avatar-circle is-flex is-align-items-center is-justify-content-center mr-4" title="{title}">{avatar}</div>'
+        return f'<div class="avatar-circle is-flex is-align-items-center is-justify-content-center mr-4 has-tooltip-multiline has-tooltip-arrow has-tooltip-right has-tooltip-text-{align}" data-tooltip="{title}">{avatar}</div>'
 
