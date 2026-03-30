@@ -1,5 +1,5 @@
 from pydantic import BaseModel, model_validator
-from datetime import date
+from datetime import date, datetime
 
 class Action(BaseModel):
     record_id: int
@@ -61,12 +61,22 @@ class RecordMethod(object):
     def code(self):
         if self.flow.value in self.register.protocol:
             return eval(self.register.protocol[self.flow.value])
-
         return ''
 
     @property
+    def date_python(self):
+        return self.updated_at if self.updated_at > self.created_at else self.created_at
+
+    @property
     def date(self):
-        return self.updated_at.strftime('%Y-%m-%d') if self.updated_at > self.created_at else self.created_at.strftime('%Y-%m-%d')
+        return self.date_python.strftime('%Y-%m-%d')
+
+    @property
+    def date_html(self):
+        dt = self.date_python
+        if datetime.now().year == dt.year:
+            return dt.strftime("%d %b")
+        return dt.strftime('%Y-%m-%d')
 
     @property
     def targets(self):
@@ -199,34 +209,24 @@ class RecordMethod(object):
         match self.flow:
             case 'inbound':
                 targets = self.targets
+
                 if not targets:
-                    rst = f"""<div class="avatar-circle is-flex is-align-items-center has-text-black is-justify-content-center mr-4" style="background-color: #dddddd;">
-                        <i class="iconify" data-icon="mdi-account"></i>
-                    </div>
-                    """
+                    title = ""
+                    avatar = '<i class="iconify" data-icon="mdi-account"></i>' 
                 elif len(targets) == 1:
-                    rst = f"""<div class="avatar-circle is-flex is-align-items-center has-text-black is-justify-content-center mr-4" title="{targets[0].actor.alias}" style="background-color: {targets[0].actor.color};">
-                        <span style="font-size: 0.75rem;">{targets[0].actor.abbr}</span>
-                    </div>
-                    """
+                    title = targets[0].actor.alias
+                    avatar = f'<span style="font-size: 0.75rem;">{targets[0].actor.abbr}</span>'
                 else:
                     title = " - ".join([target.actor.alias for target in targets])
-                    rst = f"""<div class="avatar-circle is-flex is-align-items-center has-text-black is-justify-content-center mr-4" title="{title}" style="background-color: #dddddd;">
-                        <i class="iconify" data-icon="mdi-account-multiple"></i>
-                    </div>
-                    """
+                    avatar = '<i class="iconify" data-icon="mdi-account-multiple"></i>'
             case 'outbound':
-                rst = f"""<div class="avatar-circle is-flex is-align-items-center has-text-black is-justify-content-center mr-4" title="{self.sender.alias}" style="background-color: {self.sender.color};">
-                        <span class="">{self.sender.abbr}</span>
-                    </div>
-                    """
+                title = self.sender.alias
+                avatar = f'<span style="font-size: 0.75rem;">{self.sender.abbr}</span>'
             case 'internal_cr' | 'internal_cl':
                 title, icon = self.progress
-                rst = f"""<div class="avatar-circle is-flex is-align-items-center has-text-black is-justify-content-center mr-4 has-tooltip-multiline has-tooltip-arrow" data-tooltip="{title}" style="background-color: #dddddd;">
-                    <i class="iconify" data-icon="mdi-{icon}"></i>
-                </div>
-                """
+                avatar = f'<i class="iconify" data-icon="mdi-{icon}"></i>'
             case _:
-                rst = ""
+                return ''
+        
+        return f'<div class="avatar-circle is-flex is-align-items-center is-justify-content-center mr-4" title="{title}">{avatar}</div>'
 
-        return rst

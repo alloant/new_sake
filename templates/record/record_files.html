@@ -17,7 +17,7 @@
       <div class="dropdown-trigger" aria-haspopup="true" aria-controls="dropdown-{{ record.id }}">
         <span class="icon" style="position: relative; display: inline-flex; justify-content: center;">
           <span class="iconify has-text-warning" 
-                data-icon="mdi:folder{{'-multiple' if record.references else ''}}" 
+                data-icon="mdi:folder{{'-multiple' if record.references else ''}}"
                 data-width="20">
           </span>
             
@@ -27,9 +27,9 @@
                 style="position: absolute; top: 10%; left: 0%;">
           </span>
         </span>
-      </div> <!-- End trigger -->
+      </div>
 
-      <div class="dropdown-menu" id="dropdown-{{ record.id }}" role="menu" style="width: auto; min-width: 25rem">
+      <div class="dropdown-menu" id="dropdown-{{ record.id }}" role="menu" style="width: auto; min-width: 20rem">
         <div class="dropdown-content">
           {% include 'record/record_files_files.html' %}
           <hr class="dropdown-divider">

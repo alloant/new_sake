@@ -16,6 +16,8 @@
   --target-current-color: #ffffff;
   --target-current-background: #777777;
   --target-success-background: #D1FAE5;
+  --avatar-color: #222222;
+  --avatar-background: #dddddd;
 }
 
 /* Dark Theme */
@@ -36,6 +38,8 @@
   --target-current-color: #000000;
   --target-current-background: #dddddd;
   --target-success-background: #01400D;
+  --avatar-color: #cccccc;
+  --avatar-background: #000000;
 }
 
 @media (hover: none) {
@@ -487,4 +491,6 @@ nav.sidebar-section .item a.is-active {
     border-radius: 50%;
     font-weight: 600;
     user-select: none; /* Prevents highlighting the letters */
+    color: var(--avatar-color);
+    background-color: var(--avatar-background);
 }
