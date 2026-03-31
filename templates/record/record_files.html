@@ -18,18 +18,18 @@
         <span class="icon" style="position: relative; display: inline-flex; justify-content: center;">
           <span class="iconify has-text-warning" 
                 data-icon="mdi:folder{{'-multiple' if record.references else ''}}"
-                data-width="20">
+                data-width="1.7em">
           </span>
             
           <span class="iconify has-text-black" 
                 data-icon="mdi:numeric-{{ '9-plus' if record.files|length > 9 else record.files|length }}" 
-                data-width="20" 
+                data-width="1.7em" 
                 style="position: absolute; top: 10%; left: 0%;">
           </span>
         </span>
       </div>
 
-      <div class="dropdown-menu" id="dropdown-{{ record.id }}" role="menu" style="width: auto; min-width: 20rem">
+      <div class="dropdown-menu" id="dropdown-{{ record.id }}" role="menu" style="width: auto; min-width: 15em">
         <div class="dropdown-content">
           {% include 'record/record_files_files.html' %}
           <hr class="dropdown-divider">

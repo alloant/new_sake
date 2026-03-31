@@ -212,23 +212,23 @@ class RecordMethod(object):
 
                 if not targets:
                     title = ""
-                    avatar = '<i class="iconify" data-icon="mdi-account"></i>'
+                    avatar = '<i class="iconify" data-width="1.25em" data-icon="mdi-account"></i>'
                     align = "center"
                 elif len(targets) == 1:
                     title = targets[0].actor.alias
-                    avatar = f'<span style="font-size: 0.75rem;">{targets[0].actor.abbr}</span>'
+                    avatar = f'<span style="font-size: 0.8em;">{targets[0].actor.abbr.upper()}</span>'
                     align = "center"
                 else:
                     title = " - ".join([target.actor.alias for target in targets])
-                    avatar = '<i class="iconify" data-icon="mdi-account-multiple"></i>'
+                    avatar = '<i class="iconify" data-width="1.25em" data-icon="mdi-account-multiple"></i>'
                     align = "center"
             case 'outbound':
                 title = self.sender.alias
-                avatar = f'<span style="font-size: 0.75rem;">{self.sender.abbr}</span>'
+                avatar = f'<span style="font-size: 0.8em;">{self.sender.abbr.upper()}</span>'
                 align = "center"
             case 'internal_cr' | 'internal_cl':
                 title, icon = self.progress
-                avatar = f'<i class="iconify" data-icon="mdi-{icon}"></i>'
+                avatar = f'<i class="iconify" data-width="1.25em" data-icon="mdi-{icon}"></i>'
                 align = "left"
             case _:
                 return ''

@@ -23,14 +23,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-      </div>
-      
-      <div class="card mb-5">
-        <header class="card-header">
-          <p class="card-header-title">Role</p>
-        </header>
-        <div class="card-content">
             <div class="field">
                 <div class="control">
                   <div class="checkboxes">
@@ -46,6 +38,48 @@
                   </div>
                 </div>
             </div>
+
+
+        </div>
+      </div>
+      
+      <div class="card mb-5">
+        <header class="card-header">
+          <p class="card-header-title">User Settings</p>
+        </header>
+        <div class="card-content">
+          {% for key, value in settings['settings'].items() %}
+            <div class="field is-horizontal">
+              <div class="field-label is-normal">
+                <label class="label">{{ key|capitalize }}</label>
+              </div>
+
+              <div class="field-body">
+                <div class="field">
+                  <p class="control is-expanded">
+                    {% if value['type'] == 'str' %}
+                      <input class="input" type="text" name="setting_{{ key }}" value="{{ actor.get_setting(key) }}">
+                    {% elif value['type'] == 'int' %}
+                      <input class="input" type="text" name="setting_{{ key }}" value="{{ actor.get_setting(key) }}">
+                    {% elif value['type'] == 'bool' %}
+                      <label class="checkbox">
+                        <input type="checkbox" name="setting_{{ key }}" {{ 'checked' if actor.get_setting(key) else '' }} autocomplete="off" />
+                      </label>
+                    {% elif value['type'] == 'select' %}
+                      <div class="select">
+                        <select name="setting_{{ key }}">
+                          {% for option in value['options']%}
+                              <option value="{{option}}" {{ 'selected' if actor.get_setting(key) == option else '' }}>{{option}}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+
+                    {% endif %}
+                  </p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
         </div>
       </div>
 
@@ -102,45 +136,6 @@
         </div>
       </div>
 
-      <div class="card mb-5">
-        <header class="card-header">
-          <p class="card-header-title">User Settings</p>
-        </header>
-        <div class="card-content">
-          {% for key, value in settings['settings'].items() %}
-            <div class="field is-horizontal">
-              <div class="field-label is-normal">
-                <label class="label">{{ key|capitalize }}</label>
-              </div>
-
-              <div class="field-body">
-                <div class="field">
-                  <p class="control is-expanded">
-                    {% if value['type'] == 'str' %}
-                      <input class="input" type="text" name="setting_{{ key }}" value="{{ actor.get_setting(key) }}">
-                    {% elif value['type'] == 'int' %}
-                      <input class="input" type="text" name="setting_{{ key }}" value="{{ actor.get_setting(key) }}">
-                    {% elif value['type'] == 'bool' %}
-                      <label class="checkbox">
-                        <input type="checkbox" name="setting_{{ key }}" {{ 'checked' if actor.get_setting(key) else '' }} autocomplete="off" />
-                      </label>
-                    {% elif value['type'] == 'select' %}
-                      <div class="select">
-                        <select name="setting_{{ key }}">
-                          {% for option in value['options']%}
-                              <option value="{{option}}" {{ 'selected' if actor.get_setting(key) == option else '' }}>{{option}}</option>
-                          {% endfor %}
-                        </select>
-                      </div>
-
-                    {% endif %}
-                  </p>
-                </div>
-              </div>
-            </div>
-          {% endfor %}
-        </div>
-      </div>
 
       <div class="field is-grouped is-grouped-right">
         <p class="control">

@@ -18,6 +18,7 @@
   --target-success-background: #D1FAE5;
   --avatar-color: #222222;
   --avatar-background: #dddddd;
+  --row-shadow: 0 4px 12px rgba(50, 50, 50, 0.95), 0 1px 3px rgba(50, 50, 50, 0.8);
 }
 
 /* Dark Theme */
@@ -40,6 +41,7 @@
   --target-success-background: #01400D;
   --avatar-color: #cccccc;
   --avatar-background: #000000;
+  --row-shadow: 0 2px 20px rgba(255, 255, 255, 0.5), 0 1px 5px rgba(200, 200, 200, 0.8);
 }
 
 @media (hover: none) {
@@ -156,20 +158,34 @@ html, body {
 }
 
 .hover-row {
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.1s ease;
     cursor: pointer; /* Makes it feel interactive */
+    position: relative; /* Ensures the shadow and lift don't get cut off */
+    z-index: 1;
 }
 
 .hover-row-alternate {
     background-color: var(--row-alternate); /* Light grey hover effect */
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.1s ease;
     cursor: pointer; /* Makes it feel interactive */
+    position: relative; /* Ensures the shadow and lift don't get cut off */
+    z-index: 1;
 }
 
 .hover-row-alternate:hover,
 .hover-row:hover {
     background-color: var(--row-hover);
+  /* The "Lift" effect */
+    transform: translateY(-2px); 
+    
+    /* The Gmail-style Shadow */
+    /* Syntax: offset-x | offset-y | blur-radius | spread-radius | color */
+    box-shadow: var(--row-shadow);
+    
+    /* Brings the hovered row above its neighbors so the shadow is visible */
+    z-index: 10; 
 }
+
 
 /* 1. Hide the buttons by default */
 .action-buttons {
@@ -492,8 +508,8 @@ nav.sidebar-section .item a.is-active {
 }
 
 .avatar-circle {
-    width: 20px;
-    height: 20px;
+    width: 1.2em;
+    height: 1.2em;
     border-radius: 50%;
     font-weight: 600;
     user-select: none; /* Prevents highlighting the letters */

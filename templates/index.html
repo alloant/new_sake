@@ -2,10 +2,10 @@
 
 {% block content %}
     {% if section == 'sccr' %}
-        <div hx-get="/sccr?section={{section}}&panel={{panel}}&search={{search}}" hx-trigger="load" hx-indicator="#progress-indicator">
+        <div hx-get="/sccr?section={{section}}&panel={{panel}}&search={{search}}" hx-trigger="load" hx-indicator="#progress-indicator" style="font-size: {{font_size}}rem;">
         </div>
     {% else %}
-        <div hx-get="/records?section={{section}}&panel={{panel}}&search={{search}}" hx-trigger="load" hx-indicator="#progress-indicator">
+        <div hx-get="/records?section={{section}}&panel={{panel}}&search={{search}}" hx-trigger="load" hx-indicator="#progress-indicator" style="font-size: {{font_size}}rem;">
         </div>
     {% endif%}
 {% endblock %}

@@ -16,7 +16,8 @@ def get_settings_form(actor, db):
             ctrs_actor[ctr.alias] = ''
 
     settings = {
-        'limit_records': {'type': 'int'},
+        'limit_records': {'type': 'select', 'options': list(range(20,31))},
+        'font_size': {'type': 'select', 'options': list(range(1,6))},
         'theme': {'type': 'select', 'options': ['light', 'dark']},
         'admin_active': {'type': 'bool'},
         'lang': {'type': 'select', 'options': ['en','ja']}
