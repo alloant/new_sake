@@ -60,7 +60,6 @@ async def home(request: Request, section: str | None = "board", panel: str | Non
     current_actor = get_actor_by_id(payload.uid, db)
     theme = current_actor.get_setting('theme') 
     font_size = f"1.{int(current_actor.get_setting('font_size'))-1}"
-    print('font-size:',font_size)
     
     return templates.TemplateResponse("index.html", {"request": request, "theme": theme, "font_size": font_size, "actor_role": current_actor.role, "sidebar": sidebar, "section": section, "panel": panel, "search": search})
 
@@ -71,13 +70,11 @@ async def home_search(request: Request, section: str | None = "board", panel: st
     current_actor = get_actor_by_id(payload.uid, db)
     theme = current_actor.get_setting('theme') 
     font_size = f"1.{int(current_actor.get_setting('font_size'))-1}"
-    print('font-size:',font_size)
     
     form = await request.form()
     data = dict(form)
     search = data.get("all_search")
     
-    #return RedirectResponse(url=f"/?section={section}&panel={panel}&search={search}", status_code=status.HTTP_303_SEE_OTHER)
     return templates.TemplateResponse("index.html", {"request": request, "theme": theme, "font_size": font_size, "actor_role": current_actor.role, "sidebar": sidebar, "section": section, "panel": panel, "search": search})
 
 

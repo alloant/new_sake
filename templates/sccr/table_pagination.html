@@ -2,4 +2,13 @@
   {% include 'sccr/pagination.html' %}
 </div>
 
+{% if notification_message %}
+<div id="notification" class="notification is-{{notification_color}} is-google-snackbar" hx-swap-oob="true">
+  <div class="notification-content">
+    {{notification_message}}
+  </div>
+  <button class="delete" onclick="this.parentElement.remove()"></button>
+</div>
+{% endif %}
+
 {% include 'sccr/table.html' %}

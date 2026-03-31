@@ -61,6 +61,16 @@ def FULLMENU(section):
                 MenuItem(id="despacho", title=_("Despacho"), link="/?section=board&panel=despacho", icon="mdi-briefcase", perms=["despacho"], show_count=True),
             ],
         ),
+
+        MenuGroup(
+            title="Notes",
+            items=[
+                MenuItem(id="all", title=_("All"), link="/?section=board&panel=all", icon="mdi-web", perms=["user"]),
+                MenuItem(id="mustread", title=_("Must read"), link="/?section=board&panel=mustread", icon="mdi-message-star", perms=["user"], show_count=True,hx_trigger=",read_state_changed from:body"),
+                MenuItem(id="unread", title=_("Unread"), link="/?section=board&panel=unread", icon="mdi-message-badge", perms=["user"],show_count=True,hx_trigger=",read_state_changed from:body"),
+            ],
+        ),
+
         MenuGroup(
             title="My inbox",
             items=[
@@ -159,11 +169,11 @@ def get_panel_register(actor_perms,panel,db):
     registers = get_registers(db)
     menu = []
     items = []
-    items.append(MenuItem(id=f"all",title="All",link=f"/?section=register&panel=all",icon="mdi-web"))
-    items[-1].active = "is-active" if "all" == panel else ""
-    items.append(MenuItem(id=f"unread",title="Unread",link=f"/?section=register&panel=unread",icon="mdi-message-badge",show_count=True,hx_trigger=",read_state_changed from:body"))
-    items[-1].active = "is-active" if "unread" == panel else ""
-    menu.append(MenuGroup(title="All registers", items=items))
+    #items.append(MenuItem(id=f"all",title="All",link=f"/?section=register&panel=all",icon="mdi-web"))
+    #items[-1].active = "is-active" if "all" == panel else ""
+    #items.append(MenuItem(id=f"unread",title="Unread",link=f"/?section=register&panel=unread",icon="mdi-message-badge",show_count=True,hx_trigger=",read_state_changed from:body"))
+    #items[-1].active = "is-active" if "unread" == panel else ""
+    #menu.append(MenuGroup(title="All registers", items=items))
 
     for register in registers:
         if has_permission(actor_perms,[register.alias]):

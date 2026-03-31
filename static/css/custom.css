@@ -40,8 +40,8 @@
   --target-current-background: #dddddd;
   --target-success-background: #01400D;
   --avatar-color: #cccccc;
-  --avatar-background: #000000;
-  --row-shadow: 0 2px 20px rgba(255, 255, 255, 0.5), 0 1px 5px rgba(200, 200, 200, 0.8);
+  --avatar-background: #222222;
+  --row-shadow: 0 1px 5px rgba(255, 255, 255, 0.5), 0 1px 5px rgba(200, 200, 200, 0.8);
 }
 
 @media (hover: none) {
@@ -513,6 +513,34 @@ nav.sidebar-section .item a.is-active {
     border-radius: 50%;
     font-weight: 600;
     user-select: none; /* Prevents highlighting the letters */
+    border: 1px solid var(--avatar-color);
     color: var(--avatar-color);
     background-color: var(--avatar-background);
+}
+
+.notification.is-google-snackbar {
+    display: flex;
+    align-items: flex-start; /* Aligns X to the top of the first line */
+    justify-content: space-between;
+    gap: 1.5rem; /* Creates a "no-go zone" between text and X */
+    padding: 1rem 1.25rem;
+    
+    /* The Gmail "Lift" shadow we talked about */
+    box-shadow: 0 3px 5px -1px rgba(0,0,0,0.2), 
+                0 6px 10px 0 rgba(0,0,0,0.14);
+    
+    border-radius: 4px;
+    position: fixed; /* Keeps it at the bottom of the SCREEN */
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%); /* Centers it horizontally */
+    z-index: 1000;
+    width: 90%;
+    max-width: 600px;
+}
+
+
+.notification-content {
+    flex-grow: 1;
+    line-height: 1.5;
 }

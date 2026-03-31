@@ -36,6 +36,9 @@
                     <img class="logo" src="{{ url_for('static', path='icons/sake_long.svg') }}" alt="logo" />
                 </div>
                 <div class="navbar-burger" id="navbar-burger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
             </div>
         </nav>
@@ -47,19 +50,18 @@
                 </div>
             </aside>
  
-            <main class="column is-main-content" id="main-content" style="position: relative;">
+            <main class="column is-main-content" id="main-content">
                 <div id="main" class="">
                     {% block content %}{% endblock %}
                 </div>
-
-                <div id="notification">
-                </div>
-
             </main>
             <progress id="progress-indicator" class="progress htmx-indicator is-small" max="90" style="position: absolute; bottom:0%"></progress>
         </div>
         {% include 'sidepanel.html' %}
         <footer>
+            <div id="footer">
+                Log text to see how it goes
+            </div>
         </footer>
         {% include 'modal.html' %}
         <script src="{{ url_for('static', path='js/main.js') }}"></script>

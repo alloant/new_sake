@@ -42,7 +42,7 @@ def sidebar_fragment(request: Request, section: str | None = "board", panel: str
 
 @router.get("/sidebar-top", response_class=HTMLResponse)
 def sidebar_top_fragment(request: Request, new_sidebar = None, myData = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
-    section = 'register'
+    section = 'board'
     panel = 'all'
     sidebar = get_sidebar(payload,section,panel, db)
     
@@ -148,9 +148,9 @@ async def records_global_search(request: Request, section: str = None, panel: st
     page = 1
     
     template, rst = await records_table_view(page, search, 'register', 'all', db, current_actor)
-    if section != 'register' or panel != 'all':
+    if section != 'board' or panel != 'all':
         template = f"record/table_sidebar.html"
-        sidebar = get_sidebar(payload,'register','all',db)
+        sidebar = get_sidebar(payload,'board','all',db)
     else:
         sidebar = None
     response = templates.TemplateResponse(template, {'request': request, 'section': 'register', 'panel': 'all', 'sidebar': sidebar, 'search':search} | rst)
@@ -187,11 +187,14 @@ async def mails_table(request: Request, page: int = None, last_search = None, se
     if panel.startswith('update_'):
         add_last_mails_db(db)
         panel = panel[7:]
+        notification = {'notification_message': 'Mail updated', 'notification_color': 'info'}
+    else:
+        notification = {'notification_message': '', 'notification_color': ''}
     
     template, rst = await mails_table_view(page, search, section, panel, db, current_actor, downloaded = False if panel == 'new_mail' else True)
     template = f"sccr/table_pagination.html"
     
-    return templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel, 'search': search} | rst)
+    return templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel, 'search': search} | rst | notification)
 
 @router.get("/sccr/number", response_class=HTMLResponse)
 async def sccr_hidden_row(request: Request, section: str, panel: str, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):

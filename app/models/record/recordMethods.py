@@ -216,7 +216,7 @@ class RecordMethod(object):
                     align = "center"
                 elif len(targets) == 1:
                     title = targets[0].actor.alias
-                    avatar = f'<span style="font-size: 0.8em;">{targets[0].actor.abbr.upper()}</span>'
+                    avatar = f'<span style="font-size: 0.7em;">{targets[0].actor.abbr.upper()}</span>'
                     align = "center"
                 else:
                     title = " - ".join([target.actor.alias for target in targets])
@@ -224,7 +224,7 @@ class RecordMethod(object):
                     align = "center"
             case 'outbound':
                 title = self.sender.alias
-                avatar = f'<span style="font-size: 0.8em;">{self.sender.abbr.upper()}</span>'
+                avatar = f'<span style="font-size: 0.7em;">{self.sender.abbr.upper()}</span>'
                 align = "center"
             case 'internal_cr' | 'internal_cl':
                 title, icon = self.progress
