@@ -94,7 +94,7 @@ async def login_by_sso(provider: str = "synology"):
     if provider == "google":
         client_id = GOOGLE_CLIENT_ID
         redirect_uri = GOOGLE_REDIRECT_URI
-        scope = "openid email profile https://www.googleapis.com/auth/drive.file"
+        scope = "openid email profile https://www.googleapis.com/auth/drive"
     else:
         client_id = CLIENT_ID
         redirect_uri = REDIRECT_URI
@@ -106,6 +106,8 @@ async def login_by_sso(provider: str = "synology"):
         "redirect_uri": redirect_uri,
         "scope": scope,
         "state": f"state_{provider}", # Good practice to make state unique
+        "access_type": "offline",      # CRITICAL for background access
+        "prompt": "consent",
     }
     
     return auth_ep + "?" + urlencode(params)
@@ -189,6 +191,8 @@ async def callback(request: Request, db: Session, code: str = None, state: str =
         "provider": provider,
         "lang": actor.get_setting('lang'),
         "data": {"kind": actor.kind.value},
+        "google_access_token": access_token if provider == "google" else None,
+        "google_refresh_token": refresh_token if provider == "google" else None,
     }
     
     cookie_duration = 60 * 60 * 24 * 7 # 7 Days

@@ -20,7 +20,7 @@ from app.core.database import get_db
 
 from app.models.mail import Attachment
 
-from app.services.synology import upload_bytes_and_convert
+from app.services.drive import upload_bytes_and_convert
 
 from app.crud import get_records, get_mails, get_register_by_alias, get_actor_by_id, get_record_actor, get_record_by_id, add_mail, get_last_uid, get_mail_by_uid, get_actor_by_alias
 
@@ -211,7 +211,7 @@ async def sccr_action(request: Request, mail_uid: int, action: str, db: Session 
     if action == 'add_to_sake':
         cont = 0
         for att in mail.attachments:
-            rst = await upload_bytes_and_convert(att.file_data, att.name, '/docker')
+            rst = await upload_bytes_and_convert(payload, att.file_data, att.name, '/docker')
             if rst:
                 cont += 1
                 att.file_data = b""

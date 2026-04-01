@@ -137,6 +137,8 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
         "provider": provider,
         "lang": settings['lang'],
         "data": {"kind": "user"},
+        "google_access_token": payload.access_token if provider == "google" else None,
+        "google_refresh_token": payload.refresh_token if provider == "google" else None,
     }
     
     cookie_duration = 60 * 60 * 24 * 7 # 7 Days
