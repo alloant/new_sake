@@ -91,7 +91,9 @@ def get_filter(actor,section, panel, db: Session):
             else:
                 fn.append(Record.flow=='outbound')
     elif section == 'board':
-        if panel in ['all','mustread','unread']:
+        if panel == 'despacho':
+            fn.append(Record.stage=='despacho') 
+        elif panel in ['all','mustread','unread']:
             actor_registers = get_actor_registers(actor.scopes, db)
             fn_registers = [Record.register_id == get_register_by_alias(register,db).id for register in actor_registers if actor_registers[register]]
             fn.append(or_(*fn_registers))
@@ -242,7 +244,7 @@ def get_records(db: Session, actor = None, section = None, panel = None, search:
         if panel.startswith('inbox') or panel.startswith('incoming'):
             stmt = stmt.join(RecordActor, join_condition).where(*fn, RecordActor.actor_id==actor.id)
             num_stmt = num_stmt.join(RecordActor, join_condition).where(*fn, RecordActor.actor_id==actor.id)
-        elif panel.startswith('outbox') or panel.startswith('outcoming') or panel in ['all','mustread','unread']:
+        elif panel.startswith('outbox') or panel.startswith('outcoming') or panel in ['all','mustread','unread', 'despacho']:
             stmt = stmt.join(RecordActor, join_condition, isouter=True).where(*fn)
             num_stmt = num_stmt.join(RecordActor, join_condition, isouter=True).where(*fn)
     elif section == 'register':

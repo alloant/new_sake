@@ -33,3 +33,11 @@ def get_all_deps(db: Session):
 
 def get_all_alias_deps(db: Session):
     return db.exec(select(Actor.alias).where(and_(Actor.is_active,Actor.kind=='dep'))).all()
+
+def get_senders_register(db: Session, flow: str, register_alias: str, ctr_alias: str = None) -> list(Actor):
+    if flow == 'inbound':
+        return db.exec(select(Actor).where(and_(Actor.is_active,or_(Actor.kind=='ctr',Actor.kind=='contact'),Actor.scopes.contains(f'contact:{register_alias}')))).all()
+    elif flow in ['outbound','internal_cr']: ## Note we are sending. Sender is a dr o of
+        return db.exec(select(Actor).where(and_(Actor.is_active, Actor.kind=='user',or_(Actor.scopes.contains('of'),Actor.scopes.contains('dr'))))).all()
+    elif flow == 'internal_cl': ## Note we are sending. Sender is a dr o of
+        return db.exec(select(Actor).where(and_(Actor.is_active, Actor.kind=='user',Actor.scopes.contains(f'ctr_{ctr_alias}:editor')))).all()

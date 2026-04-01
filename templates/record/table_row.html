@@ -1,8 +1,4 @@
 <div class="column is-narrow">
-    {% include 'record/table_row_unit.html' %}
-</div>
-
-<div class="column is-narrow">
     <span class="iconify has-text-grey" data-icon="mdi-{{ record.stage_icon }}"></span>
 </div>
 
@@ -10,6 +6,10 @@
   <span class="has-text-weight-semibold" style="white-space: nowrap;">
     {{ record.protocol }}
   </span>
+</div>
+
+<div class="column is-narrow">
+    {% include 'record/table_row_unit.html' %}
 </div>
 
 <div class="column is-narrow">

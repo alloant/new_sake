@@ -95,6 +95,7 @@ async def action(request: Request, record_id: int, recordactor_id: str, action: 
         response = templates.TemplateResponse(template, {'request': request, 'section': 'register', 'panel': 'all', 'sidebar': sidebar, 'search':f'all_off:{record_id}'} | rst)
 
         return response
+    
     template, rst = await action_view(record_id, recordactor_id, action, db, current_actor)
     response = templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel, 'current_actor': current_actor, 'loop': loop} | rst)
 

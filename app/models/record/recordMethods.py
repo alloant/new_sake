@@ -26,6 +26,9 @@ class ActionGroup(BaseModel):
 def ACTIONS():
     from fastapi_babel import _
     ACTIONS = {}
+    ACTIONS['sign_note'] = {"id": "sign_note_record", "title": _("Sign note"), "attr": {"hx-get": "/action?action=sign_note", "hx-target": "#modal-content-target", "onclick": "openModal()"}, "icon": "mdi-file-sign", "perms": []}
+    ACTIONS['quick_sign'] = {"id": "quick_sign", "title": _("Quick sign"), "attr": {"hx-get": "/action?action=quick_sign", "hx-target": "#row-{record_id}"}, "icon": "mdi-draw-pen"}
+    
     ACTIONS['mark_read'] = {"id": "mark_read", "title": _("Mark as read"), "attr": {"hx-get": "/action?action=mark_read", "hx-target": "#row-{record_id}"}, "icon": "mdi-email-check"}
     ACTIONS['mark_unread'] = {"id": "mark_unread", "title": _("Mark as unread"), "attr": {"hx-get": "/action?action=mark_unread", "hx-target": "#row-{record_id}"}, "icon": "mdi-email-open-outline"}
     ACTIONS['enable_snooze'] = {"id": "enable_snooze", "title": _("Hold"), "attr": {"hx-post": "/action?action=enable_snooze", "hx-prompt": "Due date (dd/mm/yyyy)", "hx-target": "#row-{record_id}"}, "icon": "mdi-alarm-snooze"}
@@ -132,7 +135,12 @@ class RecordMethod(object):
     def get_actions(self, state, current_actor, section, panel, quick_access = False):
         all_actions = ACTIONS()
         actions = []
-        if self.flow == 'inbound':
+        if self.flow == 'inbound' and self.stage == 'despacho':
+            actions.append(ActionGroup(title="Despacho",items=[]))
+            actions[-1].items.append(Action(record_id=self.id,**all_actions['sign_note']))
+            actions[-1].items.append(Action(record_id=self.id,**all_actions['quick_sign']))
+
+        if self.flow == 'inbound' and self.stage == 'registed':
             actions.append(ActionGroup(title="Read",items=[]))
             if not state or (state.handled != 'read' and self.created_at > current_actor.created_at) or (state.handled == 'read' and self.created_at <= current_actor.created_at):
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['mark_read']))
@@ -150,7 +158,7 @@ class RecordMethod(object):
                     actions[-1].items.append(Action(record_id=self.id,**all_actions['stop_circulation']))
 
 
-        if self.flow == 'inbound' or self.flow == 'internal_cr' and self.sender_id == current_actor.id and self.stage != 'shared':
+        if (self.flow == 'inbound' and self.stage == 'registered') or self.flow == 'internal_cr' and self.sender_id == current_actor.id and self.stage != 'shared':
             actions.append(ActionGroup(title="Inbox",items=[]))
             if self.state != 'snooze':
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['enable_snooze']))

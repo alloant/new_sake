@@ -32,7 +32,7 @@ async def upload_bytes(byte_content, target_filename, dest_folder):
                 f.write(byte_content)
 
             # Await the upload if it's an async function
-            return fs.upload_file(dest_path=dest_folder, file_path=local_path, progress_bar=True)
+            return fs.upload_file(dest_path=dest_folder, file_path=local_path, progress_bar=False, create_parents=True)
     except OSError as e:
         # We catch it here to add context, then raise it again
         print(f"File system error during upload setup: {e}")

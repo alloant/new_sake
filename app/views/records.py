@@ -1,5 +1,5 @@
 import math
-from app.crud import get_record_by_id, get_records, get_record_actor, get_record_actor_by_id, get_actor_registers, get_ctrs, get_all_alias_deps
+from app.crud import get_record_by_id, get_records, get_record_actor, get_record_actor_by_id, get_actor_registers, get_ctrs, get_all_alias_deps, get_senders_register
 from app.routers.websocket import broadcast_channels
 
 def pagination(num_records: int, page: int, limit_records: int):
@@ -46,7 +46,6 @@ async def action_view(record_id,status_id, action, db, current_actor):
     else:
         status = get_record_actor(record_id = record_id, actor_id = current_actor.id, db = db)
   
-    print(record.created_at, current_actor.created_at)
     if action == "mark_read":
         if record.created_at > current_actor.created_at:
             status.handled = "read"
@@ -61,10 +60,11 @@ async def action_view(record_id,status_id, action, db, current_actor):
         record.state = "archived"
     elif action == "restore":
         record.state = "active"
-    elif action == "edit":
+    elif action in ["edit","sign_note"]:
         registers = get_actor_registers(current_actor.scopes,db)
         departments = [''] + get_all_alias_deps(db)
-        return "forms/record.html", {'record': record, 'registers': registers, 'departments': departments}
+        senders = get_senders_register(db,'internal_cl','ctr','kmt')
+        return "forms/record.html", {'record': record, 'registers': registers, 'departments': departments, 'senders': senders}
     elif action == "edit_targets":
         available_targets = get_ctrs(db)
         selected_targets = record.targets
