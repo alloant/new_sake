@@ -147,13 +147,13 @@ async def records_global_search(request: Request, section: str = None, panel: st
     
     page = 1
     
-    template, rst = await records_table_view(page, search, 'register', 'all', db, current_actor)
+    template, rst = await records_table_view(page, search, 'board', 'all', db, current_actor)
     if section != 'board' or panel != 'all':
         template = f"record/table_sidebar.html"
         sidebar = get_sidebar(payload,'board','all',db)
     else:
         sidebar = None
-    response = templates.TemplateResponse(template, {'request': request, 'section': 'register', 'panel': 'all', 'sidebar': sidebar, 'search':search} | rst)
+    response = templates.TemplateResponse(template, {'request': request, 'section': 'board', 'panel': 'all', 'sidebar': sidebar, 'search':search} | rst)
 
     return response
 
