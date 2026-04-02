@@ -1,0 +1,59 @@
+  <div class="modal-background" onclick="closeModal()"></div>
+
+  <div class="modal-content p-4">
+    <div id="modal-content-target" class="">
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Targets</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            
+            <section class="modal-card-body">
+          
+                <div class="panel-block">
+                    <p class="control has-icons-left">
+                        <input class="input" type="text" name="q" placeholder="Search targets..."
+                            hx-get="/users/search" 
+                            hx-target="#sortable-targets" 
+                            hx-include="#sortable-targets"
+                            hx-trigger="keyup changed delay:300ms">
+                        <span class="icon is-small is-left">
+                            <i class="iconify" data-icon="mdi-magnify"></i>
+                        </span>
+                    </p>
+                </div>
+
+                <form hx-post="/send-email" hx-target="#response-area">
+                    <div id="sortable-targets" style="height: 60vh; overflow-y: auto;">
+                        {% include "forms/select_targets_items.html" %}
+                    </div>
+
+                    <div class="panel-block">
+                        <button type="submit" class="button is-fullwidth">
+                            Send to Targets in This Order
+                        </button>
+                    </div>
+                </form>
+            </section>
+            
+            <footer class="modal-card-foot">
+                <div class="buttons">
+                    <button class="button is-success">Save changes</button>
+                    <button class="button">Cancel</button>
+                </div>
+            </footer>
+        </div>
+    </div>
+</div>
+
+
+    
+<script>
+    Sortable.create(listWithHandle, {
+      handle: '.handle-move',
+      ghostClass: 'blue-background-class',
+      animation: 150,
+      forceFallback: true,
+      fallbackClass: 'sortable-fallback'
+    });
+</script>

@@ -1,81 +1,105 @@
+<nav class="panel">
+
 <form hx-post="/modify_record?record_id={{record.id}}&loop_index={{loop.index}}" hx-target="#row-{{record.id}}" method="POST">
-  <div class="field is-grouped">
-    <div class="control">
-      <label class="label">Register</label>
-      <div class="select">
-        <select name="register">
-          {% for register in registers %}
-              <option {{ 'selected' if register == record.register.alias else '' }}>{{ register }}</option>
-          {% endfor %}
-        </select>
+  <div class="columns p-2">
+    <div class="column">
+      <div class="field is-grouped is-fullwidth">
+        <div class="control">
+          <label class="label">Flow</label>
+          <div class="select" name="flow">
+            <select>
+              <option {{ 'selected' if record.flow.value == 'inbound' else '' }} value="inbound">Inbound</option>
+              <option {{ 'selected' if record.flow.value == 'outbound' else '' }} value="outbound">Outbound</option>
+              <option {{ 'selected' if record.flow.value == 'internal_cr' else '' }} value="internal_cr">Internal cr</option>
+              <option {{ 'selected' if record.flow.value == 'internal_cl' else '' }} value="internal_cl">Internal cl</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="control">
+                <label class="label">Register{{record.register.alias}}</label>
+          <div class="select">
+            <select name="register" hx-get="/record_form_data?info=senders_{{record.sender.alias}}_{{record.flow.value}}_" hx-target="#form_record_senders">
+                  <option {{ 'selected' if record.register.alias == '' else '' }}></option>
+              {% for register in registers %}
+                  <option {{ 'selected' if record.register.alias == register else '' }}>{{ register }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        
+        <div class="control is-expanded">
+          <label class="label">Sender</label>
+          <div class="select is-success" name="sender">
+            <select id="form_record_senders">
+                <option {{ 'selected' if record.sender.alias == 'a' else '' }}></option>
+              {% for sender in senders %}
+                <option {{ 'selected' if record.sender.alias == sender.alias else '' }} value="{{sender.alias}}">{{sender.alias}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+       
+        <div class="control" style="width: 5em;">
+          <label class="label">Sequence</label>
+          <input class="input" type="text"  name="sequence" placeholder="1234" value="{{record.sequence}}">
+        </div>
+        
+        <div class="control" style="width: 4em;">
+          <label class="label">Year</label>
+          <input class="input" type="text"  name="year" placeholder="2026" value="{{record.year}}">
+        </div>
+     
+        <div class="control">
+          <label class="label">Department</label>
+          <div class="select">
+            <select name="department">
+              {% for department in departments %}
+                  <option {{ 'selected' if department == record.unit.alias else '' }}>{{ department }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Title</label>
+        <div class="control">
+          <input class="input" type="text"  name="title" placeholder="Title" value="{{record.title}}">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Comments</label>
+        <div class="control">
+          <textarea class="textarea" placeholder="Textarea"></textarea>
+        </div>
+      </div>
+
+      <div class="field is-grouped">
+        <div class="control">
+          <button class="button is-link" onclick="closeModal()">Submit</button>
+        </div>
+        <div class="control">
+          <button class="button is-link is-light" onclick="closeModal()">Cancel</button>
+        </div>
       </div>
     </div>
-    
-    <div class="control">
-      <label class="label">Department</label>
-      <div class="select">
-        <select name="department">
-          {% for department in departments %}
-              <option {{ 'selected' if department == record.unit.alias else '' }}>{{ department }}</option>
-          {% endfor %}
-        </select>
-      </div>
-    </div>
 
-    <div class="control">
-      <label class="label">Flow</label>
-      <div class="select" name="flow">
-        <select>
-          <option {{ 'selected' if record.flow.value == 'inbound' else '' }} value="inbound">Inbound</option>
-          <option {{ 'selected' if record.flow.value == 'outbound' else '' }} value="outbound">Outbound</option>
-          <option {{ 'selected' if record.flow.value == 'internal_cr' else '' }} value="internal_cr">Internal cr</option>
-          <option {{ 'selected' if record.flow.value == 'internal_cl' else '' }} value="internal_cl">Internal cl</option>
-        </select>
-      </div>
-    </div>
-
-    <div>
-      <label class="label">Sender</label>
-      <div class="control has-icons-left">
-        <input class="input is-success" type="text" placeholder="Text input" value="{{record.sender.alias}}">
-        <span class="icon is-small is-left">
-          <i class="iconify" data-icon="mdi-email"></i>
-        </span>
-      </div>
-    </div>
-  </div>
-
-  <div class="field">
-    <label class="label">Title</label>
-    <div class="control">
-      <input class="input" type="text"  name="title" placeholder="Title" value="{{record.title}}">
-    </div>
-  </div>
-
-  <div class="field is-grouped">
-    <div class="control">
-      <label class="label">Sequence</label>
-      <input class="input" type="text"  name="sequence" placeholder="1234" value="{{record.sequence}}">
-    </div>
-    <div class="control">
-      <label class="label">Year</label>
-      <input class="input" type="text"  name="year" placeholder="2026" value="{{record.year}}">
-    </div>
-  </div>
-
-  <div class="field">
-    <label class="label">Comments</label>
-    <div class="control">
-      <textarea class="textarea" placeholder="Textarea"></textarea>
-    </div>
-  </div>
-
-  <div class="field is-grouped">
-    <div class="control">
-      <button class="button is-link" onclick="closeModal()">Submit</button>
-    </div>
-    <div class="control">
-      <button class="button is-link is-light" onclick="closeModal()">Cancel</button>
+    <div class="column is-4">
+      {% include "forms/select_targets.html" %}
     </div>
   </div>
 </form>
+
+</nav>
+
+<script>
+    Sortable.create(listWithHandle, {
+      handle: '.handle-move',
+      ghostClass: 'blue-background-class',
+      animation: 150,
+      forceFallback: true,
+      fallbackClass: 'sortable-fallback'
+    });
+</script>

@@ -116,6 +116,8 @@ async def modify_record(request: Request, record_id: int, loop_index: int, db: S
     loop.index = loop_index
     form = await request.form()
     data = dict(form)
+    target_ids = form.getlist("user_ids")
+    
     current_actor = get_actor_by_id(actor_id = payload.uid, db = db)
     record = get_record_by_id(record_id, db = db)
     status = get_record_actor(record_id = record_id, actor_id = payload.uid, db = db)

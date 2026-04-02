@@ -25,19 +25,27 @@ def create_actor(alias: str, kind: str, db: Session) -> Actor:
 
 def get_ctrs(db: Session, filter: str = "") -> list(Actor):
     if filter:
-        return db.exec(select(Actor).where(and_(or_(Actor.alias.contains(filter),Actor.full_name.contains(filter)),Actor.kind=='ctr',Actor.is_active==1))).all()
-    return db.exec(select(Actor).where(and_(Actor.kind=='ctr',Actor.is_active==1))).all()
+        return db.exec(select(Actor).where(and_(or_(Actor.alias.contains(filter),Actor.full_name.contains(filter)),Actor.kind=='ctr',Actor.is_active==1)).order_by(Actor.alias)).all()
+    return db.exec(select(Actor).where(and_(Actor.kind=='ctr',Actor.is_active==1)).order_by(Actor.alias)).all()
 
 def get_all_deps(db: Session):
     return select(Actor).where(and_(Actor.active,Actor.kind=='dep')).all()
 
 def get_all_alias_deps(db: Session):
-    return db.exec(select(Actor.alias).where(and_(Actor.is_active,Actor.kind=='dep'))).all()
+    return db.exec(select(Actor.alias).where(and_(Actor.is_active,Actor.kind=='dep')).order_by(Actor.alias)).all()
 
 def get_senders_register(db: Session, flow: str, register_alias: str, ctr_alias: str = None) -> list(Actor):
     if flow == 'inbound':
-        return db.exec(select(Actor).where(and_(Actor.is_active,or_(Actor.kind=='ctr',Actor.kind=='contact'),Actor.scopes.contains(f'contact:{register_alias}')))).all()
+        return db.exec(select(Actor).where(and_(Actor.is_active,or_(Actor.kind=='ctr',Actor.kind=='contact'),Actor.scopes.contains(f'contact:{register_alias}'))).order_by(Actor.alias)).all()
     elif flow in ['outbound','internal_cr']: ## Note we are sending. Sender is a dr o of
-        return db.exec(select(Actor).where(and_(Actor.is_active, Actor.kind=='user',or_(Actor.scopes.contains('of'),Actor.scopes.contains('dr'))))).all()
+        return db.exec(select(Actor).where(and_(Actor.is_active, Actor.kind=='user',or_(Actor.scopes.contains('of'),Actor.scopes.contains('dr')))).order_by(Actor.alias)).all()
     elif flow == 'internal_cl': ## Note we are sending. Sender is a dr o of
-        return db.exec(select(Actor).where(and_(Actor.is_active, Actor.kind=='user',Actor.scopes.contains(f'ctr_{ctr_alias}:editor')))).all()
+        return db.exec(select(Actor).where(and_(Actor.is_active, Actor.kind=='user',Actor.scopes.contains(f'ctr_{ctr_alias}:editor'))).order_by(Actor.alias)).all()
+
+def get_targets_register(db: Session, flow: str, register_alias: str, ctr_alias: str = None) -> list(Actor):
+    if flow == 'outbound':
+        return db.exec(select(Actor).where(and_(Actor.is_active,Actor.scopes.contains(f'contact:{register_alias}'))).order_by(Actor.alias)).all()
+    elif flow in ['inbound','internal_cr']: ## Note we are sending. Sender is a dr o of
+        return db.exec(select(Actor).where(and_(Actor.is_active, Actor.kind=='user',or_(Actor.scopes.contains('of'),Actor.scopes.contains('dr')))).order_by(Actor.alias)).all()
+    elif flow == 'internal_cl': ## Note we are sending. Sender is a dr o of
+        return db.exec(select(Actor).where(and_(Actor.is_active, Actor.kind=='user',Actor.scopes.contains(f'ctr_{ctr_alias}:editor'))).order_by(Actor.alias)).all()

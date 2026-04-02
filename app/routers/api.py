@@ -5,7 +5,7 @@ from authx import TokenPayload
 
 from app.core.auth import auth, get_current_actor_alias_from_cookie, get_payload_from_cookie
 from app.core.database import get_db
-from app.crud import get_ctrs, get_actor_by_ids
+from app.crud import get_ctrs, get_actor_by_ids, get_senders_register
 # Initialize the router and templates
 router = APIRouter()
 from .main import templates
@@ -23,6 +23,32 @@ async def search_targets(request: Request, q: str = "", user_ids: list[int] = Qu
         "forms/select_targets_items.html", 
         {"request": request, "available_targets": available_targets, "checked_targets": user_ids}
     )
+
+@router.get("/record_form_data", response_class=HTMLResponse)
+async def record_data(request: Request, info: str, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
+    params = dict(request.query_params)
+
+    if info.startswith('senders'):
+        senders, sender_alias, flow, ctr_alias = info.split('_')
+        senders = get_senders_register(db, flow, params['register'], ctr_alias)
+        
+        if flow == 'inbound' and not params['register'] in ['cg', 'asr']:
+            if sender_alias == "":
+                rst = f'<option selected value=""></option>'
+            else:
+                rst = f'<option value=""></option>'
+        else:
+            rst = ""
+
+        for sender in senders:
+            if sender_alias == sender.alias:
+                rst += f'<option "selected" value="{sender.alias}">{sender.alias}</option>'
+            else:
+                rst += f'<option value="{sender.alias}">{sender.alias}</option>'
+        return rst
+
+    return None
+
 """
 @router.get("/users/{target_id}/render-selected", response_class=HTMLResponse)
 async def render_selected(request: Request, target_id: int, db: Session = Depends(get_db)):

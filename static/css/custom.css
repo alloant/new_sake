@@ -54,6 +54,23 @@
   }
 }
 
+
+.modal-content {
+    height: auto; 
+    width: auto; 
+    max-width: 95%;
+    overflow-y: auto;       /* Show vertical scroll only if needed */
+    overflow-x: hidden;     /* Prevent the annoying left/right shimmy */
+}
+
+.checkbox:has(input:checked) {
+    font-weight: bold;
+}
+
+/* Optional: Add a slight transition so it feels smooth */
+.checkbox {
+    transition: font-weight 0.1s ease-in-out;
+}
 .has-tooltip-multiline::before {
   /* 1. Allows the box to shrink to the text size */
   width: auto !important; 
@@ -297,7 +314,7 @@ nav.pagination a {
 }
 
 nav.pagination,
-dev.hero-settings,
+div.hero-settings,
 div.hero-search, {
   color: var(--sidebar-color);
   background: var(--sidebar-background);
@@ -329,7 +346,6 @@ nav.sidebar-panel .menu a.is-hovered {
 
 nav.sidebar-panel .menu .menu-link a.is-active,
 nav.sidebar-panel .menu .menu-link a.is-active:hover {
-  color: #fff;                /* active */
   background: var(--sidebar-background-active);
 }
 

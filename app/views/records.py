@@ -1,5 +1,5 @@
 import math
-from app.crud import get_record_by_id, get_records, get_record_actor, get_record_actor_by_id, get_actor_registers, get_ctrs, get_all_alias_deps, get_senders_register
+from app.crud import get_record_by_id, get_records, get_record_actor, get_record_actor_by_id, get_actor_registers, get_ctrs, get_all_alias_deps, get_senders_register, get_targets_register
 from app.routers.websocket import broadcast_channels
 
 def pagination(num_records: int, page: int, limit_records: int):
@@ -63,12 +63,14 @@ async def action_view(record_id,status_id, action, db, current_actor):
     elif action in ["edit","sign_note"]:
         registers = get_actor_registers(current_actor.scopes,db)
         departments = [''] + get_all_alias_deps(db)
-        senders = get_senders_register(db,'internal_cl','ctr','kmt')
-        return "forms/record.html", {'record': record, 'registers': registers, 'departments': departments, 'senders': senders}
+        senders = get_senders_register(db,record.flow,record.register.alias)
+        available_targets = get_targets_register(db, record.flow, record.register.alias)
+        selected_targets = record.targets_id
+        return "forms/record.html", {'record': record, 'registers': registers, 'departments': departments, 'senders': senders, 'available_targets': available_targets, 'checked_targets': selected_targets}
     elif action == "edit_targets":
         available_targets = get_ctrs(db)
         selected_targets = record.targets
-        return "forms/select_targets.html", {'record': record, 'available_targets': available_targets, 'selected_targets': selected_targets}
+        return "forms/form_targets.html", {'record': record, 'available_targets': available_targets, 'checked_targets': selected_targets}
     elif action == "start_circulation":
         record.stage = "shared"
         sock_targets = [f'actor_{alias}' for alias in record.current_targets_alias]
