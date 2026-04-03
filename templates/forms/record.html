@@ -1,6 +1,4 @@
-<nav class="panel">
-
-<form hx-post="/modify_record?record_id={{record.id}}&loop_index={{loop.index}}" hx-target="#row-{{record.id}}" method="POST">
+<form class="box" hx-post="/modify_record?record_id={{record.id}}&loop_index={{loop.index}}" hx-target="#row-{{record.id}}" method="POST">
   <div class="columns p-2">
     <div class="column">
       <div class="field is-grouped is-fullwidth">
@@ -87,12 +85,15 @@
     </div>
 
     <div class="column is-4">
-      {% include "forms/select_targets.html" %}
+      <div class="field">
+        <div class="control">
+          <label class="label">Targets</label>
+          {% include "forms/select_targets.html" %}
+        </div>
+      </div>
     </div>
   </div>
 </form>
-
-</nav>
 
 <script>
     Sortable.create(listWithHandle, {

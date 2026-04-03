@@ -6,11 +6,11 @@
     </div>
   {% else %}
     <span class="tag has-text-weight-bold has-text-black"
-      style="width: 2rem; min-width: 2rem; max-width: 2rem; background-color: {{record.unit.color}};">
+      style="width: 2em; background-color: {{record.unit.color}}; font-size:0.7em;">
       {{ record.unit.alias }}
     </span>
   {% endif %}
 {% else %}
-  <span class="tag has-text-weight-bold has-text-black" style="width: 2rem;">-</span>
+  <span class="tag has-text-weight-bold has-text-black" style="width: 2em; font-size: 0.7em;">-</span>
 {% endif %}
 

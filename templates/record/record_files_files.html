@@ -1,11 +1,11 @@
 {% if record.files %}
   {% for file in record.files %}
-    <a href="{{ file.link }}" class="dropdown-item m-0 py-1" target="_blank">
+    <a href="{{ file.link }}" class="dropdown-item m-0 py-1" target="_blank" style="font-size: 1.3em;">
       {{ file.html_name | safe }}
     </a>
   {% endfor %}
 {% else %}
-  <div class="dropdown-item p-0 m-0">No files found</div>
+  <div class="dropdown-item p-0 m-0" style="font-size: 1.3em;">No files found</div>
 {% endif %}
 
 {% if record.references %}
@@ -13,9 +13,9 @@
 {% endif %}
 
 {% for reference in record.references %}
-    <div class="dropdown-item has-text-weight-bold has-text-grey m-0">{{ reference.protocol }} {{ reference.title }}</div>
+    <div class="dropdown-item has-text-weight-bold has-text-grey m-0" style="font-size: 1.3em;">{{ reference.protocol }} {{ reference.title }}</div>
     {% for file in reference.files %}
-      <a class="dropdown-item ml-4 py-1 m-0" target="_blank" href="{{ file.link }}">
+      <a class="dropdown-item ml-4 py-1 m-0" target="_blank" href="{{ file.link }}" style="font-size: 1.3em;">
         {{ file.html_name | safe }}
       </a>
     {% endfor %}
