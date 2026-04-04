@@ -58,6 +58,7 @@ def get_num_records(db: Session, search: str = None) -> list[Record]:
 def get_filter(actor,section, panel, db: Session):
     fn = []
     if section == 'register':
+        fn.append(Register.stage == 'registered')
         if panel in ['all','unread']:
             actor_registers = get_actor_registers(actor.scopes, db)
             fn_registers = [Record.register_id == get_register_by_alias(register,db).id for register in actor_registers if actor_registers[register]]
@@ -95,7 +96,11 @@ def get_filter(actor,section, panel, db: Session):
     elif section == 'board':
         if panel == 'despacho':
             fn.append(Record.stage=='despacho') 
-        elif panel in ['all','mustread','unread']:
+            return fn
+        if not 'proposals' in panel and not panel.startswith('outbox'):
+            fn.append(Record.stage == 'registered')
+
+        if panel in ['all','mustread','unread']:
             actor_registers = get_actor_registers(actor.scopes, db)
             fn_registers = [Record.register_id == get_register_by_alias(register,db).id for register in actor_registers if actor_registers[register]]
             fn.append(or_(*fn_registers))

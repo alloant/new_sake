@@ -16,7 +16,7 @@
   {{ record.avatar_html | safe}}
 </div>
 
-<div class="column position-relative">
+<div class="column position-relative is-flex is-align-items-center">
   <span class="mr-2 {{ record.read_status_html(status,current_actor) if record.flow == 'inbound' else '' }}">
     {{ record.title_hashtag|safe }}
   </span>
