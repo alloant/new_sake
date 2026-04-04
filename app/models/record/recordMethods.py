@@ -1,5 +1,18 @@
 from pydantic import BaseModel, model_validator
 from datetime import date, datetime
+import re
+from markupsafe import Markup
+
+def highlight_hashtags(text):
+    # Regex to find words starting with #
+    #pattern = r'(#\w+)'
+    pattern = r'#(\w+)' 
+    
+    # Replace with Bulma tag HTML
+    replacement = r'<span class="has-background-link-light has-text-warning-dark px-1 is-radius-rounded" style="border-radius: 4px;">\1</span>'
+    highlighted = re.sub(pattern, replacement, text)
+    return Markup(highlighted)
+
 
 class Action(BaseModel):
     record_id: int
@@ -71,6 +84,10 @@ class RecordMethod(object):
         return self.updated_at if self.updated_at > self.created_at else self.created_at
 
     @property
+    def title_hashtag(self):
+        return highlight_hashtags(self.title)
+
+    @property
     def date(self):
         return self.date_python.strftime('%Y-%m-%d')
 
@@ -83,8 +100,12 @@ class RecordMethod(object):
 
     @property
     def targets(self):
-        return [target for target in self.actors if target.target > 0]
-    
+        rst = [target for target in self.actors if target.target > 0]
+        if self.flow in ['inbound', 'internal_cr']:
+            return sorted(rst, key=lambda x: x.target)
+
+        return rst
+
     @property
     def targets_id(self):
         return [target.actor.id for target in self.actors if target.target > 0]
@@ -212,6 +233,10 @@ class RecordMethod(object):
                     return title, f"hexagon-slice-{round(progress * 6)}"
         return None, None
 
+
+    def avatar_circle(self, align, title, avatar):
+        return f'<div class="avatar-circle is-flex is-align-items-center is-justify-content-center has-tooltip-multiline has-tooltip-arrow has-tooltip-right has-tooltip-text-{align}" data-tooltip="{title}">{avatar}</div>'
+
     @property
     def avatar_html(self):
         match self.flow:
@@ -227,9 +252,15 @@ class RecordMethod(object):
                     avatar = f'<span style="font-size: 0.7em;">{targets[0].actor.abbr.upper()}</span>'
                     align = "center"
                 else:
-                    title = " - ".join([target.actor.alias for target in targets])
-                    avatar = '<i class="iconify" data-width="1.25em" data-icon="mdi-account-multiple"></i>'
-                    align = "center"
+                    if self.stage == "despacho":
+                        rst = ""
+                        for target in targets:
+                            rst += self.avatar_circle("center", target.actor.alias, f'<span style="font-size: 0.7em;">{target.actor.abbr.upper()}</span>')
+                        return f'<div class="is-flex">{rst}</div>'
+                    else:
+                        title = " - ".join([target.actor.alias for target in targets])
+                        avatar = '<i class="iconify" data-width="1.25em" data-icon="mdi-account-multiple"></i>'
+                        align = "center"
             case 'outbound':
                 title = self.sender.alias
                 avatar = f'<span style="font-size: 0.7em;">{self.sender.abbr.upper()}</span>'
@@ -240,6 +271,7 @@ class RecordMethod(object):
                 align = "left"
             case _:
                 return ''
-        
+
+        return self.avatar_circle(align, title, avatar)
         return f'<div class="avatar-circle is-flex is-align-items-center is-justify-content-center mr-4 has-tooltip-multiline has-tooltip-arrow has-tooltip-right has-tooltip-text-{align}" data-tooltip="{title}">{avatar}</div>'
 

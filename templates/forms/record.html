@@ -1,4 +1,18 @@
 <form class="box" hx-post="/modify_record?record_id={{record.id}}&loop_index={{loop.index}}" hx-target="#row-{{record.id}}" method="POST">
+  <div class="field is-grouped is-grouped-right">
+    {% if action == 'sign_note' and not status.params['dispatcher_signature'] %}
+    <div class="control">
+      <button class="button is-link" name="submit_form" value="save_sign" onclick="closeModal()">Save and sign</button>
+    </div>
+    {% endif %}
+    <div class="control">
+      <button class="button is-link" name="submit_form" value="save" onclick="closeModal()">Save</button>
+    </div>
+    <div class="control">
+      <button class="button is-link is-light" onclick="closeModal()">Cancel</button>
+      </div>
+  </div>
+
   <div class="columns p-2">
     <div class="column">
       <div class="field is-grouped is-fullwidth">
@@ -47,7 +61,46 @@
           <label class="label">Year</label>
           <input class="input" type="text"  name="year" placeholder="2026" value="{{record.year}}">
         </div>
-     
+      </div>
+
+      <div class="field is-grouped is-fullwidth">
+        
+        <div class="control">
+          <label class="label">Tags</label>
+          <div class="dropdown is-hoverable is-block">
+            <div class="dropdown-trigger" style="width: 100%;">
+              <button class="button is-fullwidth is-justify-content-space-between" aria-haspopup="true" aria-controls="dropdown-menu-tags" type="button">
+                <span>Select Tags...</span>
+                <span class="icon is-small">
+                  <i class="iconify" data-icon="mdi:chevron-down"></i>
+                </span>
+              </button>
+            </div>
+            
+            <div class="dropdown-menu" id="dropdown-menu-tags" role="menu" style="width: 100%;">
+              <div class="dropdown-content" style="max-height: 200px; overflow-y: auto;">
+                {% for tag in tags %}
+                <label class="dropdown-item">
+                  <input type="checkbox" name="audience" value="{{ tag.id }}" {{ 'checked' if tag in record.tags else '' }} class="mr-2">
+                  {{ tag.title }}
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="control">
+          <label class="label">Audience</label>
+          <div class="select">
+            <select name="audience">
+                <option {{ 'selected' if record.audience == 'all' else '' }}>All</option>
+                <option {{ 'selected' if record.audience == 'dr' else '' }}>Only dr</option>
+                <option {{ 'selected' if record.audience == 'permanent' else '' }}>Only permanent</option>
+            </select>
+          </div>
+        </div>
+
         <div class="control">
           <label class="label">Department</label>
           <div class="select">
@@ -58,28 +111,20 @@
             </select>
           </div>
         </div>
+      
       </div>
 
       <div class="field">
         <label class="label">Title</label>
         <div class="control">
-          <input class="input" type="text"  name="title" placeholder="Title" value="{{record.title}}">
+            <textarea class="textarea" name="title" placeholder="Title">{{record.title}}</textarea>
         </div>
       </div>
 
       <div class="field">
         <label class="label">Comments</label>
         <div class="control">
-          <textarea class="textarea" placeholder="Textarea"></textarea>
-        </div>
-      </div>
-
-      <div class="field is-grouped">
-        <div class="control">
-          <button class="button is-link" onclick="closeModal()">Submit</button>
-        </div>
-        <div class="control">
-          <button class="button is-link is-light" onclick="closeModal()">Cancel</button>
+            <textarea class="textarea" name="comments" placeholder="Textarea"></textarea>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 <div class="column is-narrow">
-    <span class="iconify has-text-grey" data-icon="mdi-{{ record.stage_icon }}"></span>
+    {{ record.stage_icon(status)|safe }}
 </div>
 
 <div class="column is-1-5">
@@ -18,7 +18,7 @@
 
 <div class="column position-relative">
   <span class="mr-2 {{ record.read_status_html(status,current_actor) if record.flow == 'inbound' else '' }}">
-    {{ record.title }}
+    {{ record.title_hashtag|safe }}
   </span>
 
   {% for tag in record.tags %}

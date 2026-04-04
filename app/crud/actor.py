@@ -1,7 +1,13 @@
 from sqlmodel import Session, select, and_, or_
+from sqlalchemy import Integer, cast
 
 from app.core.database import engine
 from app.models.actor import Actor
+from app.models.record_actor import RecordActor
+
+def add_recordactor(db: Session, record_id: int, actor_id: int):
+    status = RecordActor(record_id=record_id, actor_id=actor_id)
+    db.add(status); db.commit(); db.refresh(status)
 
 def get_actor_by_id(actor_id: int, db: Session) -> Actor | None:
     return db.get(Actor, actor_id)
@@ -34,6 +40,9 @@ def get_all_deps(db: Session):
 def get_all_alias_deps(db: Session):
     return db.exec(select(Actor.alias).where(and_(Actor.is_active,Actor.kind=='dep')).order_by(Actor.alias)).all()
 
+def get_dispatcher_alias(db: Session) -> list(str):
+    return db.exec(select(Actor.alias).where(and_(Actor.is_active,Actor.scopes.contains('despacho'))).order_by(Actor.alias)).all()
+
 def get_senders_register(db: Session, flow: str, register_alias: str, ctr_alias: str = None) -> list(Actor):
     if flow == 'inbound':
         return db.exec(select(Actor).where(and_(Actor.is_active,or_(Actor.kind=='ctr',Actor.kind=='contact'),Actor.scopes.contains(f'contact:{register_alias}'))).order_by(Actor.alias)).all()
@@ -42,10 +51,14 @@ def get_senders_register(db: Session, flow: str, register_alias: str, ctr_alias:
     elif flow == 'internal_cl': ## Note we are sending. Sender is a dr o of
         return db.exec(select(Actor).where(and_(Actor.is_active, Actor.kind=='user',Actor.scopes.contains(f'ctr_{ctr_alias}:editor'))).order_by(Actor.alias)).all()
 
-def get_targets_register(db: Session, flow: str, register_alias: str, ctr_alias: str = None) -> list(Actor):
+def get_targets_register(db: Session, flow: str, register_alias: str, ctr_alias: str = None, query: str = None) -> list(Actor):
     if flow == 'outbound':
         return db.exec(select(Actor).where(and_(Actor.is_active,Actor.scopes.contains(f'contact:{register_alias}'))).order_by(Actor.alias)).all()
     elif flow in ['inbound','internal_cr']: ## Note we are sending. Sender is a dr o of
-        return db.exec(select(Actor).where(and_(Actor.is_active, Actor.kind=='user',or_(Actor.scopes.contains('of'),Actor.scopes.contains('dr')))).order_by(Actor.alias)).all()
+        fn = [Actor.is_active,or_(Actor.scopes.contains('of'),Actor.scopes.contains('dr'))]
+        if query:
+            fn.append(or_(Actor.alias.contains(query),Actor.params['departments'].contains(query)))
+
+        return db.exec(select(Actor).where(*fn).order_by(cast(Actor.params['order'], Integer).desc(),Actor.alias)).all()
     elif flow == 'internal_cl': ## Note we are sending. Sender is a dr o of
-        return db.exec(select(Actor).where(and_(Actor.is_active, Actor.kind=='user',Actor.scopes.contains(f'ctr_{ctr_alias}:editor'))).order_by(Actor.alias)).all()
+        return db.exec(select(Actor).where(and_(Actor.is_active,Actor.scopes.contains(f'ctr_{ctr_alias}:editor'))).order_by(Actor.alias)).all()

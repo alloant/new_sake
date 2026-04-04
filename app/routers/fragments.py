@@ -22,7 +22,7 @@ from app.models.mail import Attachment
 
 from app.services.drive import upload_bytes_and_convert
 
-from app.crud import get_records, get_mails, get_register_by_alias, get_actor_by_id, get_record_actor, get_record_by_id, add_mail, get_last_uid, get_mail_by_uid, get_actor_by_alias
+from app.crud import get_records, get_mails, get_register_by_alias, get_actor_by_id, get_record_actor, get_record_by_id, add_mail, get_last_uid, get_mail_by_uid, get_actor_by_alias, get_actor_by_ids, add_recordactor
 
 from app.views.records import records_view, records_table_view, action_view
 from app.views.mails import mails_view, mails_table_view
@@ -116,13 +116,33 @@ async def modify_record(request: Request, record_id: int, loop_index: int, db: S
     loop.index = loop_index
     form = await request.form()
     data = dict(form)
-    target_ids = form.getlist("user_ids")
+    list_new_actors = form.getlist("user_ids")
+    new_actors = set(list_new_actors)
     
     current_actor = get_actor_by_id(actor_id = payload.uid, db = db)
     record = get_record_by_id(record_id, db = db)
     status = get_record_actor(record_id = record_id, actor_id = payload.uid, db = db)
+    
+    if data['submit_form'] == 'save_sign':
+        status.params['dispatcher_signature'] = True
+        db.add(status)
+
+    map_actors = {str(ra.actor_id): ra for ra in record.actors}
+    current_actors = set(map_actors.keys())
+   
+    for actor_id in (current_actors - new_actors):
+        map_actors[actor_id].target = 0
+    
+    for actor_id in new_actors:
+        if actor_id in current_actors:
+            map_actors[actor_id].target = list_new_actors.index(actor_id) + 1
+        else: # A new one
+            status_actor = get_record_actor(record_id = record_id, actor_id = actor_id, db = db)
+            status_actor.target = list_new_actors.index(actor_id) + 1
+            db.add(status_actor)
 
     record.title = data['title']
+    #record.comments = data['comments']
     record.sequence = data['sequence']
     record.year = data['year']
 
@@ -136,7 +156,8 @@ async def modify_record(request: Request, record_id: int, loop_index: int, db: S
 
     db.add(record)
     db.commit()
-    
+    db.refresh(record)
+
     return templates.TemplateResponse('record/table_row.html', {'request': request, 'record': record, 'status': status, 'current_actor': current_actor, 'loop': loop})
     return f"record/table_row.html", {"record": record, "status": status}
 

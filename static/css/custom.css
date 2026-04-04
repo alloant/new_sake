@@ -1,6 +1,8 @@
 /* Default / Light Theme */
 :root {
   --font-color: #000000;
+  --font-color-active: #000000;
+  --font-color-inactive: #aaaaaa;
   --background-color: #efefef;
   --sidebar-color: #000000;
   --sidebar-background: #bfbfbf;
@@ -26,6 +28,8 @@
 /* Dark Theme */
 [data-theme="dark"] {
   --font-color: #ffffff;
+  --font-color-active: #ffffff;
+  --font-color-inactive: #aaaaaa;
   --background-color: #030303;
   --sidebar-color: #ffffff;
   --sidebar-background: #131313;
@@ -74,7 +78,6 @@
     font-size: 0px !important;
 }
 
-
 .modal-content {
     height: auto; 
     width: auto; 
@@ -97,6 +100,8 @@
   overflow-y: auto;
   background-color: var(--background-color);
   border-radius: 8px !important;
+  max-height: 70vh; /* This keeps the 'floor' stable */
+  min-height: 70vh; /* This keeps the 'floor' stable */
 }
 
 @media screen and (max-width: 768px) {

@@ -74,7 +74,7 @@ def FULLMENU(section):
         MenuGroup(
             title="My inbox",
             items=[
-                MenuItem(id="inbox", title=_("Inbox"), link="/?section=board&panel=inbox", icon="mdi-inbox-arrow-down", perms=["user"], show_count=True, hx_trigger=", record_state_changed from:body"),
+                MenuItem(id="inbox", title=_("Inbox"), link="/?section=board&panel=inbox", icon="mdi-inbox-arrow-down", perms=["user"], show_count=True, hx_trigger=", record_state_changed from:body, socket-updated from:body"),
                 MenuItem(id="inbox-snooze", title=_("Snooze"), link="/?section=board&panel=inbox-snooze", icon="mdi-alarm-snooze", perms=["user"], show_count=True),
                 MenuItem(id="inbox-archived", title=_("Archived"), link="/?section=board&panel=inbox-archived", icon="mdi-archive", perms=["user"]),
             ],
@@ -83,14 +83,14 @@ def FULLMENU(section):
         MenuGroup(
             title="My outbox",
             items=[
-                MenuItem(id="outbox-drafts", title=_("Drafts"), link="/?section=board&panel=outbox-drafts", icon="mdi-note-edit", perms=["user"], show_count=True),
+                MenuItem(id="outbox-drafts", title=_("Drafts"), link="/?section=board&panel=outbox-drafts", icon="mdi-note-edit", perms=["user"], show_count=True, hx_trigger=", socket-updated from:body"),
                 MenuItem(id="outbox-sent", title=_("Sent"), link="/?section=board&panel=outbox-sent", icon="mdi-email-fast", perms=["user"]),
             ]
         ),
         MenuGroup(
             title="Proposals",
             items=[
-                MenuItem(id="incoming-proposals-to-sign", title=_("To sign"), link="/?section=board&panel=incoming-proposals-to-sign", icon="mdi-file-outline", perms=["user"], show_count=True, hx_trigger=",proposal_sign_changed from:body"),
+                MenuItem(id="incoming-proposals-to-sign", title=_("To sign"), link="/?section=board&panel=incoming-proposals-to-sign", icon="mdi-file-outline", perms=["user"], show_count=True, hx_trigger=",proposal_sign_changed from:body, socket-updated from:body"),
                 MenuItem(id="incoming-proposals-signed", title=_("Signed"), link="/?section=board&panel=incoming-proposals-signed", icon="mdi-file-sign", perms=["user"]),
             ]
         ),
@@ -98,8 +98,8 @@ def FULLMENU(section):
             title="My proposals",
             items=[
                 MenuItem(id="outcoming-proposals-drafts", title=_("Drafts"), link="/?section=board&panel=outcoming-proposals-drafts", icon="mdi-note-edit", perms=["user"], show_count=True, hx_trigger=",proposal_state_changed from:body"),
-                MenuItem(id="outcoming-proposals-circulating", title=_("Circulating"), link="/?section=board&panel=outcoming-proposals-circulating", icon="mdi-account-arrow-right-outline", perms=["user"], show_count=True, hx_trigger=",proposal_state_changed from:body"),
-                MenuItem(id="outcoming-proposals-done", title=_("Aproved"), link="/?section=board&panel=outcoming-proposals-done", icon="mdi-check-circle-outline", perms=["user"], show_count=True, hx_trigger=",proposal_state_changed from:body"),
+                MenuItem(id="outcoming-proposals-circulating", title=_("Circulating"), link="/?section=board&panel=outcoming-proposals-circulating", icon="mdi-account-arrow-right-outline", perms=["user"], show_count=True, hx_trigger=",proposal_state_changed from:body, socket-updated from:body"),
+                MenuItem(id="outcoming-proposals-done", title=_("Aproved"), link="/?section=board&panel=outcoming-proposals-done", icon="mdi-check-circle-outline", perms=["user"], show_count=True, hx_trigger=",proposal_state_changed from:body, socket-updated from:body"),
                 MenuItem(id="outcoming-proposals-snooze", title=_("Snooze"), link="/?section=board&panel=outcoming-proposals-snooze", icon="mdi-alarm-snooze", perms=["user"], show_count=True, hx_trigger=",proposal_state_changed from:body"),
                 MenuItem(id="outcoming-proposals-archived", title=_("Archived"), link="/?section=board&panel=outcoming-proposals-archived", icon="mdi-archive", perms=["user"], hx_trigger=",proposal_state_changed from:body"),
             ]

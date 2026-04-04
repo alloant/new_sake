@@ -4,6 +4,7 @@ from enum import Enum
 from sqlmodel import SQLModel, Field, Relationship, Column
 from sqlalchemy.dialects.mysql import JSON
 
+
 class Kind(str, Enum): # Roles of users
     USER = "user"
     CONTACT = "contact"
@@ -41,8 +42,11 @@ class Actor(SQLModel, ActorSettings, table=True):
     is_active: bool = True
     color: str | None = Field(max_length=10, default=None)
     scopes: list[str] = Field(sa_column=Column(JSON, nullable=False), default_factory=list)
+    params: dict[str, object] = Field(sa_column=Column(JSON, nullable=False), default_factory=dict)
     settings: dict[str, object] = Field(sa_column=Column(JSON, nullable=False), default_factory=dict)
     created_at: datetime = Field(default_factory=datetime.utcnow)
+    
+    #records: list["Record"] = Relationship(back_populates="sender")
     
     @property
     def role(self):
@@ -52,4 +56,5 @@ class Actor(SQLModel, ActorSettings, table=True):
             return 'of'
         else:
             return 'cl'
-    #records: list["Record"] = Relationship(back_populates="sender")
+    
+

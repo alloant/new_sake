@@ -1,13 +1,27 @@
-<div id="table-search" class="is-flex is-justify-content-space-between is-align-items-center top-level pr-2">
-    <div class="is-flex-grow-1 mr-2">
+
+<div id="table-search" class="is-flex is-justify-content-space-between is-align-items-center top-level px-2 mt-1">
+    <div class="is-flex-grow-1 mr-2 dropdown is-block">
       <div class="field">
-        <div class="control has-icons-left">
+        <div class="control has-icons-left has-icons-right">
           <input class="input is-mediumish is-rounded" type="search" placeholder="Search" name="search" id="search" {{ 'value=search' if search else ''}}
             hx-post="/records/table?section={{section}}&panel={{panel}}"
             hx-trigger="input changed delay:500ms, search"
             hx-indicator="#progress-indicator"
             hx-target="#main-table"/>
           <span class="icon is-small is-left"><i class="iconify" data-icon="mdi-magnify"></i></span>
+            <span class="icon is-right dropdown-trigger is-clickable" aria-haspopup="true" aria-controls="dropdown-search">
+              <i class="iconify" data-icon="mdi:tune-variant"></i>
+            </span>
+
+            <div class="dropdown-menu" id="dropdown-search" role="menu" style="width: 100%; padding-top: 0;">
+              <div class="dropdown-content box shadow" style="border-radius: 8px; margin-top: 5px;">
+                <div class="p-4">
+                  {% include 'record/main_advance_search.html' %}
+                </div>
+              </div>
+            </div>
+
+
         </div>
       </div> <!-- end field -->
     </div> <!-- end level item -->

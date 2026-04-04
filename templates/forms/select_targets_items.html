@@ -7,7 +7,12 @@
         
         <label class="checkbox is-flex-grow-1">
             <input type="checkbox" name="user_ids" value="{{ target.id }}" class="mr-2" {{ 'checked' if target.id in checked_targets }}>
-            {{ target.alias }}
+                {{ target.alias }} 
+                {% if 'departments' in target.params %}
+                    -
+                    {% if 'of' in target.scopes %}of{% endif %}
+                    {{ ','.join(target.params['departments']) }}
+                {% endif %}
         </label>
     </div>
     {% endfor %}

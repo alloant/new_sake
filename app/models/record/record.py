@@ -38,6 +38,11 @@ class Area(str, Enum):
     IND = "#697cc9"
     J = "#c6c969"
 
+class Audience(str, Enum):
+    ALL = 'all'
+    DR = 'dr'
+    PERMANENT = 'permanent'
+
 class RecordTag(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     record_id: int = Field(foreign_key="record.id")
@@ -57,6 +62,7 @@ class Record(SQLModel, RecordMethod, table=True):
     id: int | None = Field(default=None, primary_key=True)
     state: State = Field(max_length=20)
     stage: Stage = Field(max_length=20)
+    audience: Audience = Field(default=Audience.ALL, max_length=10)
     title: str | None = Field(max_length=500, default="")
     flow: Flow = Field(max_length=20)
     sequence: int = Field(description="Sequential number (nn)")
@@ -97,30 +103,54 @@ class Record(SQLModel, RecordMethod, table=True):
         },
     )
 
-    @property
-    def stage_icon(self):
+    def stage_icon(self, status):
         if self.state == 'archived':
-            return 'archive-outline'
+            title = 'Archived'
+            color, icon = 'inactive', 'archive-outline'
         elif self.state == 'snooze':
-            return 'alarm-snooze'
+            title = 'On hold'
+            color, icon = 'inactive', 'alarm-snooze'
         
         match self.stage:
             case "inbox":
-                return 'file-alert'
+                title = ''
+                color, icon = 'active', 'file-alert'
             case "despacho":
-                return 'briefcase-outline'
+                if status and status.params.get('dispatcher_signature'):
+                    title = 'Signed'
+                    color, icon = 'inactive', 'briefcase-outline'
+                else:
+                    signatures = []
+                    for actor in self.actors:
+                        if actor.params.get('dispatcher_signature'):
+                            signatures.append(actor.alias)
+                    if signatures:
+                        rst =  ", ".join(signatures)
+                        title = f"Pending (signed by {rst})"
+                        color, icon = 'active', 'briefcase-account'
+                    else:
+                        title = "Pending"
+                        color, icon = 'active', 'briefcase'
             case "registered":
-                return 'file'
+                title = ''
+                color, icon = 'active', 'file'
             case "draft":
-                return 'progress-wrench'
+                title = ''
+                color, icon = 'active', 'progress-wrench'
             case "outbox":
-                return 'timer-sand'
+                title = ''
+                color, icon = 'active', 'timer-sand'
             case "sent":
-                return 'email-fast-outline'
+                title = ''
+                color, icon = 'active', 'email-fast-outline'
             case "sketch":
-                return 'progress-wrench'
+                title = ''
+                color, icon = 'active', 'progress-wrench'
             case "shared":
-                return 'account-arrow-right-outline'
+                title = ''
+                color, icon = 'active', 'account-arrow-right-outline'
             case "closed":
-                return 'check'
+                title = ''
+                color, icon = 'active', 'check'
 
+        return f'<div class="iconify has-tooltip-multiline has-tooltip-arrow has-tooltip-right" data-tooltip="{title}"><i class="iconify" data-width="1em" data-icon="mdi-{icon}" style="color: {color};"></i></div>'

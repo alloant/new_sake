@@ -1,5 +1,6 @@
 from enum import Enum
 from sqlalchemy.dialects.mysql import JSON
+from sqlalchemy.ext.mutable import MutableDict
 from sqlmodel import SQLModel, Field, Relationship, Column
 
 class HandledStatus(str, Enum):
@@ -26,7 +27,10 @@ class RecordActor(SQLModel, table=True):
     handled: HandledStatus = Field(default="")
     target: int = Field(default=0) # 0 means not involve. > 0 means involved. The number marks the order
     
-    params: dict[str,str] = Field(sa_column=Column(JSON, nullable=False), default_factory=dict)
-    
+    #params: dict[str,str] = Field(sa_column=Column(JSON, nullable=False), default_factory=dict)
+    params: dict = Field(
+        sa_column=Column(MutableDict.as_mutable(JSON), nullable=False), 
+        default_factory=dict
+    )    
     record: "Record" = Relationship(back_populates="actors")
     actor: "Actor" = Relationship()

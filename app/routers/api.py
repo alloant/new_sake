@@ -5,18 +5,19 @@ from authx import TokenPayload
 
 from app.core.auth import auth, get_current_actor_alias_from_cookie, get_payload_from_cookie
 from app.core.database import get_db
-from app.crud import get_ctrs, get_actor_by_ids, get_senders_register
+from app.crud import get_ctrs, get_actor_by_ids, get_senders_register, get_targets_register, get_record_by_id
 # Initialize the router and templates
 router = APIRouter()
 from .main import templates
 
 
 @router.get("/users/search", response_class=HTMLResponse)
-async def search_targets(request: Request, q: str = "", user_ids: list[int] = Query(default=[]), db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
+async def search_targets(request: Request, record_id: int, query: str = "", user_ids: list[int] = Query(default=[]), db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
     # Query database based on search string
+    record = get_record_by_id(record_id, db = db)
     checked = get_actor_by_ids(user_ids,db)
-    ctrs = get_ctrs(db, q)
-    available_targets = checked + [ctr for ctr in ctrs if not ctr.id in user_ids]
+    rst = get_targets_register(db, record.flow, record.register.alias, query=query)
+    available_targets = checked + [target for target in rst if not target in checked]
     
     # Return ONLY the list items for the left column
     return templates.TemplateResponse(

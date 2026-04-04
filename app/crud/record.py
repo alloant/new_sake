@@ -8,7 +8,7 @@ from app.core.database import engine
 from app.crud.register import get_register_by_alias, get_actor_registers
 from app.crud.actor import get_actor_by_id, get_actor_by_alias
 
-from app.models.record import Record, RecordRecord
+from app.models.record import Record, RecordRecord, Tag
 from app.models.record_actor import RecordActor
 
 
@@ -21,6 +21,8 @@ current_target_subquery = (
         .scalar_subquery()
     )
 
+def get_tags(db: Session):
+    return db.exec(select(Tag)).all()
 
 def get_record_actor(record_id: int, actor_id: int, db: Session) -> RecordActor:
     smnt = select(RecordActor).where(

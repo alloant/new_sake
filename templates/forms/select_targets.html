@@ -1,7 +1,7 @@
 <div class="panel-block p-0 mr-2">
     <p class="control has-icons-left">
-        <input class="input" type="text" name="q" placeholder="Search targets..."
-               hx-get="/users/search" 
+        <input class="input" type="text" name="query" placeholder="Search targets..."
+            hx-get="/users/search?record_id={{record.id}}" 
                hx-target="#sortable-targets" 
                hx-include="#sortable-targets"
                hx-trigger="keyup changed delay:300ms">
