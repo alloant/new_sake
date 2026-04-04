@@ -81,7 +81,7 @@
               <div class="dropdown-content" style="max-height: 200px; overflow-y: auto;">
                 {% for tag in tags %}
                 <label class="dropdown-item">
-                  <input type="checkbox" name="audience" value="{{ tag.id }}" {{ 'checked' if tag in record.tags else '' }} class="mr-2">
+                  <input type="checkbox" name="tag_ids" value="{{ tag.id }}" {{ 'checked' if tag in record.tags else '' }} class="mr-2">
                   {{ tag.title }}
                 </label>
                 {% endfor %}

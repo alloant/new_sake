@@ -22,7 +22,7 @@ from app.models.mail import Attachment
 
 from app.services.drive import upload_bytes_and_convert
 
-from app.crud import get_records, get_mails, get_register_by_alias, get_actor_by_id, get_record_actor, get_record_by_id, add_mail, get_last_uid, get_mail_by_uid, get_actor_by_alias, get_actor_by_ids, add_recordactor
+from app.crud import get_records, get_mails, get_register_by_alias, get_actor_by_id, get_record_actor, get_record_by_id, add_mail, get_last_uid, get_mail_by_uid, get_actor_by_alias, get_actor_by_ids, add_recordactor, get_tags
 
 from app.views.records import records_view, records_table_view, action_view
 from app.views.mails import mails_view, mails_table_view
@@ -140,6 +140,19 @@ async def modify_record(request: Request, record_id: int, loop_index: int, db: S
             status_actor = get_record_actor(record_id = record_id, actor_id = actor_id, db = db)
             status_actor.target = list_new_actors.index(actor_id) + 1
             db.add(status_actor)
+    
+    new_tags = set(form.getlist("tag_ids"))
+    map_tags = {str(ra.id): ra for ra in record.tags}
+    current_tags = set(map_tags.keys())
+
+    map_all_tags = {str(ra.id): ra for ra in get_tags(db)}
+
+    for tag_id in (current_tags - new_tags):
+        print(tag_id)
+        record.tags.remove(map_all_tags[tag_id])
+
+    for tag_id in (new_tags - current_tags):
+        record.tags.append(map_all_tags[tag_id])
 
     record.title = data['title']
     #record.comments = data['comments']

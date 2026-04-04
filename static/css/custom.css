@@ -62,6 +62,9 @@
   }
 }
 
+html, body {
+  height: 100%;
+}
 
 .has-tooltip-multiline::before {
   font-size: 1em !important; /* Adjust this to your preferred size */
@@ -113,8 +116,14 @@
   .has-order-3-mobile { order: 3; }
 }
 
-html, body {
-  height: 100%;
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: var(--background-color);
 }
 
 .position-relative { position: relative; }
