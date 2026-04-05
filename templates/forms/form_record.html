@@ -1,17 +1,36 @@
 <form class="box" hx-post="/modify_record?record_id={{record.id}}&loop_index={{loop.index}}" hx-target="#row-{{record.id}}" method="POST">
-  <div class="field is-grouped is-grouped-right">
-    {% if action == 'sign_note' and not status.params['dispatcher_signature'] %}
-    <div class="control">
-      <button class="button is-link" name="submit_form" value="save_sign" onclick="closeModal()">Save and sign</button>
-    </div>
-    {% endif %}
-    <div class="control">
-      <button class="button is-link" name="submit_form" value="save" onclick="closeModal()">Save</button>
-    </div>
-    <div class="control">
-      <button class="button is-link is-light" onclick="closeModal()">Cancel</button>
+  <nav class="level">
+    <div class="level-left">
+      <div class="level-item">
+      <h2 class="title">Record {{ record.protocol }}</h2>
       </div>
-  </div>
+    </div>
+
+    <div class="level-right">
+      <div class="level-item">
+        <div class="field is-grouped">
+          {% if action == 'sign_note' and not status.params['dispatcher_signature'] %}
+            <div class="control">
+              <button class="button is-link" name="submit_form" value="save_sign" onclick="closeModal()">
+                <span class="iconify mr-1" data-icon="mdi-content-save-edit"></span>
+                Save and sign
+              </button>
+            </div>
+          {% endif %}
+            <div class="control">
+              <button class="button is-link" name="submit_form" value="save" onclick="closeModal()">
+                <span class="iconify mr-1" data-icon="mdi-content-save"></span>
+                Save
+              </button>
+            </div>
+            <div class="control">
+              <button class="button is-link is-light" onclick="closeModal()">Cancel</button>
+            </div>
+
+        </div>
+      </div>
+    </div>
+  </nav> 
 
   <div class="columns p-2">
     <div class="column">

@@ -2,12 +2,14 @@ import json
 import io
 import base64
 import asyncio
+from datetime import timedelta
 
 from pydantic import BaseModel
 
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request, Depends, status
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi import UploadFile, File
+from fastapi.responses import RedirectResponse
 #from fastapi.templating import Jinja2Templates
 
 from sqlmodel import Session, select
@@ -22,8 +24,9 @@ from app.models.mail import Attachment
 
 from app.services.drive import upload_bytes_and_convert
 
-from app.crud import get_records, get_mails, get_register_by_alias, get_actor_by_id, get_record_actor, get_record_by_id, add_mail, get_last_uid, get_mail_by_uid, get_actor_by_alias, get_actor_by_ids, add_recordactor, get_tags
+from app.crud import get_records, get_mails, get_register_by_alias, get_actor_by_id, get_record_actor, get_record_by_id, add_mail, get_last_uid, get_mail_by_uid, get_actor_by_alias, get_actor_by_ids, add_recordactor, get_tags, get_targets_register
 
+from app.views.settings import get_settings_form
 from app.views.records import records_view, records_table_view, action_view
 from app.views.mails import mails_view, mails_table_view
 from app.views.sidebar import get_sidebar
@@ -32,6 +35,93 @@ from app.views.sidebar import get_sidebar
 router = APIRouter()
 
 from .main import templates
+
+#Settings
+@router.get("/settings", name="settings")
+async def settings(request: Request, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
+    sidebar = get_sidebar(payload,'settings','', db)
+    current_actor = get_actor_by_id(payload.uid, db)
+    theme = current_actor.get_setting('theme') 
+
+    available_targets = get_targets_register(db, 'outbound', 'ctr')
+    checked_targets = current_actor.ctrs_alias
+    print(checked_targets)
+
+    return templates.TemplateResponse("forms/form_settings.html", {"request": request, "theme": theme, "actor_role": current_actor.role, "sidebar": sidebar, "actor": current_actor, "available_targets": available_targets, 'checked_targets': checked_targets, "settings": get_settings_form(current_actor, db)})
+
+## Settings/profile part
+@router.post("/settings", name="settings")
+async def settings_post(request: Request, db: Session = Depends(get_db), payload = Depends(get_payload_from_cookie)):
+    sidebar = get_sidebar(payload,'settings','', db)
+    current_actor = get_actor_by_id(payload.uid, db)
+    provider = payload.provider
+    theme = current_actor.get_setting('theme') 
+    
+    form = await request.form()
+    data = dict(form)
+    ctrs = form.getlist('user_ids')
+    
+    scopes = []
+    settings = {}
+    for setting in data:
+        if '_' in setting:
+            kind, key = setting.split('_', 1)
+            if kind == 'actor':
+                if key == 'kind':
+                    if data[setting] == 'dr':
+                        scopes.append(f'cg:editor')
+                        scopes.append(f'asr:editor')
+                        scopes.append(f'r:editor')
+                        scopes.append(f'ctr:editor')
+                    elif data[setting] == 'of':
+                        scopes.append(f'cg:viewer')
+                        scopes.append(f'asr:viewer')
+                        scopes.append(f'r:viewer')
+                        scopes.append(f'ctr:viewer')
+            elif kind == 'register':
+                if data[setting]:
+                    scopes.append(f'{key}:{data[setting]}')
+            elif kind == 'setting': 
+                settings[key] = int(data[setting]) if data[setting].isdigit() else data[setting]
+
+            elif kind == 'perm':
+                if data[setting] == 'on':
+                    scopes.append(key)
+    
+    for ctr_id in ctrs:
+        ctr = get_actor_by_id(ctr_id, db)
+        scopes.append(f'ctr_{ctr.alias}:editor')
+
+    current_actor.is_active = 'is_active' in data
+
+    current_actor.scopes = scopes
+    current_actor.settings = settings
+
+    db.add(current_actor)
+    db.commit()
+    
+    user_payload = {
+        "uid": current_actor.id,
+        "alias": current_actor.alias,
+        "provider": provider,
+        "lang": settings['lang'],
+        "data": {"kind": "user"},
+        "google_access_token": payload.access_token if provider == "google" else None,
+        "google_refresh_token": payload.refresh_token if provider == "google" else None,
+    }
+    
+    cookie_duration = 60 * 60 * 24 * 7 # 7 Days
+    access_token = auth.create_access_token("sake",data=user_payload, scopes=current_actor.scopes,expires_delta=timedelta(seconds=cookie_duration))
+    response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=cookie_duration
+    )
+    return response
 
 ## SIDEBAR
 @router.get("/sidebar", response_class=HTMLResponse)
@@ -153,7 +243,7 @@ async def modify_record(request: Request, record_id: int, loop_index: int, db: S
 
     for tag_id in (new_tags - current_tags):
         record.tags.append(map_all_tags[tag_id])
-
+    
     record.title = data['title']
     #record.comments = data['comments']
     record.sequence = data['sequence']

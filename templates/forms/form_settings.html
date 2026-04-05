@@ -1,0 +1,135 @@
+<form class="box" action="/settings?actor_id={{ actor.id }}" method="POST">
+  <nav class="level">
+    <div class="level-left">
+      <div class="level-item">
+        <h2 class="title">Edit User: {{ actor.full_name }}</h2>
+      </div>
+    </div>
+
+    <div class="level-right">
+      <div class="level-item">
+        <div class="field is-grouped">
+          <p class="control">
+            <a href="/settings" class="button is-light">Cancel</a>
+          </p>
+          <p class="control">
+            <button type="submit" class="button is-link">
+              <span class="iconify mr-1" data-icon="mdi-content-save"></span>
+              Save
+            </button>
+          </p>
+        </div>
+      </div>
+    </div>
+  </nav> 
+
+
+  <div class="columns">
+    
+    <div class="column">
+
+      <div class="field">
+        <div class="control">
+          <label class="label">Role:</label>
+          <div class="select">
+            <select name="actor_kind">
+              <option value="dr" {{ 'selected' if settings['kind'] == 'dr' }}>Director cr</option>
+              <option value="of" {{ 'selected' if settings['kind'] == 'of' }}>Official cr</option>
+              <option value="cl" {{ 'selected' if settings['kind'] == 'cl' }}>Member cl</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="control">
+            <label class="checkbox">
+              <input type="checkbox" name="is_active" {{ 'checked' if actor.is_active else '' }} autocomplete="off" />
+                Is active
+            </label>
+        </div>
+      </div>
+      
+      <div class="field">
+        <div class="control">
+            <label class="checkbox">
+              <input type="checkbox" name="perm_admin" {{ 'checked' if 'admin' in settings['scopes'] else '' }} autocomplete="off" />
+                admin
+            </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="control">
+            <label class="checkbox">
+              <input type="checkbox" name="perm_sccr" {{ 'checked' if 'sccr' in settings['scopes'] else '' }} autocomplete="off" />
+                sccr
+            </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="control">
+            <label class="checkbox">
+              <input type="checkbox" name="perm_despacho" {{ 'checked' if 'despacho' in settings['scopes'] else '' }} autocomplete="off" />
+                Despacho
+            </label>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="column">
+      {% for key, value in settings['settings'].items() %}
+      <div class="field">
+        <div class="control">
+          {% if value['type'] == 'str' %}
+            <label class="label">{{ key|capitalize }}</label>
+            <input class="input" type="text" name="setting_{{ key }}" value="{{ actor.get_setting(key) }}">
+          {% elif value['type'] == 'int' %}
+            <label class="label">{{ key|capitalize }}</label>
+            <input class="input" type="text" name="setting_{{ key }}" value="{{ actor.get_setting(key) }}">
+          {% elif value['type'] == 'bool' %}
+            <label class="checkbox">
+              <input type="checkbox" name="setting_{{ key }}" {{ 'checked' if actor.get_setting(key) else '' }} autocomplete="off" />
+                {{ key|capitalize }}
+            </label>
+          {% elif value['type'] == 'select' %}
+            <label class="label">{{ key|capitalize }}</label>
+            <div class="select">
+              <select name="setting_{{ key }}">
+                {% for option in value['options']%}
+                  <option value="{{option}}" {{ 'selected' if actor.get_setting(key) == option else '' }}>{{option}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="column">
+    {% for reg in settings['registers'] %}
+      <div class="field">
+        <label class="label mr-1" style="white-space: nowrap;">{{ reg }}:</label>
+        <div class="control">
+          <div class="select">
+            <select name="register_{{reg}}">
+              <option></option>
+              <option value="owner" {{ 'selected' if settings['registers'][reg].endswith('owner') }}>Owner</option>
+              <option value="editor" {{ 'selected' if settings['registers'][reg].endswith('editor') }}>Editor</option>
+              <option value="viewer" {{ 'selected' if settings['registers'][reg].endswith('viewer') }}>Viewer</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    </div>
+  
+    <div class="column">
+      {% include 'forms/select_targets.html' %}
+    </div>
+
+  </div> <!-- end columns -->
+</form>

@@ -57,4 +57,11 @@ class Actor(SQLModel, ActorSettings, table=True):
         else:
             return 'cl'
     
-
+    @property
+    def ctrs_alias(self):
+        rst = []
+        for scope in self.scopes:
+            if scope.startswith('ctr_'):
+                rst.append(scope.split(':')[0][4:])
+        
+        return rst

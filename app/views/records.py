@@ -67,7 +67,7 @@ async def action_view(record_id,status_id, action, db, current_actor):
         available_targets = get_targets_register(db, record.flow, record.register.alias)
         tags = get_tags(db)
         selected_targets = record.targets_id
-        return "forms/record.html", {'action': action, 'record': record, 'status': status, 'registers': registers, 'departments': departments, 'senders': senders, 'available_targets': available_targets, 'checked_targets': selected_targets, 'tags': tags}
+        return "forms/form_record.html", {'action': action, 'record': record, 'status': status, 'registers': registers, 'departments': departments, 'senders': senders, 'available_targets': available_targets, 'checked_targets': selected_targets, 'tags': tags}
     elif action == "edit_targets":
         available_targets = get_ctrs(db)
         selected_targets = record.targets
@@ -86,6 +86,11 @@ async def action_view(record_id,status_id, action, db, current_actor):
         status.params['dispatcher_signature'] = True
         sock_targets = [f'actor_{alias}' for alias in get_dispatcher_alias(db)]
         await broadcast_channels(channels = sock_targets, actor_alias = current_actor.alias, msg = f'Note {record.protocol} was dispatched by other dr')
+    elif action == "quick_unsign": # Despacho action
+        status.params['dispatcher_signature'] = False
+        sock_targets = [f'actor_{alias}' for alias in get_dispatcher_alias(db)]
+        await broadcast_channels(channels = sock_targets, actor_alias = current_actor.alias, msg = f'Note {record.protocol} was dispatched by other dr')
+
 
     if action in ['mark_read','mark_unread','sign_record', 'quick_sign']:
         db.add(status); db.commit(); db.refresh(status)

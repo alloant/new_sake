@@ -41,7 +41,9 @@ def ACTIONS():
     ACTIONS = {}
     ACTIONS['sign_note'] = {"id": "sign_note_record", "title": _("Sign note"), "attr": {"hx-get": "/action?action=sign_note", "hx-target": "#modal-content-target", "onclick": "openModal()"}, "icon": "mdi-file-sign", "perms": []}
     ACTIONS['quick_sign'] = {"id": "quick_sign", "title": _("Quick sign"), "attr": {"hx-get": "/action?action=quick_sign", "hx-target": "#row-{record_id}"}, "icon": "mdi-draw-pen"}
+    ACTIONS['quick_unsign'] = {"id": "quick_sign", "title": _("Unsign"), "attr": {"hx-get": "/action?action=quick_unsign", "hx-target": "#row-{record_id}"}, "icon": "mdi-pen-off"}
     
+
     ACTIONS['mark_read'] = {"id": "mark_read", "title": _("Mark as read"), "attr": {"hx-get": "/action?action=mark_read", "hx-target": "#row-{record_id}"}, "icon": "mdi-email-check"}
     ACTIONS['mark_unread'] = {"id": "mark_unread", "title": _("Mark as unread"), "attr": {"hx-get": "/action?action=mark_unread", "hx-target": "#row-{record_id}"}, "icon": "mdi-email-open-outline"}
     ACTIONS['enable_snooze'] = {"id": "enable_snooze", "title": _("Hold"), "attr": {"hx-post": "/action?action=enable_snooze", "hx-prompt": "Due date (dd/mm/yyyy)", "hx-target": "#row-{record_id}"}, "icon": "mdi-alarm-snooze"}
@@ -158,8 +160,13 @@ class RecordMethod(object):
         actions = []
         if self.flow == 'inbound' and self.stage == 'despacho':
             actions.append(ActionGroup(title="Despacho",items=[]))
-            actions[-1].items.append(Action(record_id=self.id,**all_actions['sign_note']))
-            actions[-1].items.append(Action(record_id=self.id,**all_actions['quick_sign']))
+            if state.params.get('dispatcher_signature'): # The has already sign 
+                actions[-1].items.append(Action(record_id=self.id,**all_actions['edit_record']))
+                actions[-1].items.append(Action(record_id=self.id,**all_actions['quick_unsign']))
+            else:
+                actions[-1].items.append(Action(record_id=self.id,**all_actions['sign_note']))
+                if self.title and self.targets:
+                    actions[-1].items.append(Action(record_id=self.id,**all_actions['quick_sign']))
 
         if self.flow == 'inbound' and self.stage == 'registed':
             actions.append(ActionGroup(title="Read",items=[]))
@@ -199,7 +206,6 @@ class RecordMethod(object):
         if (not quick_access or self.title == '') and (current_actor.admin or self.flow == 'outbound' and self.stage == 'draft' or self.flow == 'internal_cr' and self.sender_id == current_actor.id):
             actions.append(ActionGroup(title="Edit", items=[]))
             actions[-1].items.append(Action(record_id=self.id,**all_actions['edit_record']))
-            actions[-1].items.append(Action(record_id=self.id,**all_actions['edit_targets']))
             actions[-1].items.append(Action(record_id=self.id,**all_actions['delete_record']))
 
 
@@ -235,7 +241,10 @@ class RecordMethod(object):
 
 
     def avatar_circle(self, align, title, avatar):
-        return f'<div class="avatar-circle is-flex is-align-items-center is-justify-content-center has-tooltip-multiline has-tooltip-arrow has-tooltip-right has-tooltip-text-{align}" data-tooltip="{title}">{avatar}</div>'
+        if title:
+            return f'<div class="avatar-circle is-flex is-align-items-center is-justify-content-center has-tooltip-multiline has-tooltip-arrow has-tooltip-right has-tooltip-text-{align}" data-tooltip="{title}">{avatar}</div>'
+        
+        return f'<div class="avatar-circle is-flex is-align-items-center is-justify-content-center">{avatar}</div>'
 
     @property
     def avatar_html(self):
@@ -245,7 +254,7 @@ class RecordMethod(object):
 
                 if not targets:
                     title = ""
-                    avatar = '<i class="iconify" data-width="1.25em" data-icon="mdi-account"></i>'
+                    avatar = '<i class="iconify has-text-grey" data-width="1.25em" data-icon="mdi-account"></i>'
                     align = "center"
                 elif len(targets) == 1:
                     title = targets[0].actor.alias
@@ -273,5 +282,4 @@ class RecordMethod(object):
                 return ''
 
         return self.avatar_circle(align, title, avatar)
-        return f'<div class="avatar-circle is-flex is-align-items-center is-justify-content-center mr-4 has-tooltip-multiline has-tooltip-arrow has-tooltip-right has-tooltip-text-{align}" data-tooltip="{title}">{avatar}</div>'
 

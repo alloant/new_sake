@@ -17,7 +17,6 @@ from app.crud import get_actor_by_id, get_record_by_id
 
 from app.models.actor import Kind
 from app.views.sidebar import get_sections, get_panel, get_sidebar
-from app.views.settings import get_settings_form
 
 def is_true(obj,condition,text=""):
     if obj:
@@ -78,78 +77,4 @@ async def home_search(request: Request, section: str | None = "board", panel: st
     return templates.TemplateResponse("index.html", {"request": request, "theme": theme, "font_size": font_size, "actor_role": current_actor.role, "sidebar": sidebar, "section": section, "panel": panel, "search": search})
 
 
-## Settings/profile part
-@router.get("/settings", name="settings")
-async def settings(request: Request, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
-    sidebar = get_sidebar(payload,'settings','', db)
-    current_actor = get_actor_by_id(payload.uid, db)
-    theme = current_actor.get_setting('theme') 
-    return templates.TemplateResponse("settings.html", {"request": request, "theme": theme, "actor_role": current_actor.role, "sidebar": sidebar,"actor": current_actor,"settings": get_settings_form(current_actor, db)})
 
-@router.post("/settings", name="settings")
-async def settings_post(request: Request, db: Session = Depends(get_db), payload = Depends(get_payload_from_cookie)):
-    sidebar = get_sidebar(payload,'settings','', db)
-    current_actor = get_actor_by_id(payload.uid, db)
-    provider = payload.provider
-    theme = current_actor.get_setting('theme') 
-    
-    form = await request.form()
-    data = dict(form)
-    
-    scopes = []
-    settings = {}
-    for setting in data:
-        kind, key = setting.split('_', 1)
-        if kind == 'actor':
-            if key == 'kind':
-                if data[setting] == 'dr':
-                    scopes.append(f'cg:editor')
-                    scopes.append(f'asr:editor')
-                    scopes.append(f'r:editor')
-                    scopes.append(f'ctr:editor')
-                elif data[setting] == 'of':
-                    scopes.append(f'cg:viewer')
-                    scopes.append(f'asr:viewer')
-                    scopes.append(f'r:viewer')
-                    scopes.append(f'ctr:viewer')
-        elif kind == 'register':
-            if data[setting]:
-                scopes.append(f'{key}:{data[setting]}')
-        elif kind == 'ctr':
-            print('ctr',key)
-            scopes.append(f'ctr_{key}:editor')
-        elif kind == 'setting': 
-            settings[key] = int(data[setting]) if data[setting].isdigit() else data[setting]
-
-        elif kind == 'perm':
-            if data[setting] == 'on':
-                scopes.append(key)
-
-    current_actor.scopes = scopes
-    current_actor.settings = settings
-
-    db.add(current_actor)
-    db.commit()
-    
-    user_payload = {
-        "uid": current_actor.id,
-        "alias": current_actor.alias,
-        "provider": provider,
-        "lang": settings['lang'],
-        "data": {"kind": "user"},
-        "google_access_token": payload.access_token if provider == "google" else None,
-        "google_refresh_token": payload.refresh_token if provider == "google" else None,
-    }
-    
-    cookie_duration = 60 * 60 * 24 * 7 # 7 Days
-    access_token = auth.create_access_token("sake",data=user_payload, scopes=current_actor.scopes,expires_delta=timedelta(seconds=cookie_duration))
-    response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=True,
-        secure=True,
-        samesite="lax",
-        max_age=cookie_duration
-    )
-    return response

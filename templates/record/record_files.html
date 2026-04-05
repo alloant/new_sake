@@ -1,6 +1,6 @@
 <div class="tags has-addons" style="flex-wrap: nowrap;">
   {% if record.files %}
-    <span class="tag is-hoverable py-0 px-1">
+    <span class="tag is-hoverable py-0 px-1" style="background-color: transparent;">
       <a href="{{ record.files[0].link }}" 
         target="_blank" 
         title="{{record.files[0].name}}"
@@ -12,7 +12,7 @@
     <span class="iconify has-text-grey" data-icon="mdi-document"></span>
   {% endif %}
 
-  <span class="tag is-hoverable py-0">
+  <span class="tag is-hoverable py-0" style="background-color: transparent;">
     <div class="dropdown {{ 'is-up' if loop.index >= 15 }} is-centered">
       <div class="dropdown-trigger" aria-haspopup="true" aria-controls="dropdown-{{ record.id }}">
         <span class="icon" style="position: relative; display: inline-flex; justify-content: center;">

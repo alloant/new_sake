@@ -53,7 +53,11 @@ def get_senders_register(db: Session, flow: str, register_alias: str, ctr_alias:
 
 def get_targets_register(db: Session, flow: str, register_alias: str, ctr_alias: str = None, query: str = None) -> list(Actor):
     if flow == 'outbound':
-        return db.exec(select(Actor).where(and_(Actor.is_active,Actor.scopes.contains(f'contact:{register_alias}'))).order_by(Actor.alias)).all()
+        fn = [Actor.is_active, Actor.scopes.contains(f'contact:{register_alias}')]
+        if query:
+            fn.append(Actor.alias.contains(query))
+
+        return db.exec(select(Actor).where(and_(*fn)).order_by(Actor.alias)).all()
     elif flow in ['inbound','internal_cr']: ## Note we are sending. Sender is a dr o of
         fn = [Actor.is_active,or_(Actor.scopes.contains('of'),Actor.scopes.contains('dr'))]
         if query:
@@ -61,4 +65,8 @@ def get_targets_register(db: Session, flow: str, register_alias: str, ctr_alias:
 
         return db.exec(select(Actor).where(*fn).order_by(cast(Actor.params['order'], Integer).desc(),Actor.alias)).all()
     elif flow == 'internal_cl': ## Note we are sending. Sender is a dr o of
-        return db.exec(select(Actor).where(and_(Actor.is_active,Actor.scopes.contains(f'ctr_{ctr_alias}:editor'))).order_by(Actor.alias)).all()
+        fn = [Actor.is_active,Actor.scopes.contains(f'ctr_{ctr_alias}:editor')]
+        if query:
+            fn.append(or_(Actor.alias.contains(query),Actor.params['departments'].contains(query)))
+
+        return db.exec(select(Actor).where(and_(*fn)).order_by(Actor.alias)).all()

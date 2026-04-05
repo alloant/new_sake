@@ -7,11 +7,14 @@
       <i class="iconify" data-icon="mdi-post-outline"></i>
     </button>
     -->
-    <a  class="button has-tooltip-arrow has-tooltip-left flex-shrink"
-        data-tooltip="Settings"
-        href="settings">
-        <span class="iconify" data-icon="mdi-cog"></span>
+    <a class="button has-tooltip-arrow has-tooltip-left flex-shrink"
+      hx-get="/settings"
+      hx-target="#modal-content-target"
+      onclick="openModal()"
+      title="Settings">
+      <i class="iconify" data-icon="mdi:cog"></i>
     </a>
+
   </div>
 
   <!-- Here universal search bar -->

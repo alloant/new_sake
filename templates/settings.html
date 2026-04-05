@@ -27,6 +27,11 @@
                 <div class="control">
                   <div class="checkboxes">
                     <label class="checkbox">
+                    <input type="checkbox" name="is_active" {{ 'checked' if actor.is_active else '' }} autocomplete="off" />
+                      Is active
+                    </label>
+
+                    <label class="checkbox">
                     <input type="checkbox" name="perm_admin" {{ 'checked' if 'admin' in settings['scopes'] else '' }} autocomplete="off" />
                       admin
                     </label>
