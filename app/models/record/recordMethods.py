@@ -161,14 +161,15 @@ class RecordMethod(object):
         if self.flow == 'inbound' and self.stage == 'despacho':
             actions.append(ActionGroup(title="Despacho",items=[]))
             if state.params.get('dispatcher_signature'): # The has already sign 
-                actions[-1].items.append(Action(record_id=self.id,**all_actions['edit_record']))
+                if not quick_access:
+                    actions[-1].items.append(Action(record_id=self.id,**all_actions['edit_record']))
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['quick_unsign']))
             else:
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['sign_note']))
                 if self.title and self.targets:
                     actions[-1].items.append(Action(record_id=self.id,**all_actions['quick_sign']))
 
-        if self.flow == 'inbound' and self.stage == 'registed':
+        if self.flow == 'inbound' and self.stage == 'registered':
             actions.append(ActionGroup(title="Read",items=[]))
             if not state or (state.handled != 'read' and self.created_at > current_actor.created_at) or (state.handled == 'read' and self.created_at <= current_actor.created_at):
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['mark_read']))
@@ -188,20 +189,21 @@ class RecordMethod(object):
 
         if (self.flow == 'inbound' and self.stage == 'registered') or self.flow == 'internal_cr' and self.sender_id == current_actor.id and self.stage != 'shared':
             actions.append(ActionGroup(title="Inbox",items=[]))
-            if self.state != 'snooze':
-                actions[-1].items.append(Action(record_id=self.id,**all_actions['enable_snooze']))
-            else:
-                actions[-1].items.append(Action(record_id=self.id,**all_actions['disable_snooze']))
-        
             if self.state != 'archived':
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['archive']))
             else:
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['restore']))
 
+            if not quick_access:
+                if self.state != 'snooze':
+                    actions[-1].items.append(Action(record_id=self.id,**all_actions['enable_snooze']))
+                else:
+                    actions[-1].items.append(Action(record_id=self.id,**all_actions['disable_snooze']))
+
+        actions.append(ActionGroup(title="Info", items=[]))
         if not quick_access:
-            actions.append(ActionGroup(title="Info", items=[]))
             actions[-1].items.append(Action(record_id=self.id,**all_actions['check_info']))
-            actions[-1].items.append(Action(record_id=self.id,**all_actions['recursive_search']))
+        actions[-1].items.append(Action(record_id=self.id,**all_actions['recursive_search']))
         
         if (not quick_access or self.title == '') and (current_actor.admin or self.flow == 'outbound' and self.stage == 'draft' or self.flow == 'internal_cr' and self.sender_id == current_actor.id):
             actions.append(ActionGroup(title="Edit", items=[]))

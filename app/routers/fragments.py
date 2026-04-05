@@ -45,7 +45,6 @@ async def settings(request: Request, db: Session = Depends(get_db), payload: Tok
 
     available_targets = get_targets_register(db, 'outbound', 'ctr')
     checked_targets = current_actor.ctrs_alias
-    print(checked_targets)
 
     return templates.TemplateResponse("forms/form_settings.html", {"request": request, "theme": theme, "actor_role": current_actor.role, "sidebar": sidebar, "actor": current_actor, "available_targets": available_targets, 'checked_targets': checked_targets, "settings": get_settings_form(current_actor, db)})
 
@@ -56,9 +55,9 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
     current_actor = get_actor_by_id(payload.uid, db)
     provider = payload.provider
     theme = current_actor.get_setting('theme') 
-    
     form = await request.form()
     data = dict(form)
+
     ctrs = form.getlist('user_ids')
     
     scopes = []
@@ -69,15 +68,19 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
             if kind == 'actor':
                 if key == 'kind':
                     if data[setting] == 'dr':
+                        scopes.append('dr')
                         scopes.append(f'cg:editor')
                         scopes.append(f'asr:editor')
                         scopes.append(f'r:editor')
                         scopes.append(f'ctr:editor')
                     elif data[setting] == 'of':
+                        scopes.append('of')
                         scopes.append(f'cg:viewer')
                         scopes.append(f'asr:viewer')
                         scopes.append(f'r:viewer')
                         scopes.append(f'ctr:viewer')
+                    else:
+                        scopes.append('cl')
             elif kind == 'register':
                 if data[setting]:
                     scopes.append(f'{key}:{data[setting]}')
@@ -112,6 +115,7 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
     
     cookie_duration = 60 * 60 * 24 * 7 # 7 Days
     access_token = auth.create_access_token("sake",data=user_payload, scopes=current_actor.scopes,expires_delta=timedelta(seconds=cookie_duration))
+    
     response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(
         key="access_token",
@@ -121,6 +125,7 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
         samesite="lax",
         max_age=cookie_duration
     )
+
     return response
 
 ## SIDEBAR
@@ -238,7 +243,6 @@ async def modify_record(request: Request, record_id: int, loop_index: int, db: S
     map_all_tags = {str(ra.id): ra for ra in get_tags(db)}
 
     for tag_id in (current_tags - new_tags):
-        print(tag_id)
         record.tags.remove(map_all_tags[tag_id])
 
     for tag_id in (new_tags - current_tags):

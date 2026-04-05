@@ -9,15 +9,19 @@
     <div class="level-right">
       <div class="level-item">
         <div class="field is-grouped">
-          <p class="control">
-            <a href="/settings" class="button is-light">Cancel</a>
-          </p>
-          <p class="control">
-            <button type="submit" class="button is-link">
+          <div class="control">
+            <button class="button is-link" name="submit_form" value="save" onclick="closeModal()">
               <span class="iconify mr-1" data-icon="mdi-content-save"></span>
               Save
             </button>
-          </p>
+          </div>
+
+          <div class="control">
+            <button class="button is-link is-light" type="button" onclick="closeModal()">
+              Cancel
+            </button>
+          </div>
+
         </div>
       </div>
     </div>

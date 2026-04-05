@@ -1,5 +1,5 @@
 from pydantic import BaseModel, computed_field
-from app.crud import get_registers, get_actor_registers, has_permission, get_actor_ctrs
+from app.crud import get_registers, get_actor_registers, has_permission, get_actor_ctrs, get_actor_by_id
 
 
 class MenuSection(BaseModel):
@@ -199,7 +199,12 @@ def get_panel_register(actor_perms,panel,db):
     return menu
 
 def get_sidebar(payload,section,panel,db):
-    sections = get_sections([payload.data['kind']] + payload.scopes,section)
-    panel = get_panel([payload.data['kind']] + payload.scopes,section,panel,db)
+    current_actor = get_actor_by_id(payload.uid, db)
+
+    if current_actor.role == 'cl':
+        pass
+    else:
+        sections = get_sections([payload.data['kind']] + payload.scopes,section)
+        panel = get_panel([payload.data['kind']] + payload.scopes,section,panel,db)
 
     return {'actor_alias': payload.alias, 'sections': sections, 'panel': panel}

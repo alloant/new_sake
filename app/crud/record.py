@@ -58,7 +58,7 @@ def get_num_records(db: Session, search: str = None) -> list[Record]:
 def get_filter(actor,section, panel, db: Session):
     fn = []
     if section == 'register':
-        fn.append(Register.stage == 'registered')
+        fn.append(Record.stage == 'registered')
         if panel in ['all','unread']:
             actor_registers = get_actor_registers(actor.scopes, db)
             fn_registers = [Record.register_id == get_register_by_alias(register,db).id for register in actor_registers if actor_registers[register]]

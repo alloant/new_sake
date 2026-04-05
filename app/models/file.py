@@ -22,10 +22,10 @@ def get_class_icon(name):
             return 'info','file-video'
         case '.mp3' | '.wav':
             return 'info', 'file-music'
-        case '.jpg' | '.gif' | '.png':
+        case '.jpg' | '.jpeg' | '.gif' | '.png':
             return 'warning','file-image'
         case _:
-            return 'secondary','file-document-online'
+            return 'secondary','file'
 
 class File(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)

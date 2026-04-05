@@ -18,10 +18,10 @@ async def search_targets(request: Request, record_id: int = None, query: str = "
         rst = get_targets_register(db, record.flow, record.register.alias, query=query)
     else:
         rst = get_targets_register(db, 'outbound', 'ctr', query=query)
-    print('query: ',query)
+    
     checked = get_actor_by_ids(user_ids,db)
     available_targets = checked + [target for target in rst if not target in checked]
-    print(len(available_targets))
+    
     # Return ONLY the list items for the left column
     return templates.TemplateResponse(
         "forms/select_targets_items.html", 
