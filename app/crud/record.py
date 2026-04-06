@@ -188,32 +188,34 @@ def get_search_filter(search):
 def get_recursive_ids(start_id: int, actor: "Actor", db: Session, limit: int = None, offset:int = None):
     start_record = get_record_by_id(start_id, db)
     start_ids = [start_id]
+
     for reference in start_record.references:
         start_ids.append(reference.id)
 
     start_ids = ",".join([str(r) for r in start_ids])
-    
-    sql = text(
-        f"""
-        WITH RECURSIVE R AS (
-            SELECT record_id, reference_id FROM recordrecord 
-            WHERE record_id IN ({start_ids}) OR reference_id IN ({start_ids})
-            UNION
-            -- Use a more specific join to prevent infinite loops/duplicates
-            SELECT rr.record_id, rr.reference_id 
-            FROM recordrecord rr
-            INNER JOIN R ON rr.record_id = R.reference_id
-        )
-        SELECT record_id FROM R
-        UNION
-        SELECT reference_id FROM R
-        """
-    )
-    all_ids = db.exec(sql).unique().all()
 
-    #all_ids = list(set([start_id] + [item for sublist in all_ids for item in sublist]))
-    all_ids = list(set([int(start_id)] + [item[0] for item in all_ids]))
-    
+    sql = text(f"""
+        WITH RECURSIVE connected_ids AS (
+            -- Start with all IDs involved in the initial records
+            SELECT record_id AS id FROM recordrecord WHERE record_id IN ({start_ids}) OR reference_id IN ({start_ids})
+            UNION
+            SELECT reference_id AS id FROM recordrecord WHERE record_id IN ({start_ids}) OR reference_id IN ({start_ids})
+            
+            UNION
+            
+            -- Find any record where either side of the link matches an ID we already found
+            SELECT CASE 
+                WHEN rr.record_id = c.id THEN rr.reference_id 
+                ELSE rr.record_id 
+            END
+            FROM recordrecord rr
+            JOIN connected_ids c ON (rr.record_id = c.id OR rr.reference_id = c.id)
+        )
+        SELECT id FROM connected_ids
+        """)
+
+    all_ids = list(set([int(start_id)] + [item[0] for item in db.exec(sql).unique().all()]))
+
     return Record.id.in_(all_ids)
 
 def get_records(db: Session, actor = None, section = None, panel = None, search: str = None, limit: int = None, offset: int = None, just_number: bool = False) -> list[Record] | int:
