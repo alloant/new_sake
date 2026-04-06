@@ -69,12 +69,14 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
                 if key == 'kind':
                     if data[setting] == 'dr':
                         scopes.append('dr')
+                        scopes.append(f'prop:editor')
                         scopes.append(f'cg:editor')
                         scopes.append(f'asr:editor')
                         scopes.append(f'r:editor')
                         scopes.append(f'ctr:editor')
                     elif data[setting] == 'of':
                         scopes.append('of')
+                        scopes.append(f'prop:editor')
                         scopes.append(f'cg:viewer')
                         scopes.append(f'asr:viewer')
                         scopes.append(f'r:viewer')
@@ -184,10 +186,10 @@ async def action(request: Request, record_id: int, recordactor_id: str, action: 
     loop.index = loop_index
     if action == 'recursive_search':
         page = 1
-        template, rst = await records_table_view(page, f'all_off:{record_id}', 'register', 'all', db, current_actor)
+        template, rst = await records_table_view(page, f'all_off:{record_id}', 'board', 'all', db, current_actor)
         template = f"record/table_sidebar.html"
-        sidebar = get_sidebar(payload,'register','all',db)
-        response = templates.TemplateResponse(template, {'request': request, 'section': 'register', 'panel': 'all', 'sidebar': sidebar, 'search':f'all_off:{record_id}'} | rst)
+        sidebar = get_sidebar(payload,'board','all',db)
+        response = templates.TemplateResponse(template, {'request': request, 'section': 'board', 'panel': 'all', 'sidebar': sidebar, 'search':f'all_off:{record_id}'} | rst)
 
         return response
     
@@ -249,6 +251,7 @@ async def modify_record(request: Request, record_id: int, loop_index: int, db: S
         record.tags.append(map_all_tags[tag_id])
     
     record.title = data['title']
+    record.area = data['area']
     #record.comments = data['comments']
     record.sequence = data['sequence']
     record.year = data['year']

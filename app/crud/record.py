@@ -59,20 +59,7 @@ def get_filter(actor,section, panel, db: Session):
     fn = []
     if section == 'register':
         fn.append(Record.stage == 'registered')
-        if panel in ['all','unread']:
-            actor_registers = get_actor_registers(actor.scopes, db)
-            fn_registers = [Record.register_id == get_register_by_alias(register,db).id for register in actor_registers if actor_registers[register]]
-            fn.append(or_(*fn_registers))
-            
-            if panel == 'unread':
-                fn.append(Record.flow=='inbound')
-                fn.append(or_(
-                    and_(RecordActor == None, Record.created_at > actor.created_at),
-                    and_(RecordActor.handled != 'read', Record.created_at > actor.created_at),
-                    and_(RecordActor.handled == 'read', Record.created_at <= actor.created_at)
-                    )
-                )
-        elif panel.endswith('_ctr'):
+        if panel.endswith('_ctr'):
             ctr_alias, flow = panel[:-4].split('-')
             ctr = get_actor_by_alias(ctr_alias, db)
             
@@ -97,15 +84,24 @@ def get_filter(actor,section, panel, db: Session):
         if panel == 'despacho':
             fn.append(Record.stage=='despacho') 
             return fn
-        if not 'proposals' in panel and not panel.startswith('outbox'):
-            fn.append(Record.stage == 'registered')
 
         if panel in ['all','mustread','unread']:
             actor_registers = get_actor_registers(actor.scopes, db)
             fn_registers = [Record.register_id == get_register_by_alias(register,db).id for register in actor_registers if actor_registers[register]]
             fn.append(or_(*fn_registers))
             
-            if panel == 'unread':
+            if panel == 'all':
+                fn.append(or_(
+                Record.stage.in_(['registered','sent']),
+                and_(or_(Record.sender_id==actor.id,Record.has_actor_target(actor.id)),or_(
+                    and_(Record.stage=='shared', RecordActor == 'approved'),
+                    and_(Record.stage=='shared', RecordActor.target == current_target_subquery),
+                    Record.stage == 'closed'
+                ))
+            ))
+
+            elif panel == 'unread':
+                fn.append(Record.stage == 'registered')
                 fn.append(Record.flow=='inbound')
                 fn.append(or_(
                     and_(RecordActor == None, Record.created_at > actor.created_at),
@@ -114,10 +110,12 @@ def get_filter(actor,section, panel, db: Session):
                     )
                 )
             elif panel == 'mustread':
+                fn.append(Record.stage == 'registered')
                 fn.append(Record.flow=='inbound')
                 fn.append(RecordActor.handled == 'mustread')
 
         elif panel.startswith('inbox'):
+            fn.append(Record.stage == 'registered')
             fn.append(Record.flow=='inbound')
             fn.append(RecordActor.target > 0)
             if panel == 'inbox':
@@ -215,7 +213,7 @@ def get_recursive_ids(start_id: int, actor: "Actor", db: Session, limit: int = N
 
     #all_ids = list(set([start_id] + [item for sublist in all_ids for item in sublist]))
     all_ids = list(set([int(start_id)] + [item[0] for item in all_ids]))
-
+    
     return Record.id.in_(all_ids)
 
 def get_records(db: Session, actor = None, section = None, panel = None, search: str = None, limit: int = None, offset: int = None, just_number: bool = False) -> list[Record] | int:

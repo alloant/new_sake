@@ -67,7 +67,8 @@ async def action_view(record_id,status_id, action, db, current_actor):
         available_targets = get_targets_register(db, record.flow, record.register.alias)
         tags = get_tags(db)
         selected_targets = record.targets_id
-        return "forms/form_record.html", {'action': action, 'record': record, 'status': status, 'registers': registers, 'departments': departments, 'senders': senders, 'available_targets': available_targets, 'checked_targets': selected_targets, 'tags': tags}
+        areas = ['Aes','Aso','Asmo','Ind','J']
+        return "forms/form_record.html", {'action': action, 'record': record, 'status': status, 'registers': registers, 'departments': departments, 'senders': senders, 'available_targets': available_targets, 'checked_targets': selected_targets, 'tags': tags, 'areas': areas}
     elif action == "edit_targets":
         available_targets = get_ctrs(db)
         selected_targets = record.targets

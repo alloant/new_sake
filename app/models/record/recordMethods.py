@@ -1,7 +1,13 @@
-from pydantic import BaseModel, model_validator
-from datetime import date, datetime
 import re
+
+from datetime import date, datetime
+from pydantic import BaseModel, model_validator
 from markupsafe import Markup
+
+from sqlalchemy import exists, and_
+from sqlalchemy.ext.hybrid import hybrid_method
+
+from app.models.record_actor import RecordActor
 
 def highlight_hashtags(text):
     # Regex to find words starting with #
@@ -69,11 +75,22 @@ class RecordMethod(object):
     def protocol(self):
         if self.sequence == 0:
             if self.references:
-                return f'Ref {self.references[0].protocol}'
+                rst = f'Ref {self.references[0].protocol}'
             else:
-                return 'Ref'
+                rst = 'Ref'
         else:
-            return f'{self.code} {self.sequence}/{str(self.year)[2:]}'
+            rst = f'{self.code} {self.sequence}/{str(self.year)[2:]}'
+        
+        return rst
+
+    @property
+    def protocol_html(self):
+        rst = self.protocol
+        
+        if self.register.type == 'proposal':
+            return f'<span class="is-italic">{rst}</span>'
+        
+        return f'<span>{rst}</span>'
 
     @property
     def code(self):
@@ -87,6 +104,9 @@ class RecordMethod(object):
 
     @property
     def title_hashtag(self):
+        if self.register.type == 'proposal':
+            return f'<span class="is-italic">{highlight_hashtags(self.title)}</span>'
+
         return highlight_hashtags(self.title)
 
     @property
@@ -173,7 +193,7 @@ class RecordMethod(object):
             actions.append(ActionGroup(title="Read",items=[]))
             if not state or (state.handled != 'read' and self.created_at > current_actor.created_at) or (state.handled == 'read' and self.created_at <= current_actor.created_at):
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['mark_read']))
-            else:
+            elif not quick_access:
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['mark_unread']))
         
         if self.flow == 'internal_cr':
@@ -284,4 +304,18 @@ class RecordMethod(object):
                 return ''
 
         return self.avatar_circle(align, title, avatar)
+    
+    
+    @hybrid_method
+    def has_actor_target(self, actor_id: int) -> bool:
+        return any(link.actor_id == actor_id and link.target > 0 for link in self.actors)
 
+    @has_actor_target.expression
+    def has_actor_target(cls, actor_id: int):
+        return exists().where(
+            and_(
+                RecordActor.record_id == cls.id,
+                RecordActor.actor_id == actor_id,
+                RecordActor.target > 0
+            )
+        ).correlate(cls)

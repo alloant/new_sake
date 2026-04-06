@@ -59,7 +59,7 @@
           </div>
         </div>
         
-        <div class="control is-expanded">
+        <div class="control">
           <label class="label">Sender</label>
           <div class="select is-success" name="sender">
             <select id="form_record_senders">
@@ -89,7 +89,7 @@
           <div class="dropdown is-hoverable is-block">
             <div class="dropdown-trigger" style="width: 100%;">
               <button class="button is-fullwidth is-justify-content-space-between" aria-haspopup="true" aria-controls="dropdown-menu-tags" type="button">
-                <span>Select Tags...</span>
+                <span>Tags</span>
                 <span class="icon is-small">
                   <i class="iconify" data-icon="mdi:chevron-down"></i>
                 </span>
@@ -131,6 +131,17 @@
           </div>
         </div>
       
+        <div class="control">
+          <label class="label">Area</label>
+          <div class="select">
+            <select name="area">
+              {% for area in areas %}
+                  <option {{ 'selected' if record.area == area else '' }}>{{ area }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
       </div>
 
       <div class="field">

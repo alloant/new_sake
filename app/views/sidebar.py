@@ -176,7 +176,7 @@ def get_panel_register(actor_perms,panel,db):
     #menu.append(MenuGroup(title="All registers", items=items))
 
     for register in registers:
-        if has_permission(actor_perms,[register.alias]):
+        if has_permission(actor_perms,[register.alias]) and register.type == 'note':
             items = []
             items.append(MenuItem(id=f"{register.alias}-in",title=f"Inbox {register.alias}",link=f"/?section=register&panel={register.alias}-in",icon="mdi-inbox-arrow-down"))
             items[-1].active = "is-active" if f"{register.alias}-in" == panel else ""
