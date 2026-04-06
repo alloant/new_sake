@@ -1,0 +1,366 @@
+/* Default / Light Theme */
+:root {
+  --font-color: #000000;
+  --font-color-active: #000000;
+  --font-color-inactive: #aaaaaa;
+  --font-color-permanent: #9c0e0e;
+  --background-color: #efefef;
+  
+  --bulma-body-background-color: #eeeeee;
+  --bulma-body-color: #202020;
+  --bulma-title-color: #2c3e50;
+  --bulma-strong-color: #2c3e50;
+  
+  --bulma-primary-h: 210; --bulma-primary-s: 35%; --bulma-primary-l: 55%; /* Muted Blue-Gray */
+  --bulma-info-h:    190; --bulma-info-s:    30%; --bulma-info-l: 55%; /* Soft Cyan */
+  --bulma-success-h: 150; --bulma-success-s: 25%; --bulma-success-l: 50%; /* Sage Green */
+  --bulma-warning-h: 45;  --bulma-warning-s: 35%; --bulma-warning-l: 55%; /* Warm Sand */
+  --bulma-danger-h:  0;   --bulma-danger-s:  35%; --bulma-danger-l: 55%; /* Dusty Rose/Red */
+
+  --sidebar-color: #000000;
+  --sidebar-background: #bfbfbf;
+  --sidebar-color-hover: #eeeeee;
+  --sidebar-background-hover: #666666;
+  --sidebar-background-active: hsl(229, 53%, 53%);
+
+  --file-link-hover-color: #bbbbbb;
+  --file-link-hover-background: #222222;
+  --row-hover: #cccccc;
+  --row-alternate: #dddddd;
+  --button-files-hover: #eeeeee;
+  --records-hidden-row: #eeeeee;
+  --target-color: #666666;
+  --target-border: #666666;
+  --target-current-color: #ffffff;
+  --target-current-background: #777777;
+  --target-success-background: #D1FAE5;
+  --avatar-color: #222222;
+  --avatar-background: #dddddd;
+  --row-shadow: 0 4px 12px rgba(50, 50, 50, 0.95), 0 1px 3px rgba(50, 50, 50, 0.8);
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --font-color: #ffffff;
+  --font-color-active: #ffffff;
+  --font-color-inactive: #aaaaaa;
+  --font-color-permanent: #e34949;
+  --background-color: #030303;
+
+  --bulma-body-background-color: #202020; 
+  --bulma-body-color: #dedede;
+  --bulma-title-color: #ffffff;
+  --bulma-strong-color: #ffffff;
+
+  --sidebar-color: #ffffff;
+  --sidebar-background: #131313;
+  --sidebar-color-hover: #111111;
+  --sidebar-background-hover: #afafaf;
+  --sidebar-background-active: var(--bulma-link);
+  --file-link-hover-color: #bbbbbb;
+  --file-link-hover-background: #222222;
+  --row-hover: #151515;
+  --row-alternate: #323232;
+  --button-files-hover: #111111;
+  --records-hidden-row: #111111;
+  --target-color: #dddddd;
+  --target-border: #666666;
+  --target-current-color: #000000;
+  --target-current-background: #dddddd;
+  --target-success-background: #01400D;
+  --avatar-color: #cccccc;
+  --avatar-background: #222222;
+  --row-shadow: 0 1px 5px rgba(255, 255, 255, 0.5), 0 1px 5px rgba(200, 200, 200, 0.8);
+}
+
+/* Dark Mode Adjustments */
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* Slightly lower lightness and saturation for dark gray backgrounds */
+        --bulma-primary-l: 45%; --bulma-primary-s: 30%;
+        --bulma-success-l: 40%;
+        --bulma-danger-l:  45%;
+    }
+}
+
+@media (hover: none) {
+.parent-box:hover .has-tooltip-multiline[data-tooltip]::before,
+.parent-box:focus .has-tooltip-multiline[data-tooltip]::before,
+.parent-box:hover .has-tooltip-multiline[data-tooltip]::after,
+.parent-box:focus .has-tooltip-multiline[data-tooltip]::after {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+}
+
+html, body {
+height: 100%;
+}
+
+.has-tooltip-multiline::before {
+font-size: 1em !important; /* Adjust this to your preferred size */
+line-height: 1.4 !important;
+
+width: auto !important; 
+min-width: 10rem !important; 
+white-space: pre-wrap !important; 
+content: attr(data-tooltip);
+border-radius: 4px !important;
+}
+
+.has-tooltip-multiline::after {
+  font-size: 0px !important;
+}
+
+.modal-content {
+  height: auto; 
+  width: auto; 
+  max-width: 95%;
+  overflow-y: auto;       /* Show vertical scroll only if needed */
+  overflow-x: hidden;     /* Prevent the annoying left/right shimmy */
+}
+
+.checkbox:has(input:checked) {
+  font-weight: bold;
+  color: var(--font-color);
+}
+
+/* Optional: Add a slight transition so it feels smooth */
+.checkbox {
+  transition: font-weight 0.1s ease-in-out;
+}
+
+.checkbox-list {
+overflow-y: auto;
+background-color: var(--background-color);
+border-radius: 8px !important;
+max-height: 70vh; /* This keeps the 'floor' stable */
+min-height: 70vh; /* This keeps the 'floor' stable */
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: var(--background-color);
+}
+
+.position-relative { position: relative; }
+.position-absolute { position: absolute; }
+.translate-center { left:50%; top:50%; transform: translate(-50%,-50%); }
+
+/* custom size between small and medium */
+.button.is-mediumish,
+.input.is-mediumish {
+  font-size: 0.85rem;      /* adjust */
+  border-radius: 4px;      /* match Bulma if desired */
+}
+
+.tag.dropdown-trigger:hover {
+    filter: brightness(90%);
+    cursor: pointer;
+}
+
+/* Ensure the dropdown menu stays on top of other rows */
+.dropdown.is-active {
+  z-index: 20;
+}
+
+/* Custom class to center the dropdown menu */
+.dropdown.is-centered .dropdown-menu {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+}
+
+/* Ensure the 'is-up' logic still works with centering */
+.dropdown.is-up.is-centered .dropdown-menu {
+    /* Bulma is-up uses transform for positioning, 
+       so we combine the centering with the upward lift */
+    transform: translate(-50%, 0);
+    top: auto;
+    bottom: 100%;
+}
+
+/* Shared item styling for both columns */
+.user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+
+.sortable-item {
+    cursor: grab;
+}
+
+.sortable-item:active {
+    cursor: grabbing;
+}
+
+/* Center the main title */
+.main-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Control Row (Search + Button) */
+.controls-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+.controls-row input {
+    flex-grow: 1; /* Search takes up remaining space */
+    padding: 8px;
+}
+
+.blue-background-class {
+    background-color: #ebf5ff !important; /* Light blue */
+    border: 2px dashed #3182ce !important; /* Dashed border looks better for a ghost */
+    opacity: 0.5;
+}
+
+.sortable-fallback {
+    opacity: 1 !important;
+    display: block !important;
+    /* Add a little shadow to make it look like it's "lifted" */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+
+/* 1. The Master Container - Force strict 2em x 2em */
+.unit-square {
+  display: inline-flex !important;
+  flex-direction: column !important;
+  width: 2em !important;
+  height: 2em !important;
+  min-width: 2em !important;
+  max-width: 2em !important;
+  min-height: 2em !important;
+  max-height: 2em !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  vertical-align: middle;
+  border-radius: 4px; /* Standard Bulma curve */
+  font-size: 0.85rem !important;
+  letter-spacing: -0.05em; /* Squeezes letters for 3-char aliases */
+}
+
+/* 2. Reset internal Bulma tag behavior */
+.unit-square .tag {
+  width: 100% !important;
+  min-width: 0 !important;   /* Kill Bulma's 2.5em min-width */
+  min-height: 0 !important;  /* Kill Bulma's 2em default height */
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  line-height: 1 !important;
+}
+
+/* 3. Top Part (Alias) - 2/3 of the height */
+.is-unit-top {
+  flex: 2 0 0 !important; 
+  font-size: 0.75rem !important;
+}
+
+/* 4. Bottom Part (Area) - 1/3 of the height */
+.is-unit-bottom {
+  flex: 1 0 0 !important;
+  font-size: 0.5rem !important;
+  text-transform: uppercase;
+}
+
+/* 5. Single Tag & Placeholder - Perfectly Centered */
+.tag.unit-square {
+  justify-content: center;
+  align-items: center;
+}
+
+.unit-placeholder {
+  background-color: #ababab;
+  color: #7a7a7a;
+}
+
+
+
+
+
+
+
+
+
+
+/* 1. The Main Wrapper (Hidden by default by HTMX) */
+.htmx-indicator {
+    display: none;
+}
+
+/* 2. When HTMX is active, show the overlay */
+.htmx-indicator.htmx-request, 
+.htmx-request .htmx-indicator {
+    display: block;
+}
+
+/* 3. The Dark Untouchable Backdrop */
+.overlay-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6); /* Darken screen */
+    z-index: 9998; /* Just below the progress bar */
+    cursor: not-allowed;
+}
+
+/* 4. The Progress Bar at the bottom */
+.progress-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    z-index: 9999; /* Topmost layer */
+    background: #1a1a1a; /* Optional: solid background for the bar area */
+}
+
+.notification.is-google-snackbar {
+    display: flex;
+    align-items: flex-start; /* Aligns X to the top of the first line */
+    justify-content: space-between;
+    gap: 1.5rem; /* Creates a "no-go zone" between text and X */
+    padding: 1rem 1.25rem;
+    
+    /* The Gmail "Lift" shadow we talked about */
+    box-shadow: 0 3px 5px -1px rgba(0,0,0,0.2), 
+                0 6px 10px 0 rgba(0,0,0,0.14);
+    
+    border-radius: 4px;
+    position: fixed; /* Keeps it at the bottom of the SCREEN */
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%); /* Centers it horizontally */
+    z-index: 1000;
+    width: 90%;
+    max-width: 600px;
+}
+
+
+.notification-content {
+    flex-grow: 1;
+    line-height: 1.5;
+}

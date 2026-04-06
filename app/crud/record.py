@@ -56,7 +56,13 @@ def get_num_records(db: Session, search: str = None) -> list[Record]:
     return db.exec(select(func.count(Record.id))).one()
 
 def get_filter(actor,section, panel, db: Session):
-    fn = []
+    if 'permanent' in actor.scopes:
+        fn = []
+    elif 'dr' in actor.scopes:
+        fn = [Record.audience != 'permanent']
+    elif 'of' in actor.scopes:
+        fn = [Record.audience == 'all']
+
     if section == 'register':
         fn.append(Record.stage == 'registered')
         if panel.endswith('_ctr'):

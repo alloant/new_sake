@@ -1,0 +1,246 @@
+@media screen and (max-width: 768px) {
+  /* 1. Ensure the row allows wrapping and stays a flexbox */
+  .columns.is-mobile.is-multiline {
+    display: flex !important;
+    flex-wrap: wrap !important;
+  }
+
+  /* 2. Reset ALL columns 1-6 so they don't "eat" the gap space */
+  .column.has-order-1-mobile,
+  .column.has-order-2-mobile,
+  .column.has-order-3-mobile,
+  .column.has-order-4-mobile,
+  .column.has-order-5-mobile,
+  .column.has-order-6-mobile {
+    flex: 0 0 auto !important; /* Do not grow, do not shrink, use content width */
+    width: auto !important;
+    display: block !important; /* Reset any is-flex that might interfere with margins */
+  }
+
+  /* 3. Handle the 1.5 column specifically if it needs more space */
+  .column.is-1-5.has-order-2-mobile {
+    width: 15% !important; /* Adjust this % if 'kk' is too squished */
+    min-width: fit-content !important;
+  }
+
+  /* 4. THE SPLIT: Push 5 and 6 to the right */
+  .has-order-5-mobile {
+    margin-left: auto !important; 
+    order: 5 !important;
+  }
+  .has-order-6-mobile { 
+    order: 6 !important; 
+  }
+
+  /* 5. THE CENTERED SECOND LINE: Element 7 */
+  .has-order-7-mobile {
+    order: 7 !important;
+    flex: 0 0 100% !important; /* Force 100% width to break line */
+    width: 100% !important;
+    
+    /* Center the contents of the column */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center;
+    
+    padding: 0.5rem 0 !important;
+  }
+
+  /* Prevent text overflow in centered title */
+  .has-order-7-mobile span {
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Ensure the hidden-mobile columns stay hidden */
+  .column.is-hidden-mobile {
+    display: none !important;
+  }
+}
+
+.sender {
+  font-size: 0.65rem;
+  background-color: transparent;
+  border: 1px dashed var(--sidebar-background-hover);
+}
+
+.target {
+  font-size: 0.65rem;
+  background-color: transparent;
+  border: 1px dashed var(--target-color);
+}
+
+.target-current {
+  font-size: 0.65rem;
+  color: var(--target-current-color);
+  background-color: var(--target-current-background);
+  border: 1px solid var(--target-color);
+}
+
+.target-success {
+  font-size: 0.65rem;
+  color: var(--target-color);
+  background-color: var(--target-success-background);
+  border: 1px dashed var(--target-border);
+}
+
+.button-files {
+  background: transparent;
+}
+
+.button-files:hover {
+  background: var(--button-files-hover);
+}
+
+.file-link-button {
+/* Layout & Dimensions */
+    display: inline-flex;
+    align-items: center;
+    width: 8rem;
+    padding: 0.25rem 0.75rem; /* Equivalent to py-1 px-3 */
+    
+    /* Typography */
+    font-size: 0.8rem;
+    color: inherit;
+    text-decoration: none;
+    
+    /* The "Tag" Shape */
+    border-radius: 100px;
+    background-color: transparent;
+    
+    /* Truncation (The "...") */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
+    /* Animation */
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.file-link-button:hover {
+    background-color: var(--file-link-hover-background); 
+    color: var(--file-link-hover-color);
+    text-decoration: none;
+}
+
+.hover-row {
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.1s ease;
+    cursor: pointer; /* Makes it feel interactive */
+    position: relative; /* Ensures the shadow and lift don't get cut off */
+    z-index: 1;
+}
+
+.hover-row-alternate {
+    background-color: var(--row-alternate); /* Light grey hover effect */
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.1s ease;
+    cursor: pointer; /* Makes it feel interactive */
+    position: relative; /* Ensures the shadow and lift don't get cut off */
+    z-index: 1;
+}
+
+.hover-row-alternate:hover,
+.hover-row:hover {
+    background-color: var(--row-hover);
+  /* The "Lift" effect */
+    transform: translateY(-2px); 
+    
+    /* The Gmail-style Shadow */
+    /* Syntax: offset-x | offset-y | blur-radius | spread-radius | color */
+    box-shadow: var(--row-shadow);
+    
+    /* Brings the hovered row above its neighbors so the shadow is visible */
+    z-index: 10; 
+}
+
+
+.hover-row-alternate:hover .hide-under-buttons,
+.hover-row:hover .hide-under-buttons {
+  opacity: 0;
+}
+
+
+.hover-row-alternate:hover .action-buttons,
+.hover-row:hover .action-buttons {
+  opacity: 1;
+  pointer-events: auto;
+  background-color: var(--row-hover);
+}
+
+
+/* 2. Show them when the row (tr) is hovered */
+.hover-row-alternate:hover .action-buttons,
+.hover-row:hover .action-buttons {
+  opacity: 1;
+  pointer-events: auto;
+  background-color: var(--row-hover);
+}
+
+/* 1. Hide the buttons by default */
+.action-buttons {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  display: flex;           /* Keep items inside aligned */
+  align-items: center;
+  white-space: nowrap;
+  
+  /* Background & Appearance */
+  background-color: transparent;
+  z-index: 30;
+  
+  /* Hide by default */
+  opacity: 0;
+  pointer-events: none;    /* Prevents clicking invisible buttons */
+  transition: background-color 0.2s ease;
+}
+
+.hide-under-buttons {
+  opacity: 1;
+}
+
+nav.pagination a {
+  color: var(--sidebar-color);
+}
+
+nav.pagination,
+div.hero-settings,
+div.hero-search, {
+  color: var(--sidebar-color);
+  background: var(--sidebar-background);
+}
+
+.columns.no-stack {
+  flex-wrap: nowrap;
+}
+.columns.no-stack .column {
+  min-width: 0; /* prevents overflow from forcing wrap */
+}
+
+.column.is-1-5 {
+    flex: none !important;
+    width: 12.5% !important; /* Math: 1.5 / 12 = 0.125 */
+}
+
+/* Optional: Handle mobile sizing if you want it to stack */
+@media screen and (max-width: 768px) {
+    .column.is-1-5 {
+        width: 100% !important;
+    }
+}
+
+.avatar-circle {
+    width: 1.2em;
+    height: 1.2em;
+    border-radius: 50%;
+    font-weight: 600;
+    user-select: none; /* Prevents highlighting the letters */
+    border: 1px solid var(--avatar-color);
+    color: var(--avatar-color);
+    background-color: var(--avatar-background);
+}
+
+

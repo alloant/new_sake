@@ -8,7 +8,7 @@
 
     <div class="level-right">
       <div class="level-item">
-        <div class="field is-grouped">
+        <div class="field is-grouped is-justify-content-space-between">
           {% if action == 'sign_note' and not status.params['dispatcher_signature'] %}
             <div class="control">
               <button class="button is-link" name="submit_form" value="save_sign" onclick="closeModal()">
@@ -34,7 +34,7 @@
 
   <div class="columns p-2">
     <div class="column">
-      <div class="field is-grouped is-fullwidth">
+      <div class="field is-grouped is-justify-content-space-between">
         <div class="control">
           <label class="label">Flow</label>
           <div class="select" name="flow">
@@ -113,9 +113,9 @@
           <label class="label">Audience</label>
           <div class="select">
             <select name="audience">
-                <option {{ 'selected' if record.audience == 'all' else '' }}>All</option>
-                <option {{ 'selected' if record.audience == 'dr' else '' }}>Only dr</option>
-                <option {{ 'selected' if record.audience == 'permanent' else '' }}>Only permanent</option>
+                <option {{ 'selected' if record.audience == 'all' else '' }} value="all">All</option>
+                <option {{ 'selected' if record.audience == 'dr' else '' }} value="dr">Only dr</option>
+                <option {{ 'selected' if record.audience == 'permanent' else '' }} value="permanent">Only permanent</option>
             </select>
           </div>
         </div>

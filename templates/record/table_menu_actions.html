@@ -20,8 +20,9 @@
                   {% else %}
                     {{ attr }}="{{ action.attr[attr] }}"
                   {% endif %}
-                {% endfor %}>
-                <i class="iconify" data-icon="{{ action.icon }}"></i>
+                {% endfor %}
+                  style="font-size: 1.1em;">
+                <i class="iconify mr-1" data-icon="{{ action.icon }}"></i>
                 {{ action.title }}
               </a>
             {% endfor %}

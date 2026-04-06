@@ -86,11 +86,11 @@ class RecordMethod(object):
     @property
     def protocol_html(self):
         rst = self.protocol
-        
+        color = 'style="color: var(--font-color-permanent);"' if self.audience == 'permanent' else ''
         if self.register.type == 'proposal':
-            return f'<span class="is-italic">{rst}</span>'
+            return f'<span class="is-italic" {color}>{rst}</span>'
         
-        return f'<span>{rst}</span>'
+        return f'<span {color}>{rst}</span>'
 
     @property
     def code(self):

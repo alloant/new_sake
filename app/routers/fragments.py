@@ -252,6 +252,7 @@ async def modify_record(request: Request, record_id: int, loop_index: int, db: S
     
     record.title = data['title']
     record.area = data['area']
+    record.audience = data['audience']
     #record.comments = data['comments']
     record.sequence = data['sequence']
     record.year = data['year']

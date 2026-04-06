@@ -128,18 +128,18 @@ def transfer_users():
 
     #Now deps
     departments = {
-        'vcr':{'full_name': 'Regional vicar', 'color': '#E57373'},
-        'vc':{'full_name': 'Vicars', 'color': '#FF8A65'},
-        'df':{'full_name': 'Defensor', 'color': '#FFB74D'},
-        'dg':{'full_name': 'Delegate', 'color': '#81C784'},
-        'sccr':{'full_name': 'Secretary', 'color': '#4DB6AC'},
-        'sm':{'full_name': 'St Michael', 'color': '#64B5F6'},
-        'sr':{'full_name': 'St Raphael', 'color': '#7986CB'},
-        'sg':{'full_name': 'St Gabriel', 'color': '#9575CD'},
-        'ar':{'full_name': 'Administrator', 'color': '#F06292'},
-        'dest':{'full_name': 'Prefecto', 'color': '#02D581'},
-        'pffer':{'full_name': 'Prefecto', 'color': '#AED581'},
-        'aop':{'full_name': 'Apostolate public opinion', 'color': '#90A4AE'}
+        'vcr':  {'full_name': 'Regional vicar', 'color': '#C9A8A8'},
+        'vc':   {'full_name': 'Vicars',         'color': '#D0B1A6'},
+        'df':   {'full_name': 'Defensor',       'color': '#D9C6A5'},
+        'dg':   {'full_name': 'Delegate',       'color': '#B7C9B9'},
+        'sccr': {'full_name': 'Secretary',      'color': '#9FBEB7'},
+        'sm':   {'full_name': 'St Michael',     'color': '#A9C7DA'},
+        'sr':   {'full_name': 'St Raphael',     'color': '#A9A9C6'},
+        'sg':   {'full_name': 'St Gabriel',     'color': '#B3AFC6'},
+        'ar':   {'full_name': 'Administrator',  'color': '#D8A9C0'},
+        'dest': {'full_name': 'Prefecto',       'color': '#96B99E'},
+        'pffer':{'full_name': 'Prefecto',       'color': '#C6D1A9'},
+        'aop':  {'full_name': 'Apostolate public opinion',  'color': '#BFC5C7'}
     }
 
     for dep, values in departments.items():

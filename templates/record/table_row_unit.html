@@ -1,16 +1,23 @@
-{% if record.unit %}
-  {% if record.area != 'aes' %}
-    <div class="tags-stack">
-      <span class="tag is-top has-text-weight-bold has-text-black" style="background-color: {{ record.unit.color }}">{{ record.unit.alias }}</span>
-      <span class="tag is-bottom has-text-weight-bold has-text-black" style="background-color: {{ record.area.value }};">{{ record.area.name.capitalize() }}</span>
-    </div>
+<div class="is-flex">
+  {% if record.unit %}
+    {% if record.area != 'aes' %}
+      <div class="unit-square">
+        <span class="tag is-unit-top has-text-weight-bold has-text-black" 
+              style="background-color: {{ record.unit.color }}">
+          {{ record.unit.alias }}
+        </span>
+        <span class="tag is-unit-bottom has-text-weight-bold has-text-black" 
+              style="background-color: {{ record.area.value }};">
+          {{ record.area.name[:3] }}
+        </span>
+      </div>
+    {% else %}
+      <span class="tag unit-square has-text-weight-bold has-text-black"
+            style="background-color: {{ record.unit.color }};">
+        {{ record.unit.alias }}
+      </span>
+    {% endif %}
   {% else %}
-    <span class="tag has-text-weight-bold has-text-black"
-      style="width: 2em; background-color: {{record.unit.color}}; font-size:0.7em;">
-      {{ record.unit.alias }}
-    </span>
+    <span class="tag unit-square unit-placeholder has-text-weight-bold">-</span>
   {% endif %}
-{% else %}
-  <span class="tag has-text-weight-bold has-text-black" style="width: 2em; font-size: 0.7em;">-</span>
-{% endif %}
-
+</div>
