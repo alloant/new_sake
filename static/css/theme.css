@@ -157,24 +157,6 @@ border-radius: 4px !important;
   overflow-x: hidden;     /* Prevent the annoying left/right shimmy */
 }
 
-.checkbox:has(input:checked) {
-  font-weight: bold;
-  color: var(--font-color);
-}
-
-/* Optional: Add a slight transition so it feels smooth */
-.checkbox {
-  transition: font-weight 0.1s ease-in-out;
-}
-
-.checkbox-list {
-overflow-y: auto;
-background-color: var(--background-color);
-border-radius: 8px !important;
-max-height: 70vh; /* This keeps the 'floor' stable */
-min-height: 70vh; /* This keeps the 'floor' stable */
-}
-
 .dropdown-item {
     display: flex;
     align-items: center;

@@ -1,9 +1,26 @@
 /* Custom Scrollbar for Targets */
 .checkbox-list {
-    max-height: 400px;
+    max-height: 70vh;
     overflow-y: auto;
     border: 1px solid var(--border-muted);
     border-radius: 8px;
+}
+
+/* 1. Bold the title when the checkbox is checked */
+.target-checkbox:checked ~ span {
+    font-weight: 700;
+    color: var(--font-color-active);
+}
+
+/* 2. Increase checkbox contrast */
+.target-checkbox {
+    /* accent-color gives you a high-contrast blue without needing custom SVG checkboxes */
+    accent-color: #0056b3; /* A deeper, high-contrast blue */
+    font-weight: 300;
+    cursor: pointer;
+    transform: scale(1.2);
+    margin-right: 12px !important;
+    color: var(--font-color-inactive);
 }
 
 /* Compact but readable target items */
@@ -16,7 +33,7 @@
 }
 
 .compact-target:hover {
-    background-color: rgba(100, 142, 175, 0.05);
+    background-color: var(--background-color);
 }
 
 .target-label {
@@ -28,10 +45,15 @@
     width: 100%;
 }
 
-/* Ensure the checkbox itself is slightly larger to match font */
+.target-label span {
+    white-space: nowrap;
+    min-width: 0; /* Allows the span to shrink smaller than its content */
+}
+
+/* Prevent the drag handle and checkbox from getting squished in narrow views */
+.handle-move, 
 .target-checkbox {
-    transform: scale(1.2);
-    margin-right: 12px !important;
+    flex-shrink: 0; 
 }
 
 /* UI Refinement */
@@ -63,4 +85,7 @@
     background: rgba(100, 142, 175, 0.05);
 }
 
-
+.border-muted {
+    border: 1px solid var(--border-muted) !important;
+    border-radius: 8px;
+}

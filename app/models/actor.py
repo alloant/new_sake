@@ -65,3 +65,13 @@ class Actor(SQLModel, ActorSettings, table=True):
                 rst.append(scope.split(':')[0][4:])
         
         return rst
+    @property
+    def target_description(self):
+        if self.kind == 'user' and 'departments' in self.params:
+            return "|".join(self.params['departments'])
+        elif self.kind == 'ctr' and 'works' in self.params:
+            return "|".join(self.params['works'])
+        elif self.kind == 'contact' and 'lang' in self.params:
+            return "|".join(self.params['lang'])
+
+        return ''

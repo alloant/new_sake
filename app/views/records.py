@@ -93,7 +93,7 @@ async def action_view(record_id,status_id, action, db, current_actor):
         await broadcast_channels(channels = sock_targets, actor_alias = current_actor.alias, msg = f'Note {record.protocol} was dispatched by other dr')
 
 
-    if action in ['mark_read','mark_unread','sign_record', 'quick_sign']:
+    if action in ['mark_read','mark_unread','sign_record', 'quick_sign', 'quick_unsign']:
         db.add(status); db.commit(); db.refresh(status)
     elif action in ['archive','restore','start_circulation','stop_circulation']:
         db.add(record); db.commit(); db.refresh(record)

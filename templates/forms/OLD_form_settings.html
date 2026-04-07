@@ -8,6 +8,7 @@
         <div class="level-right">
             <div class="buttons">
                 <button type="button" class="button is-light" onclick="closeModal()">Cancel</button>
+                
                 <button class="button is-link" name="submit_form" value="save" onclick="closeModal()">
                     <span class="iconify mr-1" data-icon="mdi-content-save"></span> Save
                 </button>
@@ -15,10 +16,10 @@
         </div>
     </div>
 
-    <div class="columns is-variable is-5">
-        <div class="column is-8">
+    <div class="columns is-variable">
+        <div class="column is-7">
             
-            <div class="columns is-multiline is-mobile mb-4">
+            <div class="columns is-multiline is-mobile">
                 <div class="column is-6">
                     <label class="label is-small">Role</label>
                     <div class="select is-fullwidth">
@@ -40,42 +41,36 @@
                 </div>
             </div>
 
-            <div class="box is-shadowless border-muted mb-4">
-                <label class="label">Permissions</label>
-                <div class="columns is-multiline m-2">
-                    <div class="column is-6 py-1">
-                        <label class="checkbox">
+            <hr class="my-4">
+
+            <div class="columns">
+                <div class="column is-4">
+                    <label class="label is-small">Permissions</label>
+                    <div class="field">
+                        <label class="checkbox is-block mb-1">
                             <input type="checkbox" name="perm_admin" {{ 'checked' if 'admin' in settings['scopes'] else '' }}> admin
                         </label>
-                    </div>
-                    <div class="column is-6 py-1">
-                        <label class="checkbox">
+                        <label class="checkbox is-block mb-1">
                             <input type="checkbox" name="perm_sccr" {{ 'checked' if 'sccr' in settings['scopes'] else '' }}> sccr
                         </label>
-                    </div>
-                    <div class="column is-6 py-1">
-                        <label class="checkbox">
+                        <label class="checkbox is-block mb-1">
                             <input type="checkbox" name="perm_despacho" {{ 'checked' if 'despacho' in settings['scopes'] else '' }}> Despacho
                         </label>
-                    </div>
-                    <div class="column is-6 py-1">
-                        <label class="checkbox">
+                        <label class="checkbox is-block">
                             <input type="checkbox" name="perm_permanent" {{ 'checked' if 'permanent' in settings['scopes'] else '' }}> Permanent
                         </label>
                     </div>
                 </div>
-            </div>
 
-            <div class="box is-shadowless border-muted mb-4">
-                <label class="label">User Settings</label>
-                <div class="columns is-multiline m-2">
+                <div class="column is-4">
+                    <label class="label is-small">User Settings</label>
                     {% for key, value in settings['settings'].items() %}
-                        <div class="column is-6 py-2">
+                        <div class="field">
                             {% if value['type'] == 'str' or value['type'] == 'int' %}
                                 <label class="label is-small">{{ key|capitalize }}</label>
                                 <input class="input" type="text" name="setting_{{ key }}" value="{{ actor.get_setting(key) }}">
                             {% elif value['type'] == 'bool' %}
-                                <label class="checkbox mt-4">
+                                <label class="checkbox">
                                     <input type="checkbox" name="setting_{{ key }}" {{ 'checked' if actor.get_setting(key) else '' }}>
                                     {{ key|capitalize }}
                                 </label>
@@ -92,13 +87,11 @@
                         </div>
                     {% endfor %}
                 </div>
-            </div>
 
-            <div class="box is-shadowless border-muted">
-                <label class="label mb-2">Registers Access</label>
-                <div class="columns is-multiline m-2">
+                <div class="column is-4">
+                    <label class="label is-small">Registers Access</label>
                     {% for reg in settings['registers'] %}
-                        <div class="column is-4 py-2">
+                        <div class="field">
                             <label class="label is-small mb-1">{{ reg }}</label>
                             <div class="select is-fullwidth">
                                 <select name="register_{{reg}}">
@@ -114,7 +107,7 @@
             </div>
         </div>
 
-        <div class="column is-4">
+        <div class="column is-5">
             <div class="field">
                 <label class="label is-small">Assign Targets</label>
                 {% include 'forms/select_targets.html' %}

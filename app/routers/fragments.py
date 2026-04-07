@@ -224,6 +224,7 @@ async def modify_record(request: Request, record_id: int, loop_index: int, db: S
         status.params['dispatcher_signature'] = True
         db.add(status)
 
+    
     map_actors = {str(ra.actor_id): ra for ra in record.actors}
     current_actors = set(map_actors.keys())
    

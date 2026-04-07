@@ -1,4 +1,4 @@
-<form class="custom-card p-5" hx-post="/modify_record?record_id={{record.id}}" hx-target="#row-{{record.id}}" method="POST">
+<form class="custom-card p-5" hx-post="/modify_record?record_id={{record.id}}&loop_index={{loop.index}}" hx-target="#row-{{record.id}}" method="POST">
     <div class="level mb-5">
         <div class="level-left">
             <div>
@@ -8,11 +8,13 @@
         <div class="level-right">
             <div class="buttons">
                 <button type="button" class="button is-light" onclick="closeModal()">Cancel</button>
-                <button class="button is-link" name="submit_form" value="save">
+                
+                <button class="button is-link" name="submit_form" value="save" onclick="closeModal()">
                     <span class="iconify mr-1" data-icon="mdi-content-save"></span> Save
                 </button>
-                {% if action == 'sign_note' and not status.params['dispatcher_signature'] %}
-                <button class="button is-link" name="submit_form" value="save_sign">
+                
+                {% if action == 'sign_note' and status and not status.params['dispatcher_signature'] %}
+                <button class="button is-link" name="submit_form" value="save_sign" onclick="closeModal()">
                     <span class="iconify mr-1" data-icon="mdi-content-save-edit"></span> Save & Sign
                 </button>
                 {% endif %}
@@ -137,59 +139,60 @@
 
         <div class="column is-4">
             <div class="field">
-                <label class="label is-small">Assign Targets</label>
+                <label class="label is-small">Assign ctr</label>
                 {% include "forms/select_targets.html" %}
             </div>
         </div>
     </div>
 </form>
 
+
 <script>
-    Sortable.create(listWithHandle, {
-      handle: '.handle-move',
-      ghostClass: 'blue-background-class',
-      animation: 150,
-      forceFallback: true,
-      fallbackClass: 'sortable-fallback'
+    // 1. Wrap the initialization in a reusable function
+    function initSortable() {
+        const el = document.getElementById('listWithHandle');
+        if (el) {
+            // Check if it's already been initialized to avoid duplicates
+            if (el.sortableInstance) {
+                el.sortableInstance.destroy();
+            }
+
+            el.sortableInstance = Sortable.create(el, {
+                handle: '.handle-move',
+                ghostClass: 'blue-background-class',
+                animation: 150,
+                forceFallback: true,
+                fallbackClass: 'sortable-fallback'
+            });
+        }
+    }
+
+    // 2. Run on initial page load
+    document.addEventListener('DOMContentLoaded', initSortable);
+
+    // 3. CRITICAL: Run after HTMX swaps any content
+    document.addEventListener('htmx:afterSwap', function(event) {
+        initSortable();
     });
 
-
-
-    // Flag to ensure this only happens once per page load
+    // --- Your Existing Checkbox Logic ---
     let autoSelectDone = false;
-
     document.addEventListener('change', function(event) {
-        // 1. Identify our target checkboxes
         if (event.target.classList.contains('target-checkbox') && event.target.checked) {
-            
-            // 2. Find the select by ID (make sure the ID exists in HTML!)
             const deptSelect = document.getElementById('dept-select');
             const targetDept = event.target.getAttribute('data-dept');
 
-            // 3. Logic check:
-            // - Has not auto-filled yet (!autoSelectDone)
-            // - Current value is empty/null (!deptSelect.value)
-            // - We have a department value to apply (targetDept)
             if (!autoSelectDone && deptSelect && !deptSelect.value && targetDept) {
-                
-                // Attempt to match the department string to an option value
-                let matchFound = false;
                 for (let i = 0; i < deptSelect.options.length; i++) {
                     if (deptSelect.options[i].value === targetDept) {
                         deptSelect.selectedIndex = i;
-                        matchFound = true;
+                        autoSelectDone = true;
+                        deptSelect.parentElement.classList.add('is-success');
+                        setTimeout(() => deptSelect.parentElement.classList.remove('is-success'), 1000);
                         break;
                     }
-                }
-
-                if (matchFound) {
-                    autoSelectDone = true; 
-                    // Visual feedback: briefly turn the border green
-                    deptSelect.parentElement.classList.add('is-success');
-                    setTimeout(() => deptSelect.parentElement.classList.remove('is-success'), 1000);
                 }
             }
         }
     });
 </script>
-

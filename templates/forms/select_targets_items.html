@@ -13,11 +13,9 @@
             
                   <span class="is-flex-grow-1">{{ target.alias }}{{' (of)' if 'of' in target.scopes else ''}}</span>
 
-            {% if target.params['departments'] %}
-                <span class="is-size-7 has-text-grey-light ml-2">
-                  {{ "|".join(target.params['departments']) }}
-                </span>
-            {% endif %}
+            <span class="is-size-7 ml-4">
+              {{ target.target_description }}
+            </span>
         </label>
     </div>
     {% endfor %}
