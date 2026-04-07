@@ -62,7 +62,7 @@ async def action_view(record_id,status_id, action, db, current_actor):
         record.state = "active"
     elif action in ["edit","sign_note"]:
         registers = get_actor_registers(current_actor.scopes,db)
-        departments = [''] + get_all_alias_deps(db)
+        departments = get_all_alias_deps(db)
         senders = get_senders_register(db,record.flow,record.register.alias)
         available_targets = get_targets_register(db, record.flow, record.register.alias)
         tags = get_tags(db)

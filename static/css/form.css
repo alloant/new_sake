@@ -1,0 +1,66 @@
+/* Custom Scrollbar for Targets */
+.checkbox-list {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid var(--border-muted);
+    border-radius: 8px;
+}
+
+/* Compact but readable target items */
+.compact-target {
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+    min-height: 32px; /* Less height */
+    border-bottom: 1px solid var(--border-muted);
+    transition: background 0.1s;
+}
+
+.compact-target:hover {
+    background-color: rgba(100, 142, 175, 0.05);
+}
+
+.target-label {
+    font-size: 1.05rem; /* Bigger Font */
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* Ensure the checkbox itself is slightly larger to match font */
+.target-checkbox {
+    transform: scale(1.2);
+    margin-right: 12px !important;
+}
+
+/* UI Refinement */
+.custom-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-muted);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.input, .select select, .textarea {
+    border-color: var(--border-muted);
+    border-radius: 8px;
+    box-shadow: none !important;
+    transition: border-color 0.2s ease;
+}
+
+.input:focus, .select select:focus {
+    border-color: var(--primary-muted);
+}
+
+.target-item {
+    border-radius: 6px;
+    transition: background 0.2s;
+    border-bottom: 1px solid var(--border-muted);
+}
+
+.target-item:hover {
+    background: rgba(100, 142, 175, 0.05);
+}
+
+

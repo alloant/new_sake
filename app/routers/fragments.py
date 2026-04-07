@@ -260,6 +260,8 @@ async def modify_record(request: Request, record_id: int, loop_index: int, db: S
     unit = get_actor_by_alias(data['department'], db = db)
     if unit:
         record.unit_id = unit.id
+    else:
+        record.unit_id = None
     
     register = get_register_by_alias(data['register'], db = db)
     if register:

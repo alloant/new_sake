@@ -17,6 +17,36 @@
   --bulma-warning-h: 45;  --bulma-warning-s: 35%; --bulma-warning-l: 55%; /* Warm Sand */
   --bulma-danger-h:  0;   --bulma-danger-s:  35%; --bulma-danger-l: 55%; /* Dusty Rose/Red */
 
+/* --- The Missing Semantic Color --- */
+  /* Slightly more saturated than primary to signify clickability, but still muted */
+  --bulma-link-h:    230; --bulma-link-s:    40%; --bulma-link-l: 58%; /* Soft Indigo/Periwinkle */
+
+  /* --- The Neutrals & Grayscales --- */
+  /* Tinted slightly with your primary hue (210) so the grays feel harmonious, not harsh */
+  --bulma-black-h:   210; --bulma-black-s:   15%; --bulma-black-l: 15%; /* Soft Black/Deep Slate */
+  --bulma-dark-h:    210; --bulma-dark-s:    12%; --bulma-dark-l: 25%; /* Charcoal Gray */
+  --bulma-text-h:    210; --bulma-text-s:    10%; --bulma-text-l: 40%; /* Standard Text - Muted Slate */
+  --bulma-text-light-h: 210; --bulma-text-light-s: 10%; --bulma-text-light-l: 65%; /* Soft Muted Text */
+  
+  /* --- Backgrounds --- */
+  --bulma-light-h:   210; --bulma-light-s:   15%; --bulma-light-l: 96%; /* Cool Off-White/Fog */
+  --bulma-white-h:   210; --bulma-white-s:   10%; --bulma-white-l: 99%; /* Almost White */
+  
+  /* Ensure the overall scheme base inherits your tint */
+  --bulma-scheme-h:  210; 
+  --bulma-scheme-s:  10%;
+
+/* Your Muted HEX Palette */
+    --primary-muted: #648EAF;
+    --border-muted: #DDE2E5;
+    --bg-card: #ffffff;
+    --text-main: #5C6B75;
+    
+    /* Category Colors */
+    --color-aso: #C16767; --color-asmo: #6AB66C;
+    --color-ind: #7E7BD9; --color-j: #C3C365;
+
+
   --sidebar-color: #000000;
   --sidebar-background: #bfbfbf;
   --sidebar-color-hover: #eeeeee;
@@ -51,6 +81,13 @@
   --bulma-body-color: #dedede;
   --bulma-title-color: #ffffff;
   --bulma-strong-color: #ffffff;
+
+--primary-muted: #74A1C4;
+    --border-muted: #2D373D;
+    --bg-card: #1A2024;
+    --text-main: #CED6DB;
+    
+    --color-aso: #DE6E6E; --color-asmo: #79D17B;
 
   --sidebar-color: #ffffff;
   --sidebar-background: #131313;

@@ -1,20 +1,24 @@
 <div id="listWithHandle">
     {% for target in available_targets %}
-    <div class="panel-block sortable-item field is-grouped handle-move p-0">
-        <span class="icon is-small has-text-grey-light" style="cursor: grab;">
-            <i class="iconify" data-icon="mdi-menu"></i>
+    <div class="panel-block compact-target is-flex is-align-items-center">
+        <span class="handle-move mr-1 has-text-grey-light" style="cursor: grab; display: flex; align-items: center;">
+            <i class="iconify" data-icon="mdi:drag-vertical" style="font-size: 1.4rem;"></i>
         </span>
         
-        <label class="checkbox is-flex-grow-1">
-            <input type="checkbox" name="user_ids" value="{{ target.id }}" class="mr-2" {{ 'checked' if target.id in checked_targets or target.alias in checked_targets }}>
-                {{ target.alias }} 
-                {% if 'departments' in target.params %}
-                    -
-                    {% if 'of' in target.scopes %}of{% endif %}
-                    {{ ','.join(target.params['departments']) }}
-                {% endif %}
+        <label class="target-label is-flex-grow-1">
+            <input type="checkbox" name="user_ids" value="{{ target.id }}" 
+                   class="target-checkbox"
+                   data-dept="{{ target.params['departments'][0] if target.params['departments'] else '' }}"
+                   {{ 'checked' if target.id in checked_targets or target.alias in checked_targets }}>
+            
+                  <span class="is-flex-grow-1">{{ target.alias }}{{' (of)' if 'of' in target.scopes else ''}}</span>
+
+            {% if target.params['departments'] %}
+                <span class="is-size-7 has-text-grey-light ml-2">
+                  {{ "|".join(target.params['departments']) }}
+                </span>
+            {% endif %}
         </label>
     </div>
     {% endfor %}
 </div>
-

@@ -33,10 +33,10 @@ class State(str, Enum):
 
 class Area(str, Enum):
     AES = "aes"
-    ASO = "#c96969"
-    ASMO = "#69c98f"
-    IND = "#697cc9"
-    J = "#c6c969"
+    ASO = "#DE6E6E"
+    ASMO = "#49e34b"
+    IND = "#A09EED"
+    J = "#e3e349"
 
 class Audience(str, Enum):
     ALL = 'all'
@@ -106,52 +106,55 @@ class Record(SQLModel, RecordMethod, table=True):
     def stage_icon(self, status):
         if self.state == 'archived':
             title = 'Archived'
-            color, icon = 'font-color-inactive', 'archive-outline'
+            if self.register.type == 'note':
+                color, icon = 'font-color-inactive', 'archive-outline'
+            else:
+                color, icon = 'font-color-inactive', 'archive-check-outline'
         elif self.state == 'snooze':
             title = 'On hold'
             color, icon = 'font-color-inactive', 'alarm-snooze'
-        
-        match self.stage:
-            case "inbox":
-                title = ''
-                color, icon = 'font-color-active', 'file-alert'
-            case "despacho":
-                if status and status.params.get('dispatcher_signature'):
-                    title = 'Signed'
-                    color, icon = 'font-color-inactive', 'briefcase-outline'
-                else:
-                    signatures = []
-                    for actor in self.actors:
-                        if actor.params.get('dispatcher_signature'):
-                            signatures.append(actor.alias)
-                    if signatures:
-                        rst =  ", ".join(signatures)
-                        title = f"Pending (signed by {rst})"
-                        color, icon = 'font-color-active', 'briefcase-account'
+        else:
+            match self.stage:
+                case "inbox":
+                    title = ''
+                    color, icon = 'font-color-active', 'file-alert'
+                case "despacho":
+                    if status and status.params.get('dispatcher_signature'):
+                        title = 'Signed'
+                        color, icon = 'font-color-inactive', 'briefcase-outline'
                     else:
-                        title = "Pending"
-                        color, icon = 'font-color-active', 'briefcase'
-            case "registered":
-                title = ''
-                color, icon = 'font-color-active', 'file'
-            case "draft":
-                title = ''
-                color, icon = 'font-color-active', 'progress-wrench'
-            case "outbox":
-                title = ''
-                color, icon = 'font-color-active', 'timer-sand'
-            case "sent":
-                title = ''
-                color, icon = 'font-color-active', 'email-fast-outline'
-            case "sketch":
-                title = ''
-                color, icon = 'font-color-active', 'progress-wrench'
-            case "shared":
-                title = ''
-                color, icon = 'font-color-active', 'account-arrow-right-outline'
-            case "closed":
-                title = ''
-                color, icon = 'font-color-active', 'check'
+                        signatures = []
+                        for actor in self.actors:
+                            if actor.params.get('dispatcher_signature'):
+                                signatures.append(actor.actor.alias)
+                        if signatures:
+                            rst =  ", ".join(signatures)
+                            title = f"Pending (signed by {rst})"
+                            color, icon = 'font-color-active', 'briefcase-account'
+                        else:
+                            title = "Pending"
+                            color, icon = 'font-color-active', 'briefcase'
+                case "registered":
+                    title = ''
+                    color, icon = 'font-color-active', 'file'
+                case "draft":
+                    title = ''
+                    color, icon = 'font-color-active', 'progress-wrench'
+                case "outbox":
+                    title = ''
+                    color, icon = 'font-color-active', 'timer-sand'
+                case "sent":
+                    title = ''
+                    color, icon = 'font-color-active', 'email-fast-outline'
+                case "sketch":
+                    title = ''
+                    color, icon = 'font-color-active', 'progress-wrench'
+                case "shared":
+                    title = ''
+                    color, icon = 'font-color-active', 'account-arrow-right-outline'
+                case "closed":
+                    title = ''
+                    color, icon = 'font-color-active', 'check'
         
         if self.audience == 'permanent':
             color = 'font-color-permanent'

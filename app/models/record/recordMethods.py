@@ -162,9 +162,12 @@ class RecordMethod(object):
             return self.files[idx].link
         return ""
 
-    def read_status_html(self,status,actor):
+    def read_status_html(self,panel,status,actor):
         read = True
-        if not status:
+        if panel == 'despacho':
+            if not status or not status.params.get('dispatcher_signature'):
+                read = False
+        elif not status:
             if self.created_at > actor.created_at:
                 read = False
         elif status.handled != 'read' and self.created_at > actor.created_at:
@@ -276,7 +279,7 @@ class RecordMethod(object):
 
                 if not targets:
                     title = ""
-                    avatar = '<i class="iconify has-text-grey" data-width="1.25em" data-icon="mdi-account"></i>'
+                    avatar = '<i class="iconify has-text-grey" data-width="1.25em" data-icon="mdi-account-off"></i>'
                     align = "center"
                 elif len(targets) == 1:
                     title = targets[0].actor.alias

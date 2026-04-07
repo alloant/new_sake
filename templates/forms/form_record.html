@@ -1,173 +1,147 @@
-<form class="box" hx-post="/modify_record?record_id={{record.id}}&loop_index={{loop.index}}" hx-target="#row-{{record.id}}" method="POST">
-  <nav class="level">
-    <div class="level-left">
-      <div class="level-item">
-      <h2 class="title">Record {{ record.protocol }}</h2>
-      </div>
+<form class="custom-card p-5" hx-post="/modify_record?record_id={{record.id}}" hx-target="#row-{{record.id}}" method="POST">
+    <div class="level mb-5">
+        <div class="level-left">
+            <div>
+                <h2 class="title is-4 mb-0">Record {{ record.protocol }}</h2>
+            </div>
+        </div>
+        <div class="level-right">
+            <div class="buttons">
+                <button type="button" class="button is-light" onclick="closeModal()">Cancel</button>
+                <button class="button is-link" name="submit_form" value="save">
+                    <span class="iconify mr-1" data-icon="mdi-content-save"></span> Save
+                </button>
+                {% if action == 'sign_note' and not status.params['dispatcher_signature'] %}
+                <button class="button is-link" name="submit_form" value="save_sign">
+                    <span class="iconify mr-1" data-icon="mdi-content-save-edit"></span> Save & Sign
+                </button>
+                {% endif %}
+            </div>
+        </div>
     </div>
 
-    <div class="level-right">
-      <div class="level-item">
-        <div class="field is-grouped is-justify-content-space-between">
-          {% if action == 'sign_note' and not status.params['dispatcher_signature'] %}
-            <div class="control">
-              <button class="button is-link" name="submit_form" value="save_sign" onclick="closeModal()">
-                <span class="iconify mr-1" data-icon="mdi-content-save-edit"></span>
-                Save and sign
-              </button>
-            </div>
-          {% endif %}
-            <div class="control">
-              <button class="button is-link" name="submit_form" value="save" onclick="closeModal()">
-                <span class="iconify mr-1" data-icon="mdi-content-save"></span>
-                Save
-              </button>
-            </div>
-            <div class="control">
-              <button class="button is-link is-light" onclick="closeModal()">Cancel</button>
-            </div>
-
-        </div>
-      </div>
-    </div>
-  </nav> 
-
-  <div class="columns p-2">
-    <div class="column">
-      <div class="field is-grouped is-justify-content-space-between">
-        <div class="control">
-          <label class="label">Flow</label>
-          <div class="select" name="flow">
-            <select>
-              <option {{ 'selected' if record.flow.value == 'inbound' else '' }} value="inbound">Inbound</option>
-              <option {{ 'selected' if record.flow.value == 'outbound' else '' }} value="outbound">Outbound</option>
-              <option {{ 'selected' if record.flow.value == 'internal_cr' else '' }} value="internal_cr">Internal cr</option>
-              <option {{ 'selected' if record.flow.value == 'internal_cl' else '' }} value="internal_cl">Internal cl</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="control">
-                <label class="label">Register{{record.register.alias}}</label>
-          <div class="select">
-            <select name="register" hx-get="/record_form_data?info=senders_{{record.sender.alias}}_{{record.flow.value}}_" hx-target="#form_record_senders">
-                  <option {{ 'selected' if record.register.alias == '' else '' }}></option>
-              {% for register in registers %}
-                  <option {{ 'selected' if record.register.alias == register else '' }}>{{ register }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-        
-        <div class="control">
-          <label class="label">Sender</label>
-          <div class="select is-success" name="sender">
-            <select id="form_record_senders">
-                <option {{ 'selected' if record.sender.alias == 'a' else '' }}></option>
-              {% for sender in senders %}
-                <option {{ 'selected' if record.sender.alias == sender.alias else '' }} value="{{sender.alias}}">{{sender.alias}}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-       
-        <div class="control" style="width: 5em;">
-          <label class="label">Sequence</label>
-          <input class="input" type="text"  name="sequence" placeholder="1234" value="{{record.sequence}}">
-        </div>
-        
-        <div class="control" style="width: 4em;">
-          <label class="label">Year</label>
-          <input class="input" type="text"  name="year" placeholder="2026" value="{{record.year}}">
-        </div>
-      </div>
-
-      <div class="field is-grouped is-fullwidth">
-        
-        <div class="control">
-          <label class="label">Tags</label>
-          <div class="dropdown is-hoverable is-block">
-            <div class="dropdown-trigger" style="width: 100%;">
-              <button class="button is-fullwidth is-justify-content-space-between" aria-haspopup="true" aria-controls="dropdown-menu-tags" type="button">
-                <span>Tags</span>
-                <span class="icon is-small">
-                  <i class="iconify" data-icon="mdi:chevron-down"></i>
-                </span>
-              </button>
-            </div>
+    <div class="columns is-variable is-5">
+        <div class="column is-8">
             
-            <div class="dropdown-menu" id="dropdown-menu-tags" role="menu" style="width: 100%;">
-              <div class="dropdown-content" style="max-height: 200px; overflow-y: auto;">
-                {% for tag in tags %}
-                <label class="dropdown-item">
-                  <input type="checkbox" name="tag_ids" value="{{ tag.id }}" {{ 'checked' if tag in record.tags else '' }} class="mr-2">
-                  {{ tag.title }}
-                </label>
-                {% endfor %}
-              </div>
+            <div class="columns is-multiline is-mobile">
+                <div class="column is-4-tablet is-6-mobile">
+                    <label class="label is-small">Flow</label>
+                    <div class="select is-fullwidth">
+                        <select name="flow">
+                            <option {{ 'selected' if record.flow.value == 'inbound' }} value="inbound">Inbound</option>
+                            <option {{ 'selected' if record.flow.value == 'outbound' }} value="outbound">Outbound</option>
+                            <option {{ 'selected' if record.flow.value == 'internal_cr' }} value="internal_cr">Internal CR</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="column is-4-tablet is-6-mobile">
+                    <label class="label is-small">Register</label>
+                    <div class="select is-fullwidth">
+                        <select name="register" hx-get="/record_form_data?info=senders_{{record.sender.alias}}_{{record.flow.value}}_" hx-target="#form_record_senders">
+                            <option value=""></option>
+                            {% for register in registers %}
+                                <option {{ 'selected' if record.register.alias == register }}>{{ register }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="column is-4-tablet is-12-mobile">
+                    <label class="label is-small">Sender</label>
+                    <div class="select is-fullwidth is-success">
+                        <select id="form_record_senders" name="sender">
+                            <option value=""></option>
+                            {% for sender in senders %}
+                                <option {{ 'selected' if record.sender.alias == sender.alias }} value="{{sender.alias}}">{{sender.alias}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
             </div>
-          </div>
+
+            <div class="columns is-mobile">
+                <div class="column is-3">
+                    <label class="label is-small">Sequence</label>
+                    <input class="input" type="text" name="sequence" value="{{record.sequence}}">
+                </div>
+                <div class="column is-3">
+                    <label class="label is-small">Year</label>
+                    <input class="input" type="text" name="year" value="{{record.year}}">
+                </div>
+                <div class="column is-6">
+                    <label class="label is-small">Tags</label>
+                    <div class="dropdown is-hoverable is-block">
+                        <div class="dropdown-trigger">
+                            <button class="button is-fullwidth is-justify-content-space-between" type="button">
+                                <span>Select Tags</span>
+                                <span class="icon is-small"><i class="iconify" data-icon="mdi:chevron-down"></i></span>
+                            </button>
+                        </div>
+                        <div class="dropdown-menu" style="width: 100%;">
+                            <div class="dropdown-content" style="max-height: 200px; overflow-y: auto;">
+                                {% for tag in tags %}
+                                <label class="dropdown-item">
+                                    <input type="checkbox" name="tag_ids" value="{{ tag.id }}" {{ 'checked' if tag in record.tags }} class="mr-2">
+                                    {{ tag.title }}
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="columns">
+                <div class="column is-4">
+                    <label class="label is-small">Audience</label>
+                    <div class="select is-fullwidth">
+                        <select name="audience">
+                            <option {{ 'selected' if record.audience == 'all' }} value="all">All</option>
+                            <option {{ 'selected' if record.audience == 'dr' }} value="dr">Only dr</option>
+                            <option {{ 'selected' if record.audience == 'permanent' }} value="permanent">Only permanent</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <label class="label is-small">Department</label>
+                    <div class="select is-fullwidth">
+                        <select name="department" id="dept-select">
+                            <option value=""></option>
+                            {% for department in departments %}
+                                <option value="{{ department }}" {{ 'selected' if department == record.unit.alias }}>{{ department }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <label class="label is-small">Area</label>
+                    <div class="select is-fullwidth">
+                        <select name="area">
+                            {% for area in areas %}
+                                <option {{ 'selected' if record.area == area }}>{{ area }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field mt-4">
+                <label class="label is-small">Title</label>
+                <textarea class="textarea" name="title" rows="2">{{record.title}}</textarea>
+            </div>
+            <div class="field">
+                <label class="label is-small">Comments</label>
+                <textarea class="textarea" name="comments" rows="2" placeholder="Add internal notes..."></textarea>
+            </div>
         </div>
 
-        <div class="control">
-          <label class="label">Audience</label>
-          <div class="select">
-            <select name="audience">
-                <option {{ 'selected' if record.audience == 'all' else '' }} value="all">All</option>
-                <option {{ 'selected' if record.audience == 'dr' else '' }} value="dr">Only dr</option>
-                <option {{ 'selected' if record.audience == 'permanent' else '' }} value="permanent">Only permanent</option>
-            </select>
-          </div>
+        <div class="column is-4">
+            <div class="field">
+                <label class="label is-small">Assign Targets</label>
+                {% include "forms/select_targets.html" %}
+            </div>
         </div>
-
-        <div class="control">
-          <label class="label">Department</label>
-          <div class="select">
-            <select name="department">
-              {% for department in departments %}
-                  <option {{ 'selected' if department == record.unit.alias else '' }}>{{ department }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-      
-        <div class="control">
-          <label class="label">Area</label>
-          <div class="select">
-            <select name="area">
-              {% for area in areas %}
-                  <option {{ 'selected' if record.area == area else '' }}>{{ area }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="field">
-        <label class="label">Title</label>
-        <div class="control">
-            <textarea class="textarea" name="title" placeholder="Title">{{record.title}}</textarea>
-        </div>
-      </div>
-
-      <div class="field">
-        <label class="label">Comments</label>
-        <div class="control">
-            <textarea class="textarea" name="comments" placeholder="Textarea"></textarea>
-        </div>
-      </div>
     </div>
-
-    <div class="column is-4">
-      <div class="field">
-        <div class="control">
-          <label class="label">Targets</label>
-          {% include "forms/select_targets.html" %}
-        </div>
-      </div>
-    </div>
-  </div>
 </form>
 
 <script>
@@ -178,4 +152,44 @@
       forceFallback: true,
       fallbackClass: 'sortable-fallback'
     });
+
+
+
+    // Flag to ensure this only happens once per page load
+    let autoSelectDone = false;
+
+    document.addEventListener('change', function(event) {
+        // 1. Identify our target checkboxes
+        if (event.target.classList.contains('target-checkbox') && event.target.checked) {
+            
+            // 2. Find the select by ID (make sure the ID exists in HTML!)
+            const deptSelect = document.getElementById('dept-select');
+            const targetDept = event.target.getAttribute('data-dept');
+
+            // 3. Logic check:
+            // - Has not auto-filled yet (!autoSelectDone)
+            // - Current value is empty/null (!deptSelect.value)
+            // - We have a department value to apply (targetDept)
+            if (!autoSelectDone && deptSelect && !deptSelect.value && targetDept) {
+                
+                // Attempt to match the department string to an option value
+                let matchFound = false;
+                for (let i = 0; i < deptSelect.options.length; i++) {
+                    if (deptSelect.options[i].value === targetDept) {
+                        deptSelect.selectedIndex = i;
+                        matchFound = true;
+                        break;
+                    }
+                }
+
+                if (matchFound) {
+                    autoSelectDone = true; 
+                    // Visual feedback: briefly turn the border green
+                    deptSelect.parentElement.classList.add('is-success');
+                    setTimeout(() => deptSelect.parentElement.classList.remove('is-success'), 1000);
+                }
+            }
+        }
+    });
 </script>
+

@@ -17,7 +17,7 @@
 </div>
 
 <div class="column position-relative is-flex is-align-items-center has-order-7-mobile">
-  <span class="mr-2 {{ record.read_status_html(status,current_actor) if record.flow == 'inbound' else '' }}">
+  <span class="mr-2 {{ record.read_status_html(panel,status,current_actor) if record.flow == 'inbound' else '' }}">
     {{ record.title_hashtag|safe }}
   </span>
 
