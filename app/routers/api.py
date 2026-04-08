@@ -14,12 +14,12 @@ from .main import templates
 @router.get("/users/search", response_class=HTMLResponse)
 async def search_targets(request: Request, record_id: int = None, query: str = "", user_ids: list[int] = Query(default=[]), db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
     if record_id:
-        record = get_record_by_id(record_id, db = db)
+        record = get_record_by_id(db,record_id)
         rst = get_targets_register(db, record.flow, record.register.alias, query=query)
     else:
         rst = get_targets_register(db, 'outbound', 'ctr', query=query)
     
-    checked = get_actor_by_ids(user_ids,db)
+    checked = get_actor_by_ids(db,user_ids)
     available_targets = checked + [target for target in rst if not target in checked]
     
     # Return ONLY the list items for the left column

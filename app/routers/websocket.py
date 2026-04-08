@@ -17,7 +17,7 @@ router = APIRouter()
 @router.websocket("/ws/{actor_alias}")
 async def websocket_endpoint(websocket: WebSocket, actor_alias: str, db: Session = Depends(get_db)):
     await websocket.accept()
-    current_actor = get_actor_by_alias(actor_alias, db)
+    current_actor = get_actor_by_alias(db,actor_alias)
     
     # Define the channels we want to listen to
     channels = [f'actor_{current_actor.alias}', f'role_{current_actor.role}']

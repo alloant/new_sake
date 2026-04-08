@@ -9,22 +9,22 @@ def add_recordactor(db: Session, record_id: int, actor_id: int):
     status = RecordActor(record_id=record_id, actor_id=actor_id)
     db.add(status); db.commit(); db.refresh(status)
 
-def get_actor_by_id(actor_id: int, db: Session) -> Actor | None:
+def get_actor_by_id(db: Session, actor_id: int) -> Actor | None:
     return db.get(Actor, actor_id)
 
-def get_actor_by_ids(actor_ids: list[int], db: Session) -> Actor | None:
+def get_actor_by_ids(db: Session, actor_ids: list[int]) -> Actor | None:
     return db.exec(select(Actor).where(Actor.id.in_(actor_ids))).all()
 
-def get_actor_by_alias(alias: str, db: Session) -> Actor | None:
+def get_actor_by_alias(db: Session, alias: str) -> Actor | None:
     return db.exec(select(Actor).where(Actor.alias == alias)).first()
 
-def get_actor_by_email(email: str, db: Session) -> Actor | None:
+def get_actor_by_email(db: Session, email: str) -> Actor | None:
     return db.exec(select(Actor).where(Actor.email == email)).first()
 
 def get_actors(db: Session) -> list[Actor]:
     return db.exec(select(Actor)).all()
 
-def create_actor(alias: str, kind: str, db: Session) -> Actor:
+def create_actor(db: Session, alias: str, kind: str) -> Actor:
     db_actor = Register(alias=alias, kind=kind)
     db.add(db_actor); db.commit(); db.refresh(db_actor)
     return db_actor
@@ -35,7 +35,7 @@ def get_ctrs(db: Session, filter: str = "") -> list(Actor):
     return db.exec(select(Actor).where(and_(Actor.kind=='ctr',Actor.is_active==1)).order_by(Actor.alias)).all()
 
 def get_all_deps(db: Session):
-    return select(Actor).where(and_(Actor.active,Actor.kind=='dep')).all()
+    return db.exec(select(Actor).where(and_(Actor.is_active,Actor.kind=='dep'))).all()
 
 def get_all_alias_deps(db: Session):
     return db.exec(select(Actor.alias).where(and_(Actor.is_active,Actor.kind=='dep')).order_by(Actor.alias)).all()

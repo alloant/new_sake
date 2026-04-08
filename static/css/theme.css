@@ -188,6 +188,9 @@ border-radius: 4px !important;
   z-index: 20;
 }
 
+.dropdown.is-active .dropdown:not(.is-active) .dropdown-menu {
+    display: none;
+}
 /* Custom class to center the dropdown menu */
 .dropdown.is-centered .dropdown-menu {
     left: 50%;
@@ -243,18 +246,18 @@ border-radius: 4px !important;
 }
 
 .blue-background-class {
-    background-color: #ebf5ff !important; /* Light blue */
+    background-color: var(--background-color) !important; /* Light blue */
+    color: var(--font-color) !important;
     border: 2px dashed #3182ce !important; /* Dashed border looks better for a ghost */
     opacity: 0.5;
 }
 
 .sortable-fallback {
-    opacity: 1 !important;
+    opacity: 0 !important;
     display: block !important;
     /* Add a little shadow to make it look like it's "lifted" */
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
-
 
 /* 1. The Master Container - Force strict 2em x 2em */
 .unit-square {

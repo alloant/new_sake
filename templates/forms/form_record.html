@@ -21,10 +21,9 @@
             </div>
         </div>
     </div>
-
-    <div class="columns is-variable is-5">
-        <div class="column is-8">
-            
+    
+    <div class="columns is-variable is-5 is-align-items-stretch">
+        <div class="column is-8 is-flex is-flex-direction-column">
             <div class="columns is-multiline is-mobile">
                 <div class="column is-4-tablet is-6-mobile">
                     <label class="label is-small">Flow</label>
@@ -131,9 +130,11 @@
                 <label class="label is-small">Title</label>
                 <textarea class="textarea" name="title" rows="2">{{record.title}}</textarea>
             </div>
-            <div class="field">
+            <div class="field is-flex-grow-1 is-flex is-flex-direction-column">
                 <label class="label is-small">Comments</label>
-                <textarea class="textarea" name="comments" rows="2" placeholder="Add internal notes..."></textarea>
+                <div class="control is-flex-grow-1 is-flex">
+                    <textarea class="textarea" name="comments" placeholder="Add comments..." style="flex-grow: 1; resize: none;"></textarea>
+                </div>
             </div>
         </div>
 

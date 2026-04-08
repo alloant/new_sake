@@ -5,14 +5,14 @@ from sqlalchemy import and_, or_, desc, cast, Integer
 from app.core.database import engine
 from app.models.mail import Mail, Attachment
 
-def get_mail_by_uid(uid: str, db: Session) -> Mail | None:
+def get_mail_by_uid(db: Session, uid: str) -> Mail | None:
     return db.exec(select(Mail).where(Mail.uid==uid)).one_or_none()
 
 def get_last_uid(db: Session) -> str:
     return db.exec(select(Mail.uid).order_by(cast(Mail.uid, Integer).desc())).first()
 
-def add_mail(uid: str, subject: str, date: datetime, from_: str, text: str, db: Session) -> Register:
-    email = get_mail_by_uid(uid, db)
+def add_mail(db: Session, uid: str, subject: str, date: datetime, from_: str, text: str) -> Register:
+    email = get_mail_by_uid(db,uid)
     if not email:
         db_mail = Mail(uid=uid,subject=subject,date=date,from_=from_,text=text)
         db.add(db_mail); db.commit(); db.refresh(db_mail)
@@ -20,7 +20,7 @@ def add_mail(uid: str, subject: str, date: datetime, from_: str, text: str, db: 
     else:
         return email
 
-def add_attachment(uid: str, att, db: Session):
+def add_attachment(db: Session, uid: str, att):
     db_att = Attachment(uid=uid, name = att.filename, content_type = att.content_type, file_data = att.payload)
     db.add(db_att); db.commit(); db.refresh(db_att)
     return db_att

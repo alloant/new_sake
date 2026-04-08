@@ -58,11 +58,11 @@ def transfer_find_depts():
         dept_found = False
         for tag in tags:
             if tag['text'] == 'desr':
-                dept = get_actor_by_alias('pffer',db)
+                dept = get_actor_by_alias(db,'pffer')
             elif tag['text'] == 'stgr':
-                dept = get_actor_by_alias('dest',db)
+                dept = get_actor_by_alias(db,'dest')
             else:
-                dept = get_actor_by_alias(tag['text'],db)
+                dept = get_actor_by_alias(db,tag['text'])
             if dept:
                 record.unit_id = dept.id
                 db.add(record)
@@ -96,7 +96,7 @@ def transfer_files():
 
     for file in files:
         print(file)
-        record = get_record_by_params('old_id',file['note_id'],db)
+        record = get_record_by_params(db,'old_id',file['note_id'])
         if record:
             db_file = File(name=file['path'],record_id=record.id,permanent_link=file['permanent_link'], created_at=file['date'],updated_at=file['date'])
             db.add(db_file)
@@ -270,7 +270,7 @@ def transfer_note_user():
             if add_it:            
                 user_old_id = state['user_id']
                 user_old = get_old_data(f'SELECT * FROM user WHERE id = {user_old_id}')[0]
-                actor = get_actor_by_alias(user_old['alias'], db)
+                actor = get_actor_by_alias(db,user_old['alias'])
             
                 if actor:
                     db_record_actor = RecordActor(actor_id=actor.id,record_id=record.id,handled=handled,target=target)
@@ -314,7 +314,7 @@ def transfer_references():
         references = get_old_data(f"SELECT * FROM note_ref WHERE note_id = {old_record_id}")
         for reference in references:
             print(reference)
-            new_reference = get_record_by_params('old_id',reference['ref_id'],db)
+            new_reference = get_record_by_params(db,'old_id',reference['ref_id'])
             if new_reference:
                 recordref = RecordRecord(record_id=record.id,reference_id=new_reference.id)
             db.add(recordref)

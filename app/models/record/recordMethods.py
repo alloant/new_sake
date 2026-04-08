@@ -212,7 +212,9 @@ class RecordMethod(object):
 
         if (self.flow == 'inbound' and self.stage == 'registered') or self.flow == 'internal_cr' and self.sender_id == current_actor.id and self.stage != 'shared':
             actions.append(ActionGroup(title="Inbox",items=[]))
-            if self.state != 'archived':
+            if self.flow == 'internal_cr' and panel == 'outcoming-proposals-drafts':
+                actions[-1].items.append(Action(record_id=self.id,**all_actions['edit_record']))
+            elif self.state != 'archived':
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['archive']))
             else:
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['restore']))

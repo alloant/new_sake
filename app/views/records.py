@@ -1,5 +1,5 @@
 import math
-from app.crud import get_record_by_id, get_records, get_record_actor, get_record_actor_by_id, get_actor_registers, get_ctrs, get_all_alias_deps, get_senders_register, get_targets_register, get_dispatcher_alias, get_tags
+from app.crud import get_record_by_id, get_records, get_record_actor, get_record_actor_by_id, get_actor_registers, get_ctrs, get_all_deps, get_all_alias_deps, get_senders_register, get_targets_register, get_dispatcher_alias, get_tags
 from app.routers.websocket import broadcast_channels
 
 def pagination(num_records: int, page: int, limit_records: int):
@@ -25,26 +25,33 @@ def pagination(num_records: int, page: int, limit_records: int):
 def get_title(section,panel):
     return panel.replace('-',' ').title()
 
+def get_advance_search_data(db, current_actor, section: str, panel: str) -> dict:
+    registers = get_actor_registers(db,current_actor.scopes, only_alias=False)
+    departments = get_all_deps(db)
+    tags = get_tags(db)
+    return {'registers': registers, 'departments': departments, 'tags': tags}
+
 async def records_view(page: int = None, search: str = None, section: str = None, panel: str = None, db = None, current_actor = None):
     limit_records = current_actor.get_setting('limit_records')
     records, num_records = get_records(db=db,actor=current_actor,section=section,panel=panel,search=search,limit=limit_records,offset=page)
+    advance_search = get_advance_search_data(db, current_actor, section, panel)
     
-    return f"record/main.html", {"records": records, "pagination": pagination(num_records,page,limit_records), "title": get_title(section,panel), 'num_records': num_records, "current_actor": current_actor}
+    return f"record/main.html", {"records": records, "pagination": pagination(num_records,page,limit_records), "title": get_title(section,panel), 'num_records': num_records, "current_actor": current_actor, "advance_search": advance_search}
 
 
-async def records_table_view(page: int = None, search = None, section: str = None, panel: str = None, db = None, current_actor = None):
+async def records_table_view(db: Session, current_actor: Actor, section: str, panel: str, page: int = None, search = None, data = None):
     limit_records = current_actor.get_setting('limit_records')
     offset = (page - 1)*limit_records if page else None
-    records, num_records = get_records(db=db,actor=current_actor,section=section,panel=panel,search=search,limit=limit_records,offset=offset)
+    records, num_records = get_records(db=db,actor=current_actor,section=section,panel=panel,search=search,data=data,limit=limit_records,offset=offset)
 
     return f"record/table.html", {"records": records, "pagination": pagination(num_records,page,limit_records), "title": get_title(section,panel), 'num_records': num_records, "current_actor": current_actor}
 
 async def action_view(record_id,status_id, action, db, current_actor):
-    record = get_record_by_id(record_id, db = db)
+    record = get_record_by_id(db,record_id)
     if status_id:
-        status = get_record_actor_by_id(record_actor_id = status_id, db = db)
+        status = get_record_actor_by_id(db,record_actor_id = status_id)
     else:
-        status = get_record_actor(record_id = record_id, actor_id = current_actor.id, db = db)
+        status = get_record_actor(db, record_id = record_id, actor_id = current_actor.id)
   
     if action == "mark_read":
         if record.created_at > current_actor.created_at:
@@ -61,7 +68,7 @@ async def action_view(record_id,status_id, action, db, current_actor):
     elif action == "restore":
         record.state = "active"
     elif action in ["edit","sign_note"]:
-        registers = get_actor_registers(current_actor.scopes,db)
+        registers = get_actor_registers(db,current_actor.scopes)
         departments = get_all_alias_deps(db)
         senders = get_senders_register(db,record.flow,record.register.alias)
         available_targets = get_targets_register(db, record.flow, record.register.alias)

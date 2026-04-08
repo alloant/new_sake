@@ -55,8 +55,8 @@ async def home(request: Request, section: str | None = "board", panel: str | Non
             case 'sccr':
                 panel = 'new_mail'
             
-    sidebar = get_sidebar(payload,section,panel,db)
-    current_actor = get_actor_by_id(payload.uid, db)
+    sidebar = get_sidebar(db,payload,section,panel)
+    current_actor = get_actor_by_id(db,payload.uid)
     theme = current_actor.get_setting('theme') 
     font_size = f"1.{int(current_actor.get_setting('font_size'))-1}"
     
@@ -65,8 +65,8 @@ async def home(request: Request, section: str | None = "board", panel: str | Non
 # Here is only for all_search. It will always have a section and panel
 @router.post("/", name="homepage_search")
 async def home_search(request: Request, section: str | None = "board", panel: str | None = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
-    sidebar = get_sidebar(payload,section,panel, db)
-    current_actor = get_actor_by_id(payload.uid, db)
+    sidebar = get_sidebar(db,payload,section,panel)
+    current_actor = get_actor_by_id(db,payload.uid)
     theme = current_actor.get_setting('theme') 
     font_size = f"1.{int(current_actor.get_setting('font_size'))-1}"
     

@@ -144,9 +144,9 @@ def FULLMENU(section):
 
     return FULL_MENU[section]
 
-def get_panel(actor_perms,section,panel,db):
+def get_panel(db,actor_perms,section,panel):
     if section == 'register':
-        return get_panel_register(actor_perms,panel,db)
+        return get_panel_register(db,actor_perms,panel)
     
     filtered_menu = []
     for group in FULLMENU(section):
@@ -165,7 +165,7 @@ def get_panel(actor_perms,section,panel,db):
 
     return filtered_menu
 
-def get_panel_register(actor_perms,panel,db):
+def get_panel_register(db,actor_perms,panel):
     registers = get_registers(db)
     menu = []
     items = []
@@ -185,7 +185,7 @@ def get_panel_register(actor_perms,panel,db):
 
             menu.append(MenuGroup(title=register.full_name, items=items))
 
-    ctrs = get_actor_ctrs(actor_perms, db)
+    ctrs = get_actor_ctrs(db,actor_perms)
 
     for ctr in ctrs:
         items = []
@@ -198,13 +198,13 @@ def get_panel_register(actor_perms,panel,db):
 
     return menu
 
-def get_sidebar(payload,section,panel,db):
-    current_actor = get_actor_by_id(payload.uid, db)
+def get_sidebar(db,payload,section,panel):
+    current_actor = get_actor_by_id(db,payload.uid)
 
     if current_actor.role == 'cl':
         pass
     else:
         sections = get_sections([payload.data['kind']] + payload.scopes,section)
-        panel = get_panel([payload.data['kind']] + payload.scopes,section,panel,db)
+        panel = get_panel(db,[payload.data['kind']] + payload.scopes,section,panel)
 
     return {'actor_alias': payload.alias, 'sections': sections, 'panel': panel}

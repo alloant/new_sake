@@ -24,7 +24,7 @@ current_target_subquery = (
 def get_tags(db: Session):
     return db.exec(select(Tag)).all()
 
-def get_record_actor(record_id: int, actor_id: int, db: Session) -> RecordActor:
+def get_record_actor(db: Session, record_id: int, actor_id: int) -> RecordActor:
     smnt = select(RecordActor).where(
     RecordActor.actor_id == actor_id,
     RecordActor.record_id == record_id)
@@ -39,14 +39,14 @@ def get_record_actor(record_id: int, actor_id: int, db: Session) -> RecordActor:
 
     return status
 
-def get_record_by_params(param: str, value, db: Session) -> Record | None:
+def get_record_by_params(db: Session, param: str, value) -> Record | None:
     smnt = select(Record).where(Record.params[param] == value)
     return db.exec(smnt).one()
 
-def get_record_actor_by_id(record_actor_id: int, db: Session) -> Record | None:
+def get_record_actor_by_id(db: Session, record_actor_id: int) -> Record | None:
     return db.get(RecordActor, record_actor_id)
 
-def get_record_by_id(record_id: int, db: Session) -> Record | None:
+def get_record_by_id(db: Session, record_id: int) -> Record | None:
     return db.get(Record, record_id)
 
 def get_num_records(db: Session, search: str = None) -> list[Record]:
@@ -55,7 +55,7 @@ def get_num_records(db: Session, search: str = None) -> list[Record]:
 
     return db.exec(select(func.count(Record.id))).one()
 
-def get_filter(actor,section, panel, db: Session):
+def get_filter(db: Session, actor: Actor, section: str, panel: str):
     if 'permanent' in actor.scopes:
         fn = []
     elif 'dr' in actor.scopes:
@@ -64,10 +64,14 @@ def get_filter(actor,section, panel, db: Session):
         fn = [Record.audience == 'all']
 
     if section == 'register':
-        fn.append(Record.stage == 'registered')
+        if panel.startswith('in'):
+            fn.append(Record.stage == 'registered')
+        else:
+            fn.append(Record.stage == 'sent')
+
         if panel.endswith('_ctr'):
             ctr_alias, flow = panel[:-4].split('-')
-            ctr = get_actor_by_alias(ctr_alias, db)
+            ctr = get_actor_by_alias(db,ctr_alias)
             
             if flow == 'in':
                 fn.append(Record.flow == 'outbound')
@@ -78,7 +82,7 @@ def get_filter(actor,section, panel, db: Session):
 
         else:
             register_alias, flow = panel.split('-')
-            register = get_register_by_alias(register_alias, db)
+            register = get_register_by_alias(db,register_alias)
 
             fn.append(Record.register_id==register.id)
 
@@ -92,8 +96,8 @@ def get_filter(actor,section, panel, db: Session):
             return fn
 
         if panel in ['all','mustread','unread']:
-            actor_registers = get_actor_registers(actor.scopes, db)
-            fn_registers = [Record.register_id == get_register_by_alias(register,db).id for register in actor_registers if actor_registers[register]]
+            actor_registers = get_actor_registers(db,actor.scopes)
+            fn_registers = [Record.register_id == get_register_by_alias(db,register).id for register in actor_registers if actor_registers[register]]
             fn.append(or_(*fn_registers))
             
             if panel == 'all':
@@ -192,7 +196,7 @@ def get_search_filter(search):
 
 
 def get_recursive_ids(start_id: int, actor: "Actor", db: Session, limit: int = None, offset:int = None):
-    start_record = get_record_by_id(start_id, db)
+    start_record = get_record_by_id(db,start_id)
     start_ids = [start_id]
 
     for reference in start_record.references:
@@ -224,11 +228,50 @@ def get_recursive_ids(start_id: int, actor: "Actor", db: Session, limit: int = N
 
     return Record.id.in_(all_ids)
 
-def get_records(db: Session, actor = None, section = None, panel = None, search: str = None, limit: int = None, offset: int = None, just_number: bool = False) -> list[Record] | int:
+def get_advance_search_filter(db: Session, data: dict):
+    fn = []
+    if not data:
+        return fn
+    
+    if 'tag_ids' in data:
+        fn.append(Record.tags.any(Tag.id.in_(data['tag_ids'])))
+
+    if 'flow' in data and data['flow']:
+        fn.append(Record.flow==data['flow'])
+    
+    if 'register' in data and data['register']:
+        fn.append(Record.register_id==data['register'])
+    
+    if 'sender' in data and data['sender']:
+        fn.append(Record.sender.alias==data['sender'])
+    
+    if 'target-' in data and data['target']:
+        fn.append(Record.actors==data['flow'])
+    
+    if 'department' in data and data['department']:
+        fn.append(Record.unit_id==data['department'])
+    
+    if 'sequence' in data and data['sequence']:
+        fn.append(Record.sequence==data['sequence'])
+    
+    if 'year' in data and data['year']:
+        fn.append(Record.year==data['year'])
+    
+    if 'audience' in data and data['audience']:
+        fn.append(Record.audience==data['audience'])
+    
+    if 'area' in data and data['area']:
+        fn.append(Record.area==data['area'])
+
+    return fn
+
+def get_records(db: Session, actor: Actor, section: str, panel: str, search: str = None, data: dict = None, limit: int = None, offset: int = None, just_number: bool = False) -> list[Record] | int:
     if not actor:
         return []
 
-    fn = get_filter(actor,section, panel, db)
+    fn = get_filter(db,actor,section, panel)
+
+    fn += get_advance_search_filter(db,data)
 
     if search:
         if search.startswith('all_off:'):
@@ -238,7 +281,7 @@ def get_records(db: Session, actor = None, section = None, panel = None, search:
     
     if panel.endswith('in_ctr'):
         ctr_alias, flow = panel[:-4].split('-')
-        ctr = get_actor_by_alias(ctr_alias, db)
+        ctr = get_actor_by_alias(db,ctr_alias)
 
         join_condition = and_(
             Record.id == RecordActor.record_id, 
@@ -274,7 +317,7 @@ def get_records(db: Session, actor = None, section = None, panel = None, search:
         selectinload(Record.references),
         joinedload(RecordActor.actor),
         joinedload(RecordActor.record)
-    ).limit(limit).offset(offset).order_by(desc(Record.updated_at))
+    ).limit(limit).offset(offset).order_by(desc(Record.updated_at),Record.sequence.desc())
     
     if just_number:
         return db.exec(num_stmt).one()
@@ -286,18 +329,18 @@ def get_all_records(db: Session) -> list[Record]:
 
     return db.exec(stmt).all()
 
-def get_records_for_actor(sender_id: int, db: Session) -> list[Record]:
+def get_records_for_actor(db: Session, sender_id: int) -> list[Record]:
     return db.exec(select(Record).where(Record.sender_id == sender_id)).all()
 
-def get_record_by_protocol(protocol: str, sequence: int, year: int, db: Session) -> Record | None:
+def get_record_by_protocol(db: Session, protocol: str, sequence: int, year: int) -> Record | None:
     return db.exec(select(Record).where((Record.protocol == protocol) & (Record.sequence == sequence) & (Record.year == year))).all()
 
-def create_record(record_in: RecordCreate, db: Session) -> Record:
+def create_record(db: Session, record_in: RecordCreate) -> Record:
     db_rec = Record(title=record_in.title, sequence=record_in.sequence, year=record_in.year, flow=record_in.flow, sender_id=record_in.sender_id)
     db.add(db_rec); db.commit(); db.refresh(db_rec)
     return db_rec
 
-def update_record(db_rec: Record, rec_in: RecordUpdate, db: Session) -> Record:
+def update_record(db: Session, db_rec: Record, rec_in: RecordUpdate) -> Record:
     data = rec_in.dict(exclude_unset=True)
     for k, v in data.items():
         setattr(db_rec, k, v)

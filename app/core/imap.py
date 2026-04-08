@@ -32,14 +32,14 @@ def add_last_mails_db(db: Session):
     last_uid = int(last_uid) + 1
     with MailBox(SERVER).login(USER, PASS) as mailbox:
         for mail in mailbox.fetch(criteria=AND(uid=f'{last_uid}:*'),mark_seen=True, reverse=True):
-            add_mail(uid=mail.uid, subject=mail.subject, date=mail.date, from_=mail.from_, text=mail.text, db=db)
+            add_mail(db,uid=mail.uid, subject=mail.subject, date=mail.date, from_=mail.from_, text=mail.text)
             for att in mail.attachments:
                 add_attachment(mail.uid, att, db)
 
 def add_mails_db(db):
     with MailBox(SERVER).login(USER, PASS) as mailbox:
         for mail in mailbox.fetch(mark_seen=True, headers_only=True):
-            add_mail(uid=mail.uid, subject=mail.subject, date=mail.date, from_=mail.from_, text=mail.text, db=db)
+            add_mail(db,uid=mail.uid, subject=mail.subject, date=mail.date, from_=mail.from_, text=mail.text)
 
 
 def get_mails():

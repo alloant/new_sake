@@ -1,15 +1,135 @@
-<h6 class="title is-6 mb-3">Advanced Filters</h6>
 
-<div class="field">
-  <label class="label is-small">Filter by Actor</label>
-  <div class="control">
-    <input class="input is-small" type="text" placeholder="Name...">
-  </div>
-</div>
+<form id="advanced-search-form" 
+      hx-post="/records/table?section={{section}}&panel={{panel}}" 
+      hx-target="#main-table" 
+      hx-indicator="#progress-indicator">
+    
+    <h6 class="title is-6 mb-3">Advanced Filters</h6>
 
-<hr class="navbar-divider">
+    <div class="columns is-mobile is-multiline mb-1">
+        <div class="column is-3-tablet is-12-mobile pb-1">
+            <label class="label is-small">Flow</label>
+            <div class="select is-small is-fullwidth">
+                <select name="flow">
+                    <option value="">Any</option>
+                    <option value="inbound">Inbound</option>
+                    <option value="outbound">Outbound</option>
+                    <option value="internal_cr">Internal cr</option>
+                    <option value="internal_cl">Internal cl</option>
+                </select>
+            </div>
+        </div>
 
-<div class="buttons is-right">
-    <button class="button is-small is-link">Apply</button>
-</div>
+        <div class="column is-2-tablet is-6-mobile pb-1">
+            <label class="label is-small">Register</label>
+            <div class="select is-small is-fullwidth">
+                <select name="register">
+                    <option value="">Any</option>
+                    {% for register in advance_search['registers'] %}
+                        <option value="{{ register.id }}">{{ register.alias }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
 
+        <div class="column is-2-tablet is-6-mobile pb-1">
+          <label class="label is-small">Sender</label>
+          <input class="input is-small" type="text" name="sender" placeholder="Sender">
+        </div>
+
+        <div class="column is-3-tablet is-6-mobile pb-1">
+          <label class="label is-small">Target</label>
+          <input class="input is-small" type="text" name="target" placeholder="Targets: target1,target2...">
+        </div>
+        
+        <div class="column is-2-tablet is-6-mobile pb-1">
+            <label class="label is-small">Department</label>
+            <div class="select is-small is-fullwidth">
+                <select name="department">
+                    <option value="">Any</option>
+                    {% for department in advance_search['departments'] %}
+                        <option value="{{ department.id }}">{{ department.alias }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="columns is-mobile is-multiline mb-1">
+        <div class="column is-2-tablet is-6-mobile pb-1">
+            <label class="label is-small">Sequence</label>
+            <input class="input is-small" type="text" name="sequence" placeholder="e.g. 123">
+        </div>
+
+        <div class="column is-2-tablet is-6-mobile pb-1">
+            <label class="label is-small">Year</label>
+            <input class="input is-small" type="text" name="year" placeholder="YYYY">
+        </div>
+
+        <div class="column is-3-tablet is-6-mobile pb-1">
+            <label class="label is-small">Audience</label>
+            <div class="select is-small is-fullwidth">
+                <select name="audience">
+                    <option value="">Any</option>
+                    <option value="all">All</option>
+                    <option value="dr">Only dr</option>
+                    <option value="permanent">Only permanent</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="column is-3-tablet is-6-mobile pb-1">
+            <label class="label is-small">Tags</label>
+            <div class="dropdown is-block">
+                <div class="dropdown-trigger">
+                    <button class="button is-small is-fullwidth is-justify-content-space-between" type="button" aria-haspopup="true">
+                        <span>Select Tags to Filter</span>
+                        <span class="icon is-small"><i class="iconify" data-icon="mdi:chevron-down"></i></span>
+                    </button>
+                </div>
+                <div class="dropdown-menu" style="width: 100%;" onclick="event.stopPropagation()">
+                    <div class="dropdown-content" style="max-height: 150px; overflow-y: auto;">
+                        {% for tag in advance_search['tags'] %}
+                        <label class="dropdown-item is-size-7">
+                            <input type="checkbox" name="tag_ids" value="{{ tag.id }}" class="mr-2">
+                            {{ tag.title }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="column is-2-tablet is-6-mobile pb-1">
+            <label class="label is-small">Area</label>
+            <div class="select is-small is-fullwidth">
+                <select name="area">
+                    <option value="">Any</option>
+                    <option value="Aso">Aso</option>
+                    <option value="Asmo">Asmo</option>
+                    <option value="Ind">Ind</option>
+                    <option value="J">J</option>
+                </select>
+            </div>
+        </div>
+
+    </div>
+
+    <hr class="navbar-divider mt-4 mb-3">
+
+    <div class="level is-mobile mb-0">
+        <div class="level-left">
+            <button type="reset" class="button is-small is-ghost has-text-grey">Clear Filters</button>
+        </div>
+        <div class="level-right">
+            <div class="buttons">
+                <button type="button" class="button is-small" onclick="this.closest('.dropdown').classList.remove('is-active')">Cancel</button>
+                
+                <button type="submit" class="button is-small is-link" onclick="this.closest('.dropdown').classList.remove('is-active')">
+                    <span class="iconify mr-1" data-icon="mdi-filter-check"></span> Apply Filters
+                </button>
+            </div>
+        </div>
+    </div>
+</form>

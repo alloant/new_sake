@@ -39,20 +39,20 @@ from .main import templates
 #Settings
 @router.get("/settings", name="settings")
 async def settings(request: Request, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
-    sidebar = get_sidebar(payload,'settings','', db)
-    current_actor = get_actor_by_id(payload.uid, db)
+    sidebar = get_sidebar(db,payload,'settings','')
+    current_actor = get_actor_by_id(db, payload.uid)
     theme = current_actor.get_setting('theme') 
 
     available_targets = get_targets_register(db, 'outbound', 'ctr')
     checked_targets = current_actor.ctrs_alias
 
-    return templates.TemplateResponse("forms/form_settings.html", {"request": request, "theme": theme, "actor_role": current_actor.role, "sidebar": sidebar, "actor": current_actor, "available_targets": available_targets, 'checked_targets': checked_targets, "settings": get_settings_form(current_actor, db)})
+    return templates.TemplateResponse("forms/form_settings.html", {"request": request, "theme": theme, "actor_role": current_actor.role, "sidebar": sidebar, "actor": current_actor, "available_targets": available_targets, 'checked_targets': checked_targets, "settings": get_settings_form(db,current_actor)})
 
 ## Settings/profile part
 @router.post("/settings", name="settings")
 async def settings_post(request: Request, db: Session = Depends(get_db), payload = Depends(get_payload_from_cookie)):
-    sidebar = get_sidebar(payload,'settings','', db)
-    current_actor = get_actor_by_id(payload.uid, db)
+    sidebar = get_sidebar(db,payload,'settings','')
+    current_actor = get_actor_by_id(db,payload.uid)
     provider = payload.provider
     theme = current_actor.get_setting('theme') 
     form = await request.form()
@@ -94,7 +94,7 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
                     scopes.append(key)
     
     for ctr_id in ctrs:
-        ctr = get_actor_by_id(ctr_id, db)
+        ctr = get_actor_by_id(db,ctr_id)
         scopes.append(f'ctr_{ctr.alias}:editor')
 
     current_actor.is_active = 'is_active' in data
@@ -133,7 +133,7 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
 ## SIDEBAR
 @router.get("/sidebar", response_class=HTMLResponse)
 def sidebar_fragment(request: Request, section: str | None = "board", panel: str | None = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
-    sidebar = get_sidebar(payload,section,panel, db)
+    sidebar = get_sidebar(db,payload,section,panel)
     
     return templates.TemplateResponse("sidebar/main.html", {"request": request, "sidebar": sidebar, "section": section, "panel": panel})
 
@@ -141,14 +141,14 @@ def sidebar_fragment(request: Request, section: str | None = "board", panel: str
 def sidebar_top_fragment(request: Request, new_sidebar = None, myData = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
     section = 'board'
     panel = 'all'
-    sidebar = get_sidebar(payload,section,panel, db)
+    sidebar = get_sidebar(db,payload,section,panel)
     
     return templates.TemplateResponse("sidebar/sidebar-top.html", {"request": request, "sidebar": sidebar, "section": section, "panel": panel})
 
 # RECORDS
 @router.get("/records", response_class=HTMLResponse)
 async def records(request: Request, search:str = None, page: int = None, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
-    current_actor = get_actor_by_id(payload.uid, db)
+    current_actor = get_actor_by_id(db,payload.uid)
     template, rst = await records_view(page, search, section, panel, db, current_actor)
    
     return templates.TemplateResponse(template,{'request': request, 'last_search': None, 'section': section, 'panel': panel} | rst)
@@ -156,19 +156,22 @@ async def records(request: Request, search:str = None, page: int = None, section
 
 @router.post("/records/table", response_class=HTMLResponse)
 async def records_table(request: Request, page: int = None, last_search = None, section: str = None, panel: str = None, db: Session = Depends(get_db), current_actor_id: str = Depends(get_current_actor_alias_from_cookie)):
-    current_actor = get_actor_by_id(current_actor_id, db)
+    current_actor = get_actor_by_id(db,current_actor_id)
     form = await request.form()
     data = dict(form)
+    if 'tag_ids' in data:
+        data['tag_ids'] = form.getlist('tag_ids')
+
     search = last_search if last_search else data.get("search")
     
-    template, rst = await records_table_view(page, search, section, panel, db, current_actor)
+    template, rst = await records_table_view(db=db, current_actor=current_actor, section=section, panel=panel, page=page, search=search, data=data)
     template = f"record/table_pagination.html"
     
     return templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel, 'search': search} | rst)
 
 @router.get("/records/number", response_class=HTMLResponse)
 async def records_hidden_row(request: Request, section: str, panel: str, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
-    current_actor = get_actor_by_id(payload.uid, db)
+    current_actor = get_actor_by_id(db,payload.uid)
     num = get_records(db = db, actor = current_actor, section = section, panel = panel, just_number = True)
     if num == 0:
         return ''
@@ -181,14 +184,14 @@ class Loop(BaseModel):
 
 @router.get("/action", response_class=HTMLResponse)
 async def action(request: Request, record_id: int, recordactor_id: str, action: str, loop_index: int, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
-    current_actor = get_actor_by_id(payload.uid, db)
+    current_actor = get_actor_by_id(db,payload.uid)
     loop = Loop
     loop.index = loop_index
     if action == 'recursive_search':
         page = 1
-        template, rst = await records_table_view(page, f'all_off:{record_id}', 'board', 'all', db, current_actor)
+        template, rst = await records_table_view(db=db, current_actor=current_actor, section='board', panel='all', page=page, search=f'all_off:{record_id}')
         template = f"record/table_sidebar.html"
-        sidebar = get_sidebar(payload,'board','all',db)
+        sidebar = get_sidebar(db,payload,'board','all')
         response = templates.TemplateResponse(template, {'request': request, 'section': 'board', 'panel': 'all', 'sidebar': sidebar, 'search':f'all_off:{record_id}'} | rst)
 
         return response
@@ -216,9 +219,9 @@ async def modify_record(request: Request, record_id: int, loop_index: int, db: S
     list_new_actors = form.getlist("user_ids")
     new_actors = set(list_new_actors)
     
-    current_actor = get_actor_by_id(actor_id = payload.uid, db = db)
-    record = get_record_by_id(record_id, db = db)
-    status = get_record_actor(record_id = record_id, actor_id = payload.uid, db = db)
+    current_actor = get_actor_by_id(db, actor_id = payload.uid)
+    record = get_record_by_id(db, record_id)
+    status = get_record_actor(db, record_id = record_id, actor_id = payload.uid)
     
     if data['submit_form'] == 'save_sign':
         status.params['dispatcher_signature'] = True
@@ -235,7 +238,7 @@ async def modify_record(request: Request, record_id: int, loop_index: int, db: S
         if actor_id in current_actors:
             map_actors[actor_id].target = list_new_actors.index(actor_id) + 1
         else: # A new one
-            status_actor = get_record_actor(record_id = record_id, actor_id = actor_id, db = db)
+            status_actor = get_record_actor(db, record_id = record_id, actor_id = actor_id)
             status_actor.target = list_new_actors.index(actor_id) + 1
             db.add(status_actor)
     
@@ -258,13 +261,13 @@ async def modify_record(request: Request, record_id: int, loop_index: int, db: S
     record.sequence = data['sequence']
     record.year = data['year']
 
-    unit = get_actor_by_alias(data['department'], db = db)
+    unit = get_actor_by_alias(db, data['department'])
     if unit:
         record.unit_id = unit.id
     else:
         record.unit_id = None
     
-    register = get_register_by_alias(data['register'], db = db)
+    register = get_register_by_alias(db, data['register'])
     if register:
         record.register_id = register.id
 
@@ -279,16 +282,19 @@ async def modify_record(request: Request, record_id: int, loop_index: int, db: S
 async def records_global_search(request: Request, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
     form = await request.form()
     data = dict(form)
+    if 'tag_ids' in data:
+        data['tag_ids'] = form.getlist('tag_ids')
+
     search = data.get("all_search")
     
-    current_actor = get_actor_by_id(payload.uid, db)
+    current_actor = get_actor_by_id(db, payload.uid)
     
     page = 1
     
-    template, rst = await records_table_view(page, search, 'board', 'all', db, current_actor)
+    template, rst = await records_table_view(db=db, current_actor=current_actor, section='board', panel='all', page=page, search=search, data=data)
     if section != 'board' or panel != 'all':
         template = f"record/table_sidebar.html"
-        sidebar = get_sidebar(payload,'board','all',db)
+        sidebar = get_sidebar(db, payload,'board','all')
     else:
         sidebar = None
     response = templates.TemplateResponse(template, {'request': request, 'section': 'board', 'panel': 'all', 'sidebar': sidebar, 'search':search} | rst)
@@ -302,7 +308,7 @@ async def records_files(request: Request, record_id: int, files: List[UploadFile
 
 @router.get("/sccr", response_class=HTMLResponse)
 async def mails(request: Request, search: str = None, page: int = None, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
-    current_actor = get_actor_by_id(payload.uid, db)
+    current_actor = get_actor_by_id(db, payload.uid)
     limit_records = current_actor.get_setting('limit_records')
 
     template, rst = await mails_view(page, search, section, panel, db, current_actor, downloaded = False if panel == 'new_mail' else True)
@@ -317,7 +323,7 @@ async def mails(request: Request, search: str = None, page: int = None, section:
 
 @router.post("/sccr/table", response_class=HTMLResponse)
 async def mails_table(request: Request, page: int = None, last_search = None, section: str = None, panel: str = None, db: Session = Depends(get_db), current_actor_id: str = Depends(get_current_actor_alias_from_cookie)):
-    current_actor = get_actor_by_id(current_actor_id, db)
+    current_actor = get_actor_by_id(db, current_actor_id)
     form = await request.form()
     data = dict(form)
     search = last_search if last_search else data.get("search")
@@ -344,7 +350,7 @@ async def sccr_hidden_row(request: Request, section: str, panel: str, db: Sessio
 
 @router.get("/sccr/action", response_class=HTMLResponse)
 async def sccr_action(request: Request, mail_uid: int, action: str, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
-    mail = get_mail_by_uid(mail_uid, db)
+    mail = get_mail_by_uid(db, mail_uid)
     
     if action == 'add_to_sake':
         cont = 0

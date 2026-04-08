@@ -14,32 +14,39 @@ document.getElementById('navbar-burger').addEventListener('click', function() {
 });
 
 document.addEventListener('click', function (event) {
-    // 1. Find if the user clicked the button or anything INSIDE the button (like the icon)
     const trigger = event.target.closest('.dropdown-trigger');
-    
-    // 2. If it's a dropdown trigger, toggle its parent
+    const insideMenu = event.target.closest('.dropdown-menu');
+
     if (trigger) {
         const dropdown = trigger.closest('.dropdown');
         
-        // Close any other open dropdowns first (Optional, but cleaner)
+        // 1. Close other dropdowns
         document.querySelectorAll('.dropdown.is-active').forEach(openDropdown => {
-            if (openDropdown !== dropdown) {
+            // ONLY close if it's not the one we clicked AND it's not a parent of the one we clicked
+            if (openDropdown !== dropdown && !openDropdown.contains(dropdown)) {
                 openDropdown.classList.remove('is-active');
             }
         });
 
-        // Toggle the current one
+        // 2. Toggle the current one
         dropdown.classList.toggle('is-active');
         
-        // Prevent the click from "bubbling up" to the document listener below
         event.stopPropagation(); 
+
+    } else if (insideMenu) {
+        // If clicking inside the menu (form fields, labels), do nothing so it stays open
+        return;
     } else {
-        // 3. If the user clicked anywhere else, close all open dropdowns
+        // Clicked outside everything: close all
         document.querySelectorAll('.dropdown.is-active').forEach(dropdown => {
             dropdown.classList.remove('is-active');
         });
     }
 });
+
+
+
+
 
 
 // Request permission on page load
