@@ -216,12 +216,21 @@ async def modify_record(request: Request, record_id: int, loop_index: int, db: S
     loop.index = loop_index
     form = await request.form()
     data = dict(form)
-    list_new_actors = form.getlist("user_ids")
-    new_actors = set(list_new_actors)
     
     current_actor = get_actor_by_id(db, actor_id = payload.uid)
     record = get_record_by_id(db, record_id)
     status = get_record_actor(db, record_id = record_id, actor_id = payload.uid)
+   
+    if data['submit_form'] == 'save_tags':
+        actor_tags = form.getlist("actor_tags")
+        status.params['actor_tags'] = actor_tags
+        print('status',status,status.params)
+        db.add(status); db.commit(); db.refresh(status)
+
+        return templates.TemplateResponse('record/table_row.html', {'request': request, 'record': record, 'status': status, 'current_actor': current_actor, 'loop': loop})
+
+    list_new_actors = form.getlist("user_ids")
+    new_actors = set(list_new_actors)
     
     if data['submit_form'] == 'save_sign':
         status.params['dispatcher_signature'] = True
@@ -276,7 +285,6 @@ async def modify_record(request: Request, record_id: int, loop_index: int, db: S
     db.refresh(record)
 
     return templates.TemplateResponse('record/table_row.html', {'request': request, 'record': record, 'status': status, 'current_actor': current_actor, 'loop': loop})
-    return f"record/table_row.html", {"record": record, "status": status}
 
 @router.post("/global_search", response_class=HTMLResponse)
 async def records_global_search(request: Request, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):

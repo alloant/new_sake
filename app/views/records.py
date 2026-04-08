@@ -80,6 +80,11 @@ async def action_view(record_id,status_id, action, db, current_actor):
         available_targets = get_ctrs(db)
         selected_targets = record.targets
         return "forms/form_targets.html", {'record': record, 'available_targets': available_targets, 'checked_targets': selected_targets}
+    elif action == 'edit_actor_tags':
+        tags = current_actor.settings['actor_tags'].split(',') if 'actor_tags' in current_actor.settings else []
+        checked_tags = status.params['actor_tags'] if status and 'actor_tags' in status.params else []
+
+        return "forms/form_actor_tags.html", {'record': record, 'actor': current_actor, 'tags': tags, 'checked_tags': checked_tags}
     elif action == "start_circulation":
         record.stage = "shared"
         sock_targets = [f'actor_{alias}' for alias in record.current_targets_alias]

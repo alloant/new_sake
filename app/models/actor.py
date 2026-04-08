@@ -22,9 +22,11 @@ class ActorSettings(object):
             case 'theme':
                 return 'light'
             case 'admin_active':
-                return True
+                return False
             case 'lang':
                 return 'en'
+            case 'actor_tags':
+                return ''
 
     @property
     def admin(self):

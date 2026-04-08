@@ -60,6 +60,7 @@ def ACTIONS():
     ACTIONS['check_info'] = {"id": "check_info", "title": _("Info about the note"), "attr": {"hx-get": "/action?action=check_info", "hx-target": "#row-{record_id}"}, "icon": "mdi-information-outline"}
     ACTIONS['recursive_search'] = {"id": "recursive_search", "title": _("List all notes related with this entry"), "attr": {"hx-get": "/action?action=recursive_search", "hx-target": "#main-table"}, "icon": "mdi-archive-search-outline"}
     ACTIONS['edit_record'] = {"id": "edit_record", "title": _("Edit"), "attr": {"hx-get": "/action?action=edit", "hx-target": "#modal-content-target", "onclick": "openModal()"}, "icon": "mdi-email-edit", "perms": []}
+    ACTIONS['edit_actor_tags'] = {"id": "edit_actor_tags", "title": _("Personal tags"), "attr": {"hx-get": "/action?action=edit_actor_tags", "hx-target": "#modal-content-target", "onclick": "openModal()"}, "icon": "mdi-tag"}
     ACTIONS['edit_targets'] = {"id": "edit_targets", "title": _("Edit targets"), "attr": {"hx-get": "/action?action=edit_targets", "hx-target": "#modal-content-target", "onclick": "openModal()"}, "icon": "mdi-account-group"}
     ACTIONS['delete_record'] = {"id": "delete_record", "title": _("Delete"), "attr": {"hx-get": "/action?action=delete", "hx-target": "#row-{record_id}", "hx-confirm": "Are you sure you want to delete the record?"}, "icon": "mdi-delete-circle-outline", "extra_class": "has-text-danger"}
 
@@ -181,6 +182,10 @@ class RecordMethod(object):
     def get_actions(self, state, current_actor, section, panel, quick_access = False):
         all_actions = ACTIONS()
         actions = []
+        
+        actions.append(ActionGroup(title="Personal",items=[]))
+        actions[-1].items.append(Action(record_id=self.id,**all_actions['edit_actor_tags']))
+        
         if self.flow == 'inbound' and self.stage == 'despacho':
             actions.append(ActionGroup(title="Despacho",items=[]))
             if state.params.get('dispatcher_signature'): # The has already sign 
