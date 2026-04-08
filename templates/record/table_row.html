@@ -25,9 +25,11 @@
     <span class="tag mx-0 is-hidden-mobile is-link" style="font-size: 0.65rem;">{{ tag.title }}</span>
   {% endfor %}
   
+  {% if 'actor_tags' in status.params %}
   {% for tag in status.params['actor_tags'] %}
-    <span class="tag mx-0 is-hidden-mobile is-warning" style="font-size: 0.65rem;">{{ tag }}</span>
+    <span class="tag mx-0 is-hidden-mobile is-danger" style="font-size: 0.65rem; color: var(--font-color);">{{ tag }}</span>
   {% endfor %}
+  {% endif %}
 
   <div class="action-buttons is-hidden-mobile is-rounded">
     {% include 'record/table_row_actions.html' %}

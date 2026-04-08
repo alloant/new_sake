@@ -182,9 +182,10 @@ class RecordMethod(object):
     def get_actions(self, state, current_actor, section, panel, quick_access = False):
         all_actions = ACTIONS()
         actions = []
-        
-        actions.append(ActionGroup(title="Personal",items=[]))
-        actions[-1].items.append(Action(record_id=self.id,**all_actions['edit_actor_tags']))
+       
+        if panel != 'despacho':
+            actions.append(ActionGroup(title="Personal",items=[]))
+            actions[-1].items.append(Action(record_id=self.id,**all_actions['edit_actor_tags']))
         
         if self.flow == 'inbound' and self.stage == 'despacho':
             actions.append(ActionGroup(title="Despacho",items=[]))
