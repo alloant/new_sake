@@ -29,7 +29,8 @@ def get_advance_search_data(db, current_actor, section: str, panel: str) -> dict
     registers = get_actor_registers(db,current_actor.scopes, only_alias=False)
     departments = get_all_deps(db)
     tags = get_tags(db)
-    return {'registers': registers, 'departments': departments, 'tags': tags}
+    actor_tags = current_actor.settings['actor_tags'].split(',') if 'actor_tags' in current_actor.settings else []
+    return {'registers': registers, 'departments': departments, 'tags': tags, 'actor_tags': actor_tags}
 
 async def records_view(page: int = None, search: str = None, section: str = None, panel: str = None, db = None, current_actor = None):
     limit_records = current_actor.get_setting('limit_records')

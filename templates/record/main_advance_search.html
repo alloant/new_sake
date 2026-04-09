@@ -67,7 +67,7 @@
             <input class="input is-small" type="text" name="year" placeholder="YYYY">
         </div>
 
-        <div class="column is-3-tablet is-6-mobile pb-1">
+        <div class="column is-2-tablet is-6-mobile pb-1">
             <label class="label is-small">Audience</label>
             <div class="select is-small is-fullwidth">
                 <select name="audience">
@@ -79,7 +79,7 @@
             </div>
         </div>
 
-        <div class="column is-3-tablet is-6-mobile pb-1">
+        <div class="column is-2-tablet is-6-mobile pb-1">
             <label class="label is-small">Tags</label>
             <div class="dropdown is-block">
                 <div class="dropdown-trigger">
@@ -101,6 +101,28 @@
             </div>
         </div>
         
+        <div class="column is-2-tablet is-6-mobile pb-1">
+            <label class="label is-small">Custom tags</label>
+            <div class="dropdown is-block">
+                <div class="dropdown-trigger">
+                    <button class="button is-small is-fullwidth is-justify-content-space-between" type="button" aria-haspopup="true">
+                        <span>Select custom tags</span>
+                        <span class="icon is-small"><i class="iconify" data-icon="mdi:chevron-down"></i></span>
+                    </button>
+                </div>
+                <div class="dropdown-menu" style="width: 100%;" onclick="event.stopPropagation()">
+                    <div class="dropdown-content" style="max-height: 150px; overflow-y: auto;">
+                        {% for tag in advance_search['actor_tags'] %}
+                        <label class="dropdown-item is-size-7">
+                            <input type="checkbox" name="actor_tags" value="{{ tag }}" class="mr-2">
+                            {{ tag }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="column is-2-tablet is-6-mobile pb-1">
             <label class="label is-small">Area</label>
             <div class="select is-small is-fullwidth">

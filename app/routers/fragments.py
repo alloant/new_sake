@@ -161,6 +161,8 @@ async def records_table(request: Request, page: int = None, last_search = None, 
     data = dict(form)
     if 'tag_ids' in data:
         data['tag_ids'] = form.getlist('tag_ids')
+    if 'actor_tags' in data:
+        data['actor_tags'] = form.getlist('actor_tags')
 
     search = last_search if last_search else data.get("search")
     
@@ -292,6 +294,8 @@ async def records_global_search(request: Request, section: str = None, panel: st
     data = dict(form)
     if 'tag_ids' in data:
         data['tag_ids'] = form.getlist('tag_ids')
+    if 'actor_tags' in data:
+        data['actor_tags'] = form.getlist('actor_tags')
 
     search = data.get("all_search")
     

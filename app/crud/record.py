@@ -234,7 +234,11 @@ def get_advance_search_filter(db: Session, data: dict):
         return fn
     
     if 'tag_ids' in data:
-        fn.append(Record.tags.any(Tag.id.in_(data['tag_ids'])))
+        fn.append( Record.tags.any(Tag.id.in_(data['tag_ids'])) ) 
+
+    if 'actor_tags' in data:
+        print(data['actor_tags'])
+        fn.append(RecordActor.params['actor_tags'].contains(data['actor_tags']))
 
     if 'flow' in data and data['flow']:
         fn.append(Record.flow==data['flow'])
