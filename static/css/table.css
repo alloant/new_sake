@@ -64,35 +64,35 @@
 .sender {
   font-size: 0.65rem;
   background-color: transparent;
-  border: 1px dashed var(--sidebar-background-hover);
+  border: 1px dashed var(--bg-sidebar-hover);
 }
 
 .target {
   font-size: 0.65rem;
   background-color: transparent;
-  border: 1px dashed var(--target-color);
+  border: 1px dashed var(--text-target);
 }
 
 .target-current {
   font-size: 0.65rem;
-  color: var(--target-current-color);
-  background-color: var(--target-current-background);
-  border: 1px solid var(--target-color);
+  color: var(--text-target-current);
+  background-color: var(--bg-target-current);
+  border: 1px solid var(--text-target);
 }
 
 .target-success {
   font-size: 0.65rem;
-  color: var(--target-color);
-  background-color: var(--target-success-background);
-  border: 1px dashed var(--target-border);
+  color: var(--text-target);
+  background-color: var(--bg-target-success);
+  border: 1px dashed var(--border-target);
 }
 
-.button-files {
+.action-button {
   background: transparent;
 }
 
-.button-files:hover {
-  background: var(--button-files-hover);
+.action-button:hover {
+  background: var(--bg-action-button-hover);
 }
 
 .file-link-button {
@@ -121,8 +121,8 @@
 }
 
 .file-link-button:hover {
-    background-color: var(--file-link-hover-background); 
-    color: var(--file-link-hover-color);
+    background-color: var(--text-file-hover); 
+    color: var(--text-file-hover);
     text-decoration: none;
 }
 
@@ -134,7 +134,7 @@
 }
 
 .hover-row-alternate {
-    background-color: var(--row-alternate); /* Light grey hover effect */
+    background-color: var(--bg-row-alternate); /* Light grey hover effect */
     transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.1s ease;
     cursor: pointer; /* Makes it feel interactive */
     position: relative; /* Ensures the shadow and lift don't get cut off */
@@ -143,13 +143,13 @@
 
 .hover-row-alternate:hover,
 .hover-row:hover {
-    background-color: var(--row-hover);
+    background-color: var(--bg-row-hover);
   /* The "Lift" effect */
     transform: translateY(-2px); 
     
     /* The Gmail-style Shadow */
     /* Syntax: offset-x | offset-y | blur-radius | spread-radius | color */
-    box-shadow: var(--row-shadow);
+    box-shadow: var(--shadow-row);
     
     /* Brings the hovered row above its neighbors so the shadow is visible */
     z-index: 10; 
@@ -166,7 +166,7 @@
 .hover-row:hover .action-buttons {
   opacity: 1;
   pointer-events: auto;
-  background-color: var(--row-hover);
+  background-color: var(--bg-row-hover);
 }
 
 
@@ -175,7 +175,7 @@
 .hover-row:hover .action-buttons {
   opacity: 1;
   pointer-events: auto;
-  background-color: var(--row-hover);
+  background-color: var(--bg-row-hover);
 }
 
 /* 1. Hide the buttons by default */
@@ -203,14 +203,14 @@
 }
 
 nav.pagination a {
-  color: var(--sidebar-color);
+  color: var(--text-sidebar);
 }
 
 nav.pagination,
 div.hero-settings,
 div.hero-search, {
-  color: var(--sidebar-color);
-  background: var(--sidebar-background);
+  color: var(--text-sidebar);
+  background: var(--bg-sidebar);
 }
 
 .columns.no-stack {
@@ -238,9 +238,9 @@ div.hero-search, {
     border-radius: 50%;
     font-weight: 600;
     user-select: none; /* Prevents highlighting the letters */
-    border: 1px solid var(--avatar-color);
-    color: var(--avatar-color);
-    background-color: var(--avatar-background);
+    border: 1px solid var(--text-avatar);
+    color: var(--text-avatar);
+    background-color: var(--bg-avatar);
 }
 
 

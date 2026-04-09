@@ -9,7 +9,7 @@
 /* 1. Bold the title when the checkbox is checked */
 .target-checkbox:checked ~ span {
     font-weight: 700;
-    color: var(--font-color-active);
+    color: var(--text-active);
 }
 
 /* 2. Increase checkbox contrast */
@@ -20,7 +20,7 @@
     cursor: pointer;
     transform: scale(1.2);
     margin-right: 12px !important;
-    color: var(--font-color-inactive);
+    color: var(--text-inactive);
 }
 
 /* Compact but readable target items */
@@ -33,7 +33,7 @@
 }
 
 .compact-target:hover {
-    background-color: var(--background-color);
+    background-color: var(--bg-main);
 }
 
 .target-label {

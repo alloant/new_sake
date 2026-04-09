@@ -8,7 +8,7 @@
   height: 100vh; /* Full viewport height */
   position: sticky;
   top: 0;
-  background-color: var(--sidebar-background);
+  background-color: var(--bg-sidebar);
 }
 
 .sidebar-top {
@@ -50,32 +50,32 @@
 }
 
 .menu .menu-link {
-  color: var(--sidebar-color);
+  color: var(--text-sidebar);
   background: transparent;
 }
 
 .menu .menu-link.is-active,
 .menu .menu-link.is-active:hover,
 .menu .menu-link.is-active:focus {
-  background-color: var(--sidebar-background-active);
+  background-color: var(--bg-sidebar-active);
 }
 
 /* hover state */
 .menu .menu-link:hover {
-  background-color: var(--sidebar-background-hover);
-  color: var(--sidebar-color-hover);
+  background-color: var(--bg-sidebar-hover);
+  color: var(--text-sidebar-hover);
 }
 
 /* keep hover/active styles by matching Bulma's states */
 nav.sidebar-panel .menu a:hover,
 nav.sidebar-panel .menu a.is-hovered {
-  color: var(--sidebar-color-hover);
-  background: var(--sidebar-background-hover);
+  color: var(--text-sidebar-hover);
+  background: var(--bg-sidebar-hover);
 }
 
 nav.sidebar-panel .menu .menu-link a.is-active,
 nav.sidebar-panel .menu .menu-link a.is-active:hover {
-  background: var(--sidebar-background-active);
+  background: var(--bg-sidebar-active);
 }
 
 .sidebar-section {
@@ -85,8 +85,8 @@ nav.sidebar-panel .menu .menu-link a.is-active:hover {
 nav.sidebar-section .item a.is-active:focus,
 nav.sidebar-section .item a.is-active:hover,
 nav.sidebar-section .item a.is-active {
-  background: var(--sidebar-background-active) !important;
-  background-color: var(--sidebar-background-active) !important;
+  background: var(--bg-sidebar-active) !important;
+  background-color: var(--bg-sidebar-active) !important;
 }
 
 

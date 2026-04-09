@@ -107,21 +107,21 @@ class Record(SQLModel, RecordMethod, table=True):
         if self.state == 'archived':
             title = 'Archived'
             if self.register.type == 'note':
-                color, icon = 'font-color-inactive', 'archive-outline'
+                color, icon = 'text-inactive', 'archive-outline'
             else:
-                color, icon = 'font-color-inactive', 'archive-check-outline'
+                color, icon = 'text-inactive', 'archive-check-outline'
         elif self.state == 'snooze':
             title = 'On hold'
-            color, icon = 'font-color-inactive', 'alarm-snooze'
+            color, icon = 'text-inactive', 'alarm-snooze'
         else:
             match self.stage:
                 case "inbox":
                     title = ''
-                    color, icon = 'font-color-active', 'file-alert'
+                    color, icon = 'text-active', 'file-alert'
                 case "despacho":
                     if status and status.params.get('dispatcher_signature'):
                         title = 'Signed'
-                        color, icon = 'font-color-inactive', 'briefcase-outline'
+                        color, icon = 'text-inactive', 'briefcase-outline'
                     else:
                         signatures = []
                         for actor in self.actors:
@@ -130,31 +130,31 @@ class Record(SQLModel, RecordMethod, table=True):
                         if signatures:
                             rst =  ", ".join(signatures)
                             title = f"Pending (signed by {rst})"
-                            color, icon = 'font-color-active', 'briefcase-account'
+                            color, icon = 'text-active', 'briefcase-account'
                         else:
                             title = "Pending"
-                            color, icon = 'font-color-active', 'briefcase'
+                            color, icon = 'text-active', 'briefcase'
                 case "registered":
                     title = ''
-                    color, icon = 'font-color-active', 'file'
+                    color, icon = 'text-active', 'file'
                 case "draft":
                     title = ''
-                    color, icon = 'font-color-active', 'progress-wrench'
+                    color, icon = 'text-active', 'progress-wrench'
                 case "outbox":
                     title = ''
-                    color, icon = 'font-color-active', 'timer-sand'
+                    color, icon = 'text-active', 'timer-sand'
                 case "sent":
                     title = ''
-                    color, icon = 'font-color-active', 'email-fast-outline'
+                    color, icon = 'text-active', 'email-fast-outline'
                 case "sketch":
                     title = ''
-                    color, icon = 'font-color-active', 'progress-wrench'
+                    color, icon = 'text-active', 'progress-wrench'
                 case "shared":
                     title = ''
-                    color, icon = 'font-color-active', 'account-arrow-right-outline'
+                    color, icon = 'text-active', 'account-arrow-right-outline'
                 case "closed":
                     title = ''
-                    color, icon = 'font-color-active', 'check'
+                    color, icon = 'text-active', 'check'
         
         if self.audience == 'permanent':
             color = 'font-color-permanent'

@@ -1,11 +1,5 @@
-/* Default / Light Theme */
 :root {
-  --font-color: #000000;
-  --font-color-active: #000000;
-  --font-color-inactive: #aaaaaa;
-  --font-color-permanent: #9c0e0e;
-  --background-color: #efefef;
-  
+/* Bulma modifications */
   --bulma-body-background-color: #eeeeee;
   --bulma-body-color: #202020;
   --bulma-title-color: #2c3e50;
@@ -17,107 +11,104 @@
   --bulma-warning-h: 45;  --bulma-warning-s: 35%; --bulma-warning-l: 55%; /* Warm Sand */
   --bulma-danger-h:  0;   --bulma-danger-s:  35%; --bulma-danger-l: 55%; /* Dusty Rose/Red */
 
-/* --- The Missing Semantic Color --- */
-  /* Slightly more saturated than primary to signify clickability, but still muted */
   --bulma-link-h:    230; --bulma-link-s:    40%; --bulma-link-l: 58%; /* Soft Indigo/Periwinkle */
 
-  /* --- The Neutrals & Grayscales --- */
-  /* Tinted slightly with your primary hue (210) so the grays feel harmonious, not harsh */
   --bulma-black-h:   210; --bulma-black-s:   15%; --bulma-black-l: 15%; /* Soft Black/Deep Slate */
   --bulma-dark-h:    210; --bulma-dark-s:    12%; --bulma-dark-l: 25%; /* Charcoal Gray */
   --bulma-text-h:    210; --bulma-text-s:    10%; --bulma-text-l: 40%; /* Standard Text - Muted Slate */
   --bulma-text-light-h: 210; --bulma-text-light-s: 10%; --bulma-text-light-l: 65%; /* Soft Muted Text */
   
-  /* --- Backgrounds --- */
   --bulma-light-h:   210; --bulma-light-s:   15%; --bulma-light-l: 96%; /* Cool Off-White/Fog */
   --bulma-white-h:   210; --bulma-white-s:   10%; --bulma-white-l: 99%; /* Almost White */
   
-  /* Ensure the overall scheme base inherits your tint */
   --bulma-scheme-h:  210; 
   --bulma-scheme-s:  10%;
 
-/* Your Muted HEX Palette */
-    --primary-muted: #648EAF;
-    --border-muted: #DDE2E5;
-    --bg-card: #ffffff;
-    --text-main: #5C6B75;
+/* Custom */
+  --text-main: #000000;
+  --bg-main: #efefef;
+  
+  --text-active: #000000;
+  --text-inactive: #aaaaaa;
+  --text-permanent: #9c0e0e;
+
+  --primary-muted: #648EAF;
+  --border-muted: #DDE2E5;
+  --bg-card: #ffffff;
     
-    /* Category Colors */
-    --color-aso: #C16767; --color-asmo: #6AB66C;
-    --color-ind: #7E7BD9; --color-j: #C3C365;
+  --text-sidebar: #000000;
+  --text-sidebar-hover: #eeeeee;
+  --bg-sidebar: #bfbfbf;
+  --bg-sidebar-hover: #666666;
+  --bg-sidebar-active: hsl(229, 53%, 53%);
 
+  --text-file-hover: #bbbbbb;
+  --bg-file-hover: #222222;
 
-  --sidebar-color: #000000;
-  --sidebar-background: #bfbfbf;
-  --sidebar-color-hover: #eeeeee;
-  --sidebar-background-hover: #666666;
-  --sidebar-background-active: hsl(229, 53%, 53%);
+  --bg-row-hover: #cccccc;
+  --bg-row-alternate: #dddddd;
 
-  --file-link-hover-color: #bbbbbb;
-  --file-link-hover-background: #222222;
-  --row-hover: #cccccc;
-  --row-alternate: #dddddd;
-  --button-files-hover: #eeeeee;
-  --records-hidden-row: #eeeeee;
-  --target-color: #666666;
-  --target-border: #666666;
-  --target-current-color: #ffffff;
-  --target-current-background: #777777;
-  --target-success-background: #D1FAE5;
-  --avatar-color: #222222;
-  --avatar-background: #dddddd;
-  --row-shadow: 0 4px 12px rgba(50, 50, 50, 0.95), 0 1px 3px rgba(50, 50, 50, 0.8);
+  --bg-action-button-hover: #eeeeee;
+
+  --text-target: #666666;
+  --border-target: #666666;
+  --text-target-current: #ffffff;
+  --bg-target-current: #777777;
+  --bg-target-success: #D1FAE5;
+
+  --text-avatar: #222222;
+  --bg-avatar: #dddddd;
+
+  --shadow-row: 0 4px 12px rgba(50, 50, 50, 0.95), 0 1px 3px rgba(50, 50, 50, 0.8);
 }
 
 /* Dark Theme */
 [data-theme="dark"] {
-  --font-color: #ffffff;
-  --font-color-active: #ffffff;
-  --font-color-inactive: #aaaaaa;
-  --font-color-permanent: #e34949;
-  --background-color: #030303;
-
+/* Bulma modifications */
   --bulma-body-background-color: #202020; 
   --bulma-body-color: #dedede;
   --bulma-title-color: #ffffff;
   --bulma-strong-color: #ffffff;
+  --bulma-primary-l: 45%; --bulma-primary-s: 30%;
+  --bulma-success-l: 40%;
+  --bulma-danger-l:  45%;
 
---primary-muted: #74A1C4;
-    --border-muted: #2D373D;
-    --bg-card: #1A2024;
-    --text-main: #CED6DB;
+/* Custom */
+  --text-main: #ffffff;
+  --bg-main: #030303;
+  
+  --text-active: #ffffff;
+  --text-inactive: #aaaaaa;
+  --text-permanent: #e34949;
+
+  --primary-muted: #74A1C4;
+  --border-muted: #2D373D;
+  --bg-card: #dddddd;
     
-    --color-aso: #DE6E6E; --color-asmo: #79D17B;
+  --text-sidebar: #ffffff;
+  --text-sidebar-hover: #111111;
+  --bg-sidebar: #131313;
+  --bg-sidebar-hover: #afafaf;
+  --bg-sidebar-active: var(--bulma-link);
 
-  --sidebar-color: #ffffff;
-  --sidebar-background: #131313;
-  --sidebar-color-hover: #111111;
-  --sidebar-background-hover: #afafaf;
-  --sidebar-background-active: var(--bulma-link);
-  --file-link-hover-color: #bbbbbb;
-  --file-link-hover-background: #222222;
-  --row-hover: #151515;
-  --row-alternate: #323232;
-  --button-files-hover: #111111;
-  --records-hidden-row: #111111;
-  --target-color: #dddddd;
-  --target-border: #666666;
-  --target-current-color: #000000;
-  --target-current-background: #dddddd;
-  --target-success-background: #01400D;
-  --avatar-color: #cccccc;
-  --avatar-background: #222222;
-  --row-shadow: 0 1px 5px rgba(255, 255, 255, 0.5), 0 1px 5px rgba(200, 200, 200, 0.8);
-}
+  --text-file-hover: #bbbbbb;
+  --bg-file-hover: #222222;
 
-/* Dark Mode Adjustments */
-@media (prefers-color-scheme: dark) {
-    :root {
-        /* Slightly lower lightness and saturation for dark gray backgrounds */
-        --bulma-primary-l: 45%; --bulma-primary-s: 30%;
-        --bulma-success-l: 40%;
-        --bulma-danger-l:  45%;
-    }
+  --bg-row-hover: #151515;
+  --bg-row-alternate: #323232;
+
+  --bg-action-button-hover: #111111;
+
+  --text-target: #dddddd;
+  --border-target: #666666;
+  --text-target-current: #000000;
+  --bg-target-current: #dddddd;
+  --bg-target-success: #01400D;
+
+  --text-avatar: #cccccc;
+  --bg-avatar: #222222;
+
+  --shadow-row: 0 4px 12px rgba(50, 50, 50, 0.95), 0 1px 3px rgba(50, 50, 50, 0.8);
 }
 
 @media (hover: none) {
@@ -164,7 +155,7 @@ border-radius: 4px !important;
 }
 
 .dropdown-item:hover {
-    background-color: var(--background-color);
+    background-color: var(--bg-main);
 }
 
 .position-relative { position: relative; }
@@ -246,7 +237,7 @@ border-radius: 4px !important;
 }
 
 .blue-background-class {
-    background-color: var(--background-color) !important; /* Light blue */
+    background-color: var(--bg-main) !important; /* Light blue */
     color: var(--font-color) !important;
     border: 2px dashed #3182ce !important; /* Dashed border looks better for a ghost */
     opacity: 0.5;
