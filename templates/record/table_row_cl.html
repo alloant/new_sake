@@ -1,0 +1,37 @@
+<div class="column is-narrow has-order-1-mobile">
+    {{ record.stage_icon(status)|safe }}
+</div>
+
+<div class="column is-1-5 has-order-2-mobile">
+  <span class="has-text-weight-semibold" style="white-space: nowrap;">
+    {{ record.protocol_html|safe }}
+  </span>
+</div>
+
+<div class="column position-relative is-flex is-align-items-center has-order-7-mobile">
+  <span class="mr-2 {{ record.read_status_html(panel,status,current_actor) if record.flow == 'inbound' else '' }}">
+    {{ record.title_hashtag|safe }}
+  </span>
+
+  {% if 'actor_tags' in status.params %}
+  {% for tag in status.params['actor_tags'] %}
+    <span class="tag mx-0 is-hidden-mobile is-danger" style="font-size: 0.65rem; color: var(--text-main);">{{ tag }}</span>
+  {% endfor %}
+  {% endif %}
+
+  <div class="action-buttons is-hidden-mobile is-rounded">
+    {% include 'record/table_row_actions.html' %}
+  </div>
+</div>
+    
+<div class="column is-narrow has-order-5-mobile">
+  {% include 'record/table_menu_actions.html' %}
+</div>
+
+<div class="column is-narrow has-order-6-mobile">
+  {% include 'record/record_files.html' %}
+</div>
+
+<div class="column is-1 is-hidden-mobile has-text-right" style="white-space: nowrap;">
+  {{ record.date_html }}
+</div>

@@ -20,6 +20,7 @@ def SECTIONS():
         MenuSection(id='board',title=_('Dashboard'),icon='mdi-bulletin-board',perms=['user']),
         MenuSection(id='register',title=_('Registers'),icon='mdi-file-cabinet',perms=['user']),
         MenuSection(id='sccr',title=_('Secretary'),icon='mdi-mail',perms=['sccr']),
+        MenuSection(id='cl',title=_('Cl work'),icon='mdi-calendar-check',perms=['user']),
         MenuSection(id='pages',title=_('Pages'),icon='mdi-folder-information',perms=['user'])
     ]
 
@@ -142,11 +143,21 @@ def FULLMENU(section):
 
     ]
 
+    FULL_MENU['cl'] = [
+        MenuGroup(
+            title =_("Dashboard"),
+            items=[]
+        )
+    ]
+
     return FULL_MENU[section]
 
 def get_panel(db,actor_perms,section,panel):
     if section == 'register':
-        return get_panel_register(db,actor_perms,panel)
+        return get_panel_register_cr(db,actor_perms,panel)
+    elif section == 'cl':
+        return get_panel_register_cl(db,actor_perms,panel)
+
     
     filtered_menu = []
     for group in FULLMENU(section):
@@ -165,15 +176,10 @@ def get_panel(db,actor_perms,section,panel):
 
     return filtered_menu
 
-def get_panel_register(db,actor_perms,panel):
+def get_panel_register_cr(db,actor_perms,panel):
     registers = get_registers(db)
     menu = []
     items = []
-    #items.append(MenuItem(id=f"all",title="All",link=f"/?section=register&panel=all",icon="mdi-web"))
-    #items[-1].active = "is-active" if "all" == panel else ""
-    #items.append(MenuItem(id=f"unread",title="Unread",link=f"/?section=register&panel=unread",icon="mdi-message-badge",show_count=True,hx_trigger=",read_state_changed from:body"))
-    #items[-1].active = "is-active" if "unread" == panel else ""
-    #menu.append(MenuGroup(title="All registers", items=items))
 
     for register in registers:
         if has_permission(actor_perms,[register.alias]) and register.type == 'note':
@@ -184,15 +190,21 @@ def get_panel_register(db,actor_perms,panel):
             items[-1].active = "is-active" if f"{register.alias}-out" == panel else ""
 
             menu.append(MenuGroup(title=register.full_name, items=items))
+    
+    return menu
+
+def get_panel_register_cl(db,actor_perms,panel):
+    menu = []
+    items = []
 
     ctrs = get_actor_ctrs(db,actor_perms)
 
     for ctr in ctrs:
         items = []
-        items.append(MenuItem(id=f"{ctr}-in",title=f"Inbox {ctr}",link=f"/?section=register&panel={ctr}-in_ctr",icon="mdi-inbox-arrow-down"))
-        items[-1].active = "is-active" if f"{ctr}-in" == panel else ""
-        items.append(MenuItem(id=f"{ctr}-out",title=f"Outbox {ctr}",link=f"/?section=register&panel={ctr}-out_ctr",icon="mdi-email-fast"))
-        items[-1].active = "is-active" if f"{ctr}-out" == panel else ""
+        items.append(MenuItem(id=f"{ctr}-in",title=f"Inbox {ctr}",link=f"/?section=cl&panel={ctr}-in_ctr",icon="mdi-inbox-arrow-down"))
+        items[-1].active = "is-active" if f"{ctr}-in_ctr" == panel else ""
+        items.append(MenuItem(id=f"{ctr}-out",title=f"Outbox {ctr}",link=f"/?section=cl&panel={ctr}-out_ctr",icon="mdi-email-fast"))
+        items[-1].active = "is-active" if f"{ctr}-out_ctr" == panel else ""
 
         menu.append(MenuGroup(title=f'Register {ctr}', items=items))
 

@@ -2,7 +2,7 @@ from sqlmodel import Session
 
 from app.core.database import engine, get_old_data
 
-from app.models import Actor, Record, RecordActor, Register, File, RecordRecord
+from app.models import Actor, Record, RecordUser, Register, File, RecordRecord
 from app.models.record.record import Tag, RecordTag
 
 from app.crud.actor import get_actor_by_alias, get_actors
@@ -273,9 +273,9 @@ def transfer_note_user():
                 actor = get_actor_by_alias(db,user_old['alias'])
             
                 if actor:
-                    db_record_actor = RecordActor(actor_id=actor.id,record_id=record.id,handled=handled,target=target)
+                    db_record_user = RecordUser(actor_id=actor.id,record_id=record.id,handled=handled,target=target)
             
-            db.add(db_record_actor)
+            db.add(db_record_user)
     db.commit()
 
 def transfer_tags():

@@ -9,14 +9,14 @@ from app.crud.register import get_register_by_alias, get_actor_registers
 from app.crud.actor import get_actor_by_id, get_actor_by_alias
 
 from app.models.record import Record, RecordRecord, Tag
-from app.models.record_actor import RecordActor
+from app.models.record_user import RecordUser, RecordSection
 
 
 current_target_subquery = (
-        select(func.min(RecordActor.target))
-        #.where(RecordActor.record_id == Record.id)
-        .where(RecordActor.handled == 'pending')
-        .where(RecordActor.target > 0)
+        select(func.min(RecordUser.target))
+        #.where(RecordUser.record_id == Record.id)
+        .where(RecordUser.handled == 'pending')
+        .where(RecordUser.target > 0)
         .correlate(Record) # Ensures it checks target per record
         .scalar_subquery()
     )
@@ -24,15 +24,15 @@ current_target_subquery = (
 def get_tags(db: Session):
     return db.exec(select(Tag)).all()
 
-def get_record_actor(db: Session, record_id: int, actor_id: int) -> RecordActor:
-    smnt = select(RecordActor).where(
-    RecordActor.actor_id == actor_id,
-    RecordActor.record_id == record_id)
+def get_record_actor(db: Session, record_id: int, actor_id: int) -> RecordUser:
+    smnt = select(RecordUser).where(
+    RecordUser.actor_id == actor_id,
+    RecordUser.record_id == record_id)
 
     status = db.exec(smnt).first()
 
     if not status:
-        status = RecordActor(actor_id=actor_id, record_id=record_id)
+        status = RecordUser(actor_id=actor_id, record_id=record_id)
         db.add(status)
         db.commit()
         db.refresh(status)
@@ -44,7 +44,7 @@ def get_record_by_params(db: Session, param: str, value) -> Record | None:
     return db.exec(smnt).one()
 
 def get_record_actor_by_id(db: Session, record_actor_id: int) -> Record | None:
-    return db.get(RecordActor, record_actor_id)
+    return db.get(RecordUser, record_actor_id)
 
 def get_record_by_id(db: Session, record_id: int) -> Record | None:
     return db.get(Record, record_id)
@@ -56,40 +56,40 @@ def get_num_records(db: Session, search: str = None) -> list[Record]:
     return db.exec(select(func.count(Record.id))).one()
 
 def get_filter(db: Session, actor: Actor, section: str, panel: str):
-    if 'permanent' in actor.scopes:
+    if 'permanent' or section == 'cl' in actor.scopes:
         fn = []
     elif 'dr' in actor.scopes:
         fn = [Record.audience != 'permanent']
     elif 'of' in actor.scopes:
         fn = [Record.audience == 'all']
-
+    
     if section == 'register':
-        if panel.startswith('in'):
+        if panel.endswith('in'):
             fn.append(Record.stage == 'registered')
+            fn.append(Record.flow=='inbound')
         else:
             fn.append(Record.stage == 'sent')
+            fn.append(Record.flow=='outbound')
+        
+        register_alias, flow = panel.split('-')
+        register = get_register_by_alias(db,register_alias)
+        
+        fn.append(Record.register_id==register.id)
 
-        if panel.endswith('_ctr'):
-            ctr_alias, flow = panel[:-4].split('-')
-            ctr = get_actor_by_alias(db,ctr_alias)
-            
-            if flow == 'in':
-                fn.append(Record.flow == 'outbound')
-                fn.append(RecordActor.actor_id == ctr.id)
-            else:
-                fn.append(Record.flow == 'inbound')
-                fn.append(Record.sender_id == ctr.id)
-
+    elif section == 'cl':
+        if panel.endswith('in_ctr'):
+            pass
+            fn.append(Record.flow == 'outbound')
+            fn.append(Record.stage == 'sent')
+            #fn.append(RecordUser.actor_id == actor.id)
         else:
-            register_alias, flow = panel.split('-')
-            register = get_register_by_alias(db,register_alias)
+            fn.append(Record.flow == 'inbound')
+            fn.append(Record.stage == 'registered')
+            fn.append(Record.sender_id == actor.id)
+        
+        register = get_register_by_alias(db,'ctr')
+        fn.append(Record.register_id==register.id)
 
-            fn.append(Record.register_id==register.id)
-
-            if flow == 'in':
-                fn.append(Record.flow=='inbound')
-            else:
-                fn.append(Record.flow=='outbound')
     elif section == 'board':
         if panel == 'despacho':
             fn.append(Record.stage=='despacho') 
@@ -104,8 +104,8 @@ def get_filter(db: Session, actor: Actor, section: str, panel: str):
                 fn.append(or_(
                 Record.stage.in_(['registered','sent']),
                 and_(or_(Record.sender_id==actor.id,Record.has_actor_target(actor.id)),or_(
-                    and_(Record.stage=='shared', RecordActor == 'approved'),
-                    and_(Record.stage=='shared', RecordActor.target == current_target_subquery),
+                    and_(Record.stage=='shared', RecordUser == 'approved'),
+                    and_(Record.stage=='shared', RecordUser.target == current_target_subquery),
                     Record.stage == 'closed'
                 ))
             ))
@@ -114,20 +114,20 @@ def get_filter(db: Session, actor: Actor, section: str, panel: str):
                 fn.append(Record.stage == 'registered')
                 fn.append(Record.flow=='inbound')
                 fn.append(or_(
-                    and_(RecordActor == None, Record.created_at > actor.created_at),
-                    and_(RecordActor.handled != 'read', Record.created_at > actor.created_at),
-                    and_(RecordActor.handled == 'read', Record.created_at <= actor.created_at)
+                    and_(RecordUser == None, Record.created_at > actor.created_at),
+                    and_(RecordUser.handled != 'read', Record.created_at > actor.created_at),
+                    and_(RecordUser.handled == 'read', Record.created_at <= actor.created_at)
                     )
                 )
             elif panel == 'mustread':
                 fn.append(Record.stage == 'registered')
                 fn.append(Record.flow=='inbound')
-                fn.append(RecordActor.handled == 'mustread')
+                fn.append(RecordUser.handled == 'mustread')
 
         elif panel.startswith('inbox'):
             fn.append(Record.stage == 'registered')
             fn.append(Record.flow=='inbound')
-            fn.append(RecordActor.target > 0)
+            fn.append(RecordUser.target > 0)
             if panel == 'inbox':
                 fn.append(Record.state == 'active')
             if panel == 'inbox-snooze':
@@ -144,12 +144,12 @@ def get_filter(db: Session, actor: Actor, section: str, panel: str):
                 fn.append(Record.stage == 'sent')
         elif panel.startswith('incoming-proposals'):
             fn.append(Record.flow=='internal_cr')
-            fn.append(RecordActor.target > 0)
+            fn.append(RecordUser.target > 0)
             if panel == 'incoming-proposals-to-sign':
-                fn.append(RecordActor.handled == 'pending')
-                fn.append(RecordActor.target == current_target_subquery)
+                fn.append(RecordUser.handled == 'pending')
+                fn.append(RecordUser.target == current_target_subquery)
             elif panel == 'incoming-proposals-signed':
-                fn.append(RecordActor.handled != 'pending')
+                fn.append(RecordUser.handled != 'pending')
         elif panel.startswith('outcoming-proposals'):
             fn.append(Record.flow=='internal_cr')
             fn.append(Record.sender_id == actor.id)
@@ -238,7 +238,7 @@ def get_advance_search_filter(db: Session, data: dict):
 
     if 'actor_tags' in data:
         print(data['actor_tags'])
-        fn.append(RecordActor.params['actor_tags'].contains(data['actor_tags']))
+        fn.append(RecordUser.params['actor_tags'].contains(data['actor_tags']))
 
     if 'flow' in data and data['flow']:
         fn.append(Record.flow==data['flow'])
@@ -270,10 +270,13 @@ def get_advance_search_filter(db: Session, data: dict):
     return fn
 
 def get_records(db: Session, actor: Actor, section: str, panel: str, search: str = None, data: dict = None, limit: int = None, offset: int = None, just_number: bool = False) -> list[Record] | int:
-    if not actor:
-        return []
-
-    fn = get_filter(db,actor,section, panel)
+    if section == 'cl':
+        ctr_alias, flow = panel[:-4].split('-')
+        ctr = get_actor_by_alias(db,ctr_alias)
+    
+        fn = get_filter(db,ctr,section, panel)
+    else:
+        fn = get_filter(db,actor,section, panel)
 
     fn += get_advance_search_filter(db,data)
 
@@ -282,35 +285,42 @@ def get_records(db: Session, actor: Actor, section: str, panel: str, search: str
             fn.append(get_recursive_ids(search[8:], actor, db, limit, offset))
         else:
             fn.append(get_search_filter(search))
-    
-    if panel.endswith('in_ctr'):
-        ctr_alias, flow = panel[:-4].split('-')
-        ctr = get_actor_by_alias(db,ctr_alias)
-
-        join_condition = and_(
-            Record.id == RecordActor.record_id, 
-            RecordActor.actor_id == ctr.id
+   
+    num_stmt = select(func.count(Record.id))
+    if section == 'cl':
+        record_ctr = aliased(RecordUser, name="status_ctr")
+        stmt = select(Record, RecordUser, record_ctr, current_target_subquery.label("target_order"))
+        join_condition_ctr = and_(
+            Record.id == record_ctr.record_id, 
+            record_ctr.actor_id == ctr.id
         )
     else:
-        join_condition = and_(
-            Record.id == RecordActor.record_id, 
-            RecordActor.actor_id == actor.id
-        )
-     
-    num_stmt = select(func.count(Record.id))
-    stmt = select(Record, RecordActor, current_target_subquery.label("target_order"))
+        stmt = select(Record, RecordUser, current_target_subquery.label("target_order"))
 
+    #record_user = aliased(RecordUser, name="status")
+    join_condition = and_(
+        Record.id == RecordUser.record_id, 
+        RecordUser.actor_id == actor.id
+    )
+ 
     if section == 'board':
         if panel.startswith('inbox') or panel.startswith('incoming'):
-            stmt = stmt.join(RecordActor, join_condition).where(*fn, RecordActor.actor_id==actor.id)
-            num_stmt = num_stmt.join(RecordActor, join_condition).where(*fn, RecordActor.actor_id==actor.id)
+            stmt = stmt.join(RecordUser, join_condition).where(*fn)
+            num_stmt = num_stmt.join(RecordUser, join_condition).where(*fn)
         elif panel.startswith('outbox') or panel.startswith('outcoming') or panel in ['all','mustread','unread', 'despacho']:
-            stmt = stmt.join(RecordActor, join_condition, isouter=True).where(*fn)
-            num_stmt = num_stmt.join(RecordActor, join_condition, isouter=True).where(*fn)
+            stmt = stmt.join(RecordUser, join_condition, isouter=True).where(*fn)
+            num_stmt = num_stmt.join(RecordUser, join_condition, isouter=True).where(*fn)
     elif section == 'register':
-        stmt = stmt.join(RecordActor, join_condition, isouter=True).where(*fn)
-        num_stmt = num_stmt.join(RecordActor, join_condition, isouter=True).where(*fn)
-    
+        stmt = stmt.join(RecordUser, join_condition, isouter=True).where(*fn)
+        num_stmt = num_stmt.join(RecordUser, join_condition, isouter=True).where(*fn)
+    elif section == 'cl':
+        if flow == 'in':
+            stmt = stmt.join(RecordUser, join_condition, isouter=True).join(record_ctr, join_condition_ctr).where(*fn)
+            num_stmt = num_stmt.join(RecordUser, join_condition, isouter=True).join(record_ctr, join_condition_ctr).where(*fn)
+        else:
+            stmt = stmt.join(RecordUser, join_condition, isouter=True).join(record_ctr, join_condition_ctr, isouter=True).where(*fn)
+            num_stmt = num_stmt.join(RecordUser, join_condition, isouter=True).join(record_ctr, join_condition_ctr, isouter=True).where(*fn)
+
     stmt = stmt.options(
         joinedload(Record.sender),
         joinedload(Record.register),
@@ -319,8 +329,8 @@ def get_records(db: Session, actor: Actor, section: str, panel: str, search: str
         selectinload(Record.actors),
         selectinload(Record.files),
         selectinload(Record.references),
-        joinedload(RecordActor.actor),
-        joinedload(RecordActor.record)
+        joinedload(RecordUser.actor),
+        joinedload(RecordUser.record)
     ).limit(limit).offset(offset).order_by(desc(Record.updated_at),Record.sequence.desc())
     
     if just_number:

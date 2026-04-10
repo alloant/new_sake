@@ -6,6 +6,7 @@ from sqlalchemy.dialects.mysql import JSON
 
 
 class Kind(str, Enum): # Roles of users
+    CR = "cr"
     USER = "user"
     CONTACT = "contact"
     CTR = "ctr"

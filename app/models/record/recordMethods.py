@@ -7,7 +7,7 @@ from markupsafe import Markup
 from sqlalchemy import exists, and_
 from sqlalchemy.ext.hybrid import hybrid_method
 
-from app.models.record_actor import RecordActor
+from app.models.record_user import RecordUser
 
 def highlight_hashtags(text):
     # Regex to find words starting with #
@@ -325,8 +325,8 @@ class RecordMethod(object):
     def has_actor_target(cls, actor_id: int):
         return exists().where(
             and_(
-                RecordActor.record_id == cls.id,
-                RecordActor.actor_id == actor_id,
-                RecordActor.target > 0
+                RecordUser.record_id == cls.id,
+                RecordUser.actor_id == actor_id,
+                RecordUser.target > 0
             )
         ).correlate(cls)

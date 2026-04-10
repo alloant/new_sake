@@ -1,10 +1,23 @@
 <div class="columns is-mobile is-gapless m-0 p-1" style="border-bottom: 0.5px solid #555555;">
 </div>
 
+{% if section == 'cl' %}
+  {% for record, status, status_section, target_order in records %}
+    <div  id="row-{{record.id}}"
+          class="columns parent-box is-mobile is-multiline is-vcentered is-variable is-1 m-0 {{ loop.cycle('hover-row-alternate', 'hover-row') }}"
+          style="border-bottom: 1px solid #333;">
+      {% include 'record/table_row_cl.html' %}
+    </div>
+  {% endfor %}
+
+{% else %}
 {% for record, status, target_order in records %}
-  <div  id="row-{{record.id}}"
-        class="columns parent-box is-mobile is-multiline is-vcentered is-variable is-1 m-0 {{ loop.cycle('hover-row-alternate', 'hover-row') }}"
-        style="border-bottom: 1px solid #333;">
-    {% include 'record/table_row.html' %}
-  </div>  
-{% endfor %}
+    <div  id="row-{{record.id}}"
+          class="columns parent-box is-mobile is-multiline is-vcentered is-variable is-1 m-0 {{ loop.cycle('hover-row-alternate', 'hover-row') }}"
+          style="border-bottom: 1px solid #333;">
+      {% include 'record/table_row.html' %}
+    </div>
+  {% endfor %}
+
+{% endif %}
+

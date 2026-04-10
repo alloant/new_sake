@@ -47,10 +47,10 @@ async def records_table_view(db: Session, current_actor: Actor, section: str, pa
 
     return f"record/table.html", {"records": records, "pagination": pagination(num_records,page,limit_records), "title": get_title(section,panel), 'num_records': num_records, "current_actor": current_actor}
 
-async def action_view(record_id,status_id, action, db, current_actor):
+async def action_view(record_id, status_id, action, db, current_actor):
     record = get_record_by_id(db,record_id)
     if status_id:
-        status = get_record_actor_by_id(db,record_actor_id = status_id)
+        status = get_record_actor_by_id(db, record_actor_id = status_id)
     else:
         status = get_record_actor(db, record_id = record_id, actor_id = current_actor.id)
   
