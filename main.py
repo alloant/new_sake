@@ -18,7 +18,7 @@ from app.core.auth import auth
 
 from app.routers import router
 
-from app.models import Register, Record, Actor, RecordUser, File, RecordRecord
+from app.models import Register, Record, Actor, RecordActor, File, RecordRecord
 
 from app.crud.transfer import transfer_notes, transfer_users, transfer_registers, transfer_note_user, transfer_tags, transfer_record_tag, transfer_find_depts, transfer_files, transfer_references
 

@@ -3,10 +3,10 @@ from sqlalchemy import Integer, cast
 
 from app.core.database import engine
 from app.models.actor import Actor
-from app.models.record_user import RecordUser
+from app.models.record_actor import RecordActor
 
 def add_recordactor(db: Session, record_id: int, actor_id: int):
-    status = RecordUser(record_id=record_id, actor_id=actor_id)
+    status = RecordActor(record_id=record_id, actor_id=actor_id)
     db.add(status); db.commit(); db.refresh(status)
 
 def get_actor_by_id(db: Session, actor_id: int) -> Actor | None:
