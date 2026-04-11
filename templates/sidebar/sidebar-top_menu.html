@@ -1,6 +1,22 @@
 <aside class="menu p-2">
 {% for group in sidebar['panel'] %}
-  <p class="menu-label has-text-weight-bold mb-0">{{_(group['title'])}}</p>
+  <div class="level is-mobile p-0 m-0">
+    <div class="level-left">
+      <p class="menu-label has-text-weight-bold mb-0">{{_(group['title'])}}</p>
+    </div>
+    <div class="level-right">
+      {% if section == 'cl' %}
+      <a class="button is-small is-responsive is-text has-tooltip-arrow has-tooltip-left"
+        hx-get="/settings_ctr?section={{section}}&panel={{panel}}"
+        hx-target="#modal-content-target"
+        onclick="openModal()"
+        title="Settings ctr">
+        <i class="iconify is-small" data-icon="mdi:cog"></i>
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
   <ul class="menu-list">
 
   {% for item in group.items %}

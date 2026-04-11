@@ -39,22 +39,18 @@ from .main import templates
 #Settings
 @router.get("/settings", name="settings")
 async def settings(request: Request, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
-    sidebar = get_sidebar(db,payload,'settings','')
     current_actor = get_actor_by_id(db, payload.uid)
-    theme = current_actor.get_setting('theme') 
-
     available_targets = get_targets_register(db, 'outbound', 'ctr')
     checked_targets = current_actor.ctrs_alias
 
-    return templates.TemplateResponse("forms/form_settings.html", {"request": request, "theme": theme, "actor_role": current_actor.role, "sidebar": sidebar, "actor": current_actor, "available_targets": available_targets, 'checked_targets': checked_targets, "settings": get_settings_form(db,current_actor)})
+    return templates.TemplateResponse("forms/form_settings.html", {"request": request, "actor_role": current_actor.role, "actor": current_actor, "available_targets": available_targets, 'checked_targets': checked_targets, "settings": get_settings_form(db,current_actor)})
 
 ## Settings/profile part
 @router.post("/settings", name="settings")
-async def settings_post(request: Request, db: Session = Depends(get_db), payload = Depends(get_payload_from_cookie)):
-    sidebar = get_sidebar(db,payload,'settings','')
+async def settings_post(request: Request, actor_id:int, db: Session = Depends(get_db), payload = Depends(get_payload_from_cookie)):
     current_actor = get_actor_by_id(db,payload.uid)
+    edit_actor = get_actor_by_id(db,actor_id)
     provider = payload.provider
-    theme = current_actor.get_setting('theme') 
     form = await request.form()
     data = dict(form)
 
@@ -97,12 +93,13 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
         ctr = get_actor_by_id(db,ctr_id)
         scopes.append(f'ctr_{ctr.alias}:editor')
 
-    current_actor.is_active = 'is_active' in data
+    edit_actor.is_active = 'is_active' in data
+    edit_actor.full_name = data['full_name']
+    edit_actor.abbr = data['abbr']
+    edit_actor.scopes = scopes
+    edit_actor.settings = settings
 
-    current_actor.scopes = scopes
-    current_actor.settings = settings
-
-    db.add(current_actor)
+    db.add(edit_actor)
     db.commit()
     
     user_payload = {
@@ -129,6 +126,29 @@ async def settings_post(request: Request, db: Session = Depends(get_db), payload
     )
 
     return response
+
+@router.get("/settings_ctr", name="settings")
+async def settings(request: Request, section: str, panel: str, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
+    #current_actor = get_actor_by_id(db, payload.uid)
+    ctr_alias, flow = panel[:-4].split('-')
+    ctr = get_actor_by_alias(db, ctr_alias)
+
+    available_targets = get_targets_register(db, 'outbound', 'ctr')
+    checked_targets = ctr.ctrs_alias
+
+    return templates.TemplateResponse("forms/form_settings_ctr.html", {"request": request, "actor_role": ctr.role, "actor": ctr, "available_targets": available_targets, 'checked_targets': checked_targets, "settings": get_settings_form(db,ctr)})
+
+## Settings/profile part
+@router.post("/settings_ctr", name="settings")
+async def settings_post(request: Request, section: str, panel: str, db: Session = Depends(get_db), payload = Depends(get_payload_from_cookie)):
+    current_actor = get_actor_by_id(db,payload.uid)
+    provider = payload.provider
+    form = await request.form()
+    data = dict(form)
+
+    ctrs = form.getlist('user_ids')
+ 
+
 
 ## SIDEBAR
 @router.get("/sidebar", response_class=HTMLResponse)
@@ -226,7 +246,6 @@ async def modify_record(request: Request, record_id: int, loop_index: int, secti
     if data['submit_form'] == 'save_tags':
         actor_tags = form.getlist("actor_tags")
         status.params['actor_tags'] = actor_tags
-        print('status',status,status.params)
         db.add(status); db.commit(); db.refresh(status)
 
         return templates.TemplateResponse('record/table_row.html', {'request': request, 'record': record, 'status': status, 'current_actor': current_actor, 'loop': loop})

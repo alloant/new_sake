@@ -341,7 +341,6 @@ class RecordMethod(object):
         match self.flow:
             case 'outbound':
                 targets = self.targets_ctr(ctr_alias)
-                print('outbound', self.title, targets)
 
                 if not targets:
                     title = ""

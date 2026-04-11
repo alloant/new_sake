@@ -163,3 +163,31 @@ class Record(SQLModel, RecordMethod, table=True):
             return f'<div class="iconify has-tooltip-multiline has-tooltip-arrow has-tooltip-right" data-tooltip="{title}"><i class="iconify" data-width="1em" data-icon="mdi-{icon}" style="color: var(--{color});"></i></div>'
         
         return f'<div class="iconify"><i class="iconify" data-width="1em" data-icon="mdi-{icon}" style="color: var(--{color});"></i></div>'
+
+    def stage_icon_ctr(self, status, status_section):
+        if status_section and status_section.handled == 'done':
+            title = 'Archived'
+            if self.register.type == 'note':
+                color, icon = 'text-inactive', 'archive-outline'
+            else:
+                color, icon = 'text-inactive', 'archive-check-outline'
+        else:
+            if self.flow == 'outbound': # This are in note for the ctr
+                title = ''
+                color, icon = 'text-active', 'file'
+            elif self.flow == 'inbound':
+                if self.stage == "draft":
+                    title = ''
+                    color, icon = 'text-active', 'progress-wrench'
+                else:
+                    title = ''
+                    color, icon = 'text-active', 'email-fast-outline'
+            else:
+                title = ''
+                color, icon = '', ''
+
+
+        if title:
+            return f'<div class="iconify has-tooltip-multiline has-tooltip-arrow has-tooltip-right" data-tooltip="{title}"><i class="iconify" data-width="1em" data-icon="mdi-{icon}" style="color: var(--{color});"></i></div>'
+        
+        return f'<div class="iconify"><i class="iconify" data-width="1em" data-icon="mdi-{icon}" style="color: var(--{color});"></i></div>'

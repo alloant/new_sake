@@ -180,10 +180,10 @@ async def callback(request: Request, db: Session, code: str = None, state: str =
          raise HTTPException(status_code=400, detail="Could not retrieve user identity")
 
     if provider == "google":
-        actor = get_actor_by_email(alias, db)
+        actor = get_actor_by_email(db, alias)
         alias = actor.alias
     else:
-        actor = get_actor_by_alias(alias, db)
+        actor = get_actor_by_alias(db, alias)
     
     user_payload = {
         "uid": actor.id,

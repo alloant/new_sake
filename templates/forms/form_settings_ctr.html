@@ -20,16 +20,6 @@
             
             <div class="columns is-multiline is-mobile mb-4">
                 <div class="column is-6">
-                    <label class="label is-small">Role</label>
-                    <div class="select is-fullwidth">
-                        <select name="actor_kind">
-                            <option value="dr" {{ 'selected' if settings['kind'] == 'dr' }}>Director cr</option>
-                            <option value="of" {{ 'selected' if settings['kind'] == 'of' }}>Official cr</option>
-                            <option value="cl" {{ 'selected' if settings['kind'] == 'cl' }}>Member cl</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="column is-6">
                     <label class="label is-small">Status</label>
                     <div class="field mt-2">
                         <label class="checkbox">
@@ -56,26 +46,26 @@
             </div>
 
             <div class="box is-shadowless border-muted mb-4">
-                <label class="label">Permissions</label>
+                <label class="label">Works</label>
                 <div class="columns is-multiline m-2">
                     <div class="column is-6 py-1">
                         <label class="checkbox">
-                            <input type="checkbox" name="perm_admin" {{ 'checked' if 'admin' in settings['scopes'] else '' }}> admin
+                            <input type="checkbox" name="perm_sm" {{ 'checked' if 'sm' in settings['scopes'] else '' }}> sm
                         </label>
                     </div>
                     <div class="column is-6 py-1">
                         <label class="checkbox">
-                            <input type="checkbox" name="perm_sccr" {{ 'checked' if 'sccr' in settings['scopes'] else '' }}> sccr
+                            <input type="checkbox" name="perm_sg" {{ 'checked' if 'sg' in settings['scopes'] else '' }}> sg
                         </label>
                     </div>
                     <div class="column is-6 py-1">
                         <label class="checkbox">
-                            <input type="checkbox" name="perm_despacho" {{ 'checked' if 'despacho' in settings['scopes'] else '' }}> Despacho
+                            <input type="checkbox" name="perm_sr" {{ 'checked' if 'sr' in settings['scopes'] else '' }}> sr
                         </label>
                     </div>
                     <div class="column is-6 py-1">
                         <label class="checkbox">
-                            <input type="checkbox" name="perm_permanent" {{ 'checked' if 'permanent' in settings['scopes'] else '' }}> Permanent
+                            <input type="checkbox" name="perm_sss+" {{ 'checked' if 'sss+' in settings['scopes'] else '' }}> sss+
                         </label>
                     </div>
                 </div>

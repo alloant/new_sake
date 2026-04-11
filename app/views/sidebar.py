@@ -17,8 +17,8 @@ class MenuSection(BaseModel):
 def SECTIONS():
     from fastapi_babel import _
     return [
-        MenuSection(id='board',title=_('Dashboard'),icon='mdi-bulletin-board',perms=['user']),
-        MenuSection(id='register',title=_('Registers'),icon='mdi-file-cabinet',perms=['user']),
+        MenuSection(id='board',title=_('Dashboard'),icon='mdi-bulletin-board',perms=['dr','of']),
+        MenuSection(id='register',title=_('Registers'),icon='mdi-file-cabinet',perms=['dr','of']),
         MenuSection(id='sccr',title=_('Secretary'),icon='mdi-mail',perms=['sccr']),
         MenuSection(id='cl',title=_('Cl work'),icon='mdi-calendar-check',perms=['user']),
         MenuSection(id='pages',title=_('Pages'),icon='mdi-folder-information',perms=['user'])
@@ -212,9 +212,10 @@ def get_panel_register_cl(db,actor_perms,panel):
 
 def get_sidebar(db,payload,section,panel):
     current_actor = get_actor_by_id(db,payload.uid)
-
+    
     if current_actor.role == 'cl':
-        pass
+        sections = []
+        panel = []
     else:
         sections = get_sections([payload.data['kind']] + payload.scopes,section)
         panel = get_panel(db,[payload.data['kind']] + payload.scopes,section,panel)
