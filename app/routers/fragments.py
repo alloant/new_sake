@@ -198,7 +198,7 @@ async def action(request: Request, record_id: int, recordactor_id: str, action: 
 
         return response
     
-    template, rst = await action_view(record_id, recordactor_id, action, db, current_actor)
+    template, rst = await action_view(db, record_id, recordactor_id, action, current_actor, section, panel)
     response = templates.TemplateResponse(template, {'request': request, 'section': section, 'panel': panel, 'current_actor': current_actor, 'loop': loop} | rst)
 
     if action in ['mark_read','mark_unread']:
@@ -213,7 +213,7 @@ async def action(request: Request, record_id: int, recordactor_id: str, action: 
     return response
 
 @router.post("/modify_record", response_class=HTMLResponse)
-async def modify_record(request: Request, record_id: int, loop_index: int, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
+async def modify_record(request: Request, record_id: int, loop_index: int, section: str, panel: str, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
     loop = Loop
     loop.index = loop_index
     form = await request.form()
@@ -286,7 +286,48 @@ async def modify_record(request: Request, record_id: int, loop_index: int, db: S
     db.commit()
     db.refresh(record)
 
-    return templates.TemplateResponse('record/table_row.html', {'request': request, 'record': record, 'status': status, 'current_actor': current_actor, 'loop': loop})
+    return templates.TemplateResponse('record/table_row.html', {'request': request, 'record': record, 'status': status, 'current_actor': current_actor, 'loop': loop, 'section': section, 'panel': panel})
+
+
+@router.post("/modify_record_cl", response_class=HTMLResponse)
+async def modify_record(request: Request,ctr_alias: str, record_id: int, loop_index: int, section: str, panel: str, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
+    loop = Loop
+    loop.index = loop_index
+    form = await request.form()
+    data = dict(form)
+    
+    #current_actor = get_actor_by_id(db, actor_id = payload.uid)
+    ctr = get_actor_by_alias(db, ctr_alias)
+    current_actor = get_actor_by_id(db, actor_id = payload.uid)
+    record = get_record_by_id(db, record_id)
+    status = get_record_actor(db, record_id = record_id, actor_id = current_actor.id)
+    status_section = get_record_actor(db, record_id = record_id, actor_id = ctr.id)
+    
+    new_targets = form.getlist("user_ids")
+    set_new_targets = set(new_targets)
+
+    targets = record.targets_ctr(ctr_alias)
+    map_targets = {str(ra.actor_id): ra for ra in targets}
+    set_targets = set(map_targets.keys())
+   
+    for actor_id in (set_targets - set_new_targets):
+        map_targets[actor_id].target = 0
+    
+    for actor_id in set_new_targets:
+        if actor_id in set_targets:
+            map_targets[actor_id].target = new_targets.index(actor_id) + 1
+        else: # A new one
+            status_actor = get_record_actor(db, record_id = record_id, actor_id = actor_id)
+            status_actor.target = new_targets.index(actor_id) + 1
+            db.add(status_actor)
+
+    db.add(record)
+    db.commit()
+    db.refresh(record)
+
+    return templates.TemplateResponse('record/table_row_cl.html', {'request': request, 'ctr_alias': ctr_alias, 'record': record, 'status': status, 'status_section': status_section, 'current_actor': current_actor, 'loop': loop, 'section': section, 'panel': panel})
+
+
 
 @router.post("/global_search", response_class=HTMLResponse)
 async def records_global_search(request: Request, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):

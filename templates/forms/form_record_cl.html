@@ -1,4 +1,4 @@
-<form class="custom-card p-5" hx-post="/modify_record?record_id={{record.id}}&loop_index={{loop.index}}&section={{section}}&panel={{panel}}" hx-target="#row-{{record.id}}" method="POST">
+<form class="custom-card p-5" hx-post="/modify_record_cl?ctr_alias={{ctr_alias}}&record_id={{record.id}}&loop_index={{loop.index}}&section={{section}}&panel={{panel}}" hx-target="#row-{{record.id}}" method="POST">
     <div class="level mb-5">
         <div class="level-left">
             <div>
@@ -24,41 +24,6 @@
     
     <div class="columns is-variable is-5 is-align-items-stretch">
         <div class="column is-8 is-flex is-flex-direction-column">
-            <div class="columns is-multiline is-mobile">
-                <div class="column is-4-tablet is-6-mobile">
-                    <label class="label is-small">Flow</label>
-                    <div class="select is-fullwidth">
-                        <select name="flow">
-                            <option {{ 'selected' if record.flow.value == 'inbound' }} value="inbound">Inbound</option>
-                            <option {{ 'selected' if record.flow.value == 'outbound' }} value="outbound">Outbound</option>
-                            <option {{ 'selected' if record.flow.value == 'internal_cr' }} value="internal_cr">Internal CR</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="column is-4-tablet is-6-mobile">
-                    <label class="label is-small">Register</label>
-                    <div class="select is-fullwidth">
-                        <select name="register" hx-get="/record_form_data?info=senders_{{record.sender.alias}}_{{record.flow.value}}_" hx-target="#form_record_senders">
-                            <option value=""></option>
-                            {% for register in registers %}
-                                <option {{ 'selected' if record.register.alias == register }}>{{ register }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="column is-4-tablet is-12-mobile">
-                    <label class="label is-small">Sender</label>
-                    <div class="select is-fullwidth is-success">
-                        <select id="form_record_senders" name="sender">
-                            <option value=""></option>
-                            {% for sender in senders %}
-                                <option {{ 'selected' if record.sender.alias == sender.alias }} value="{{sender.alias}}">{{sender.alias}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-            </div>
-
             <div class="columns is-mobile">
                 <div class="column is-3">
                     <label class="label is-small">Sequence</label>
@@ -81,47 +46,12 @@
                             <div class="dropdown-content" style="max-height: 200px; overflow-y: auto;">
                                 {% for tag in tags %}
                                 <label class="dropdown-item">
-                                    <input type="checkbox" name="tag_ids" value="{{ tag.id }}" {{ 'checked' if tag in record.tags }} class="mr-2">
-                                    {{ tag.title }}
+                                    <input type="checkbox" name="tag_ids" value="{{ tag }}" {{ 'checked' if tag in record.tags }} class="mr-2">
+                                    {{ tag }}
                                 </label>
                                 {% endfor %}
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="columns">
-                <div class="column is-4">
-                    <label class="label is-small">Audience</label>
-                    <div class="select is-fullwidth">
-                        <select name="audience">
-                            <option {{ 'selected' if record.audience == 'all' }} value="all">All</option>
-                            <option {{ 'selected' if record.audience == 'dr' }} value="dr">Only dr</option>
-                            <option {{ 'selected' if record.audience == 'permanent' }} value="permanent">Only permanent</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="column is-4">
-                    <label class="label is-small">Department</label>
-                    <div class="select is-fullwidth">
-                        <select name="department" id="dept-select">
-                            <option value=""></option>
-                            {% for department in departments %}
-                                <option value="{{ department }}" {{ 'selected' if department == record.unit.alias }}>{{ department }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="column is-4">
-                    <label class="label is-small">Area</label>
-                    <div class="select is-fullwidth">
-                        <select name="area">
-                            {% for area in areas %}
-                                <option {{ 'selected' if record.area == area }}>{{ area }}</option>
-                            {% endfor %}
-                        </select>
                     </div>
                 </div>
             </div>

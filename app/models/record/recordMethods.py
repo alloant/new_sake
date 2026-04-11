@@ -59,11 +59,16 @@ def ACTIONS():
 
     ACTIONS['check_info'] = {"id": "check_info", "title": _("Info about the note"), "attr": {"hx-get": "/action?action=check_info", "hx-target": "#row-{record_id}"}, "icon": "mdi-information-outline"}
     ACTIONS['recursive_search'] = {"id": "recursive_search", "title": _("List all notes related with this entry"), "attr": {"hx-get": "/action?action=recursive_search", "hx-target": "#main-table"}, "icon": "mdi-archive-search-outline"}
-    ACTIONS['edit_record'] = {"id": "edit_record", "title": _("Edit"), "attr": {"hx-get": "/action?action=edit", "hx-target": "#modal-content-target", "onclick": "openModal()"}, "icon": "mdi-email-edit", "perms": []}
+    ACTIONS['edit_record'] = {"id": "edit_record", "title": _("Edit"), "attr": {"hx-get": "/action?action=edit_record", "hx-target": "#modal-content-target", "onclick": "openModal()"}, "icon": "mdi-email-edit", "perms": []}
     ACTIONS['edit_actor_tags'] = {"id": "edit_actor_tags", "title": _("Personal tags"), "attr": {"hx-get": "/action?action=edit_actor_tags", "hx-target": "#modal-content-target", "onclick": "openModal()"}, "icon": "mdi-tag"}
     ACTIONS['edit_targets'] = {"id": "edit_targets", "title": _("Edit targets"), "attr": {"hx-get": "/action?action=edit_targets", "hx-target": "#modal-content-target", "onclick": "openModal()"}, "icon": "mdi-account-group"}
     ACTIONS['delete_record'] = {"id": "delete_record", "title": _("Delete"), "attr": {"hx-get": "/action?action=delete", "hx-target": "#row-{record_id}", "hx-confirm": "Are you sure you want to delete the record?"}, "icon": "mdi-delete-circle-outline", "extra_class": "has-text-danger"}
 
+    # cl actions
+
+    ACTIONS['edit_record_cl'] = {"id": "edit_record_cl", "title": _("Assign"), "attr": {"hx-get": "/action?action=edit_record_cl", "hx-target": "#modal-content-target", "onclick": "openModal()"}, "icon": "mdi-clipboard-account", "perms": []}
+
+    ## Proposal actions
 
     ACTIONS['start_circulation'] = {"id": "start_circulation", "title": _("Start circulation"), "attr": {"hx-get": "/action?action=start_circulation", "hx-target": "#row-{record_id}"}, "icon": "mdi-file-send"}
     ACTIONS['stop_circulation'] = {"id": "stop_circulation", "title": _("Stop circulation"), "attr": {"hx-get": "/action?action=stop_circulation", "hx-target": "#row-{record_id}"}, "icon": "mdi-file-cancel", "extra_class": "has-text-danger"}
@@ -120,6 +125,16 @@ class RecordMethod(object):
         if datetime.now().year == dt.year:
             return dt.strftime("%d %b")
         return dt.strftime('%Y-%m-%d')
+     
+    def targets_ctr(self, ctr_alias: str):
+        rst = [target for target in self.actors if target.target > 0 and f'ctr_{ctr_alias}:editor' in target.actor.scopes]
+        #return sorted(rst, key=lambda x: x.alias)
+        return rst
+
+    def targets_ctr_id(self, ctr_alias: str):
+        rst = [target.actor.id for target in self.actors if target.target > 0 and f'ctr_{ctr_alias}:editor' in target.actor.scopes]
+        #return sorted(rst, key=lambda x: x.alias)
+        return rst
 
     @property
     def targets(self):
@@ -231,6 +246,10 @@ class RecordMethod(object):
                 else:
                     actions[-1].items.append(Action(record_id=self.id,**all_actions['disable_snooze']))
 
+        if section == 'cl' and self.flow == 'outbound':
+            actions.append(ActionGroup(title="Cl actions",items=[]))
+            actions[-1].items.append(Action(record_id=self.id,**all_actions['edit_record_cl']))
+
         actions.append(ActionGroup(title="Info", items=[]))
         if not quick_access:
             actions[-1].items.append(Action(record_id=self.id,**all_actions['check_info']))
@@ -316,7 +335,40 @@ class RecordMethod(object):
 
         return self.avatar_circle(align, title, avatar)
     
-    
+    def avatar_ctr_html(self, panel: str):
+        ctr_alias, flow = panel[:-4].split('-')
+
+        match self.flow:
+            case 'outbound':
+                targets = self.targets_ctr(ctr_alias)
+                print('outbound', self.title, targets)
+
+                if not targets:
+                    title = ""
+                    avatar = '<i class="iconify has-text-grey" data-width="1.25em" data-icon="mdi-account-off"></i>'
+                    align = "center"
+                elif len(targets) == 1:
+                    title = targets[0].actor.alias
+                    avatar = f'<span style="font-size: 0.7em;">{targets[0].actor.abbr.upper()}</span>'
+                    align = "center"
+                else:
+                    title = " - ".join([target.actor.alias for target in targets])
+                    avatar = '<i class="iconify" data-width="1.25em" data-icon="mdi-account-multiple"></i>'
+                    align = "center"
+            case 'inbound':
+                return ''
+                title = self.sender.alias
+                avatar = f'<span style="font-size: 0.7em;">{self.sender.abbr.upper()}</span>'
+                align = "center"
+            case 'internal_cl':
+                title, icon = self.progress
+                avatar = f'<i class="iconify" data-width="1.25em" data-icon="mdi-{icon}"></i>'
+                align = "left"
+            case _:
+                return ''
+
+        return self.avatar_circle(align, title, avatar)
+
     @hybrid_method
     def has_actor_target(self, actor_id: int) -> bool:
         return any(link.actor_id == actor_id and link.target > 0 for link in self.actors)

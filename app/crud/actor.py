@@ -53,7 +53,12 @@ def get_senders_register(db: Session, flow: str, register_alias: str, ctr_alias:
 
 def get_targets_register(db: Session, flow: str, register_alias: str, ctr_alias: str = None, query: str = None) -> list(Actor):
     if flow == 'outbound':
-        fn = [Actor.is_active, Actor.scopes.contains(f'contact:{register_alias}')]
+        if ctr_alias:
+            fn = [Actor.is_active, Actor.scopes.contains(f'ctr_{ctr_alias}:editor')]
+            print(f'ctr_{ctr_alias}:editor')
+        else:
+            fn = [Actor.is_active, Actor.scopes.contains(f'contact:{register_alias}')]
+        
         if query:
             fn.append(Actor.alias.contains(query))
 

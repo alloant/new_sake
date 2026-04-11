@@ -47,7 +47,7 @@ async def records_table_view(db: Session, current_actor: Actor, section: str, pa
 
     return f"record/table.html", {"records": records, "pagination": pagination(num_records,page,limit_records), "title": get_title(section,panel), 'num_records': num_records, "current_actor": current_actor}
 
-async def action_view(record_id, status_id, action, db, current_actor):
+async def action_view(db: Session, record_id: int, status_id: int, action: str, current_actor: Actor, section: str, panel: panel):
     record = get_record_by_id(db,record_id)
     if status_id:
         status = get_record_actor_by_id(db, record_actor_id = status_id)
@@ -68,7 +68,7 @@ async def action_view(record_id, status_id, action, db, current_actor):
         record.state = "archived"
     elif action == "restore":
         record.state = "active"
-    elif action in ["edit","sign_note"]:
+    elif action in ["edit_record","sign_note"]:
         registers = get_actor_registers(db,current_actor.scopes)
         departments = get_all_alias_deps(db)
         senders = get_senders_register(db,record.flow,record.register.alias)
@@ -77,6 +77,12 @@ async def action_view(record_id, status_id, action, db, current_actor):
         selected_targets = record.targets_id
         areas = ['Aes','Aso','Asmo','Ind','J']
         return "forms/form_record.html", {'action': action, 'record': record, 'status': status, 'registers': registers, 'departments': departments, 'senders': senders, 'available_targets': available_targets, 'checked_targets': selected_targets, 'tags': tags, 'areas': areas}
+    elif action == 'edit_record_cl':
+        ctr_alias, flow = panel[:-4].split('-')
+        available_targets = get_targets_register(db, record.flow, 'ctr', ctr_alias=ctr_alias)
+        selected_targets = record.targets_ctr_id(ctr_alias)
+        tags = ['asd','qwe']
+        return "forms/form_record_cl.html", {'ctr_alias': ctr_alias,'action': action, 'record': record, 'status': status, 'available_targets': available_targets, 'checked_targets': selected_targets, 'tags': tags}
     elif action == "edit_targets":
         available_targets = get_ctrs(db)
         selected_targets = record.targets

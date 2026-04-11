@@ -8,6 +8,10 @@
   </span>
 </div>
 
+<div class="column is-narrow has-order-4-mobile">
+  {{ record.avatar_ctr_html(panel) | safe}}
+</div>
+
 <div class="column position-relative is-flex is-align-items-center has-order-7-mobile">
   <span class="mr-2 {{ record.read_status_html(panel,status,current_actor) if record.flow == 'inbound' else '' }}">
     {{ record.title_hashtag|safe }}
