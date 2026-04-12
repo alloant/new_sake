@@ -25,7 +25,7 @@
     <span class="tag mx-0 is-hidden-mobile is-link" style="font-size: 0.65rem;">{{ tag.title }}</span>
   {% endfor %}
   
-  {% if 'actor_tags' in status.params %}
+  {% if status and 'actor_tags' in status.params %}
   {% for tag in status.params['actor_tags'] %}
     <span class="tag mx-0 is-hidden-mobile is-danger" style="font-size: 0.65rem; color: var(--text-main);">{{ tag }}</span>
   {% endfor %}

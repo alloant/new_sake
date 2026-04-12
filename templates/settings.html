@@ -5,7 +5,7 @@
   <div class="container">
     <h1 class="title has-text-centered">Edit User: {{ actor.full_name }}</h1>
     
-    <form action="/settings?actor_id={{ actor.id }}" method="POST">
+    <form action="/settings?actor_id={{ actor.id }}&section={{section}}&panel={{panel}}" method="POST">
       <div class="card mb-5">
         <header class="card-header">
           <p class="card-header-title">Role</p>

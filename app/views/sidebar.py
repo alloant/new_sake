@@ -45,10 +45,12 @@ class MenuItem(BaseModel):
     active: str = ""
     show_count: bool = False
     hx_trigger: str = ""
+    blank: bool = False
 
 class MenuGroup(BaseModel):
     title: str
     items: list[MenuItem]
+    has_settings: bool = False
 
 # Your master menu definition
 
@@ -133,8 +135,9 @@ def FULLMENU(section):
 
     FULL_MENU['pages'] = [
         MenuGroup(
-            title=_("Import"),
+            title=_("Documentation"),
             items=[
+                MenuItem(id="documentation", title=_("Documentation"), link="https://nas.prome.sg:5001/ns/sharing/QjDLA", icon="mdi-information", perms=[""], blank = True)
             ]
         ),
     ]
@@ -206,8 +209,10 @@ def get_panel_register_cl(db,actor_perms,panel):
         items.append(MenuItem(id=f"{ctr}-out",title=f"Outbox {ctr}",link=f"/?section=cl&panel={ctr}-out_ctr",icon="mdi-email-fast"))
         items[-1].active = "is-active" if f"{ctr}-out_ctr" == panel else ""
 
-        menu.append(MenuGroup(title=f'Register {ctr}', items=items))
-
+        menu.append(MenuGroup(title=f'Register {ctr}', items=items, has_settings = True))
+    
+    menu.append(FULLMENU('pages')[0])
+    
     return menu
 
 def get_sidebar(db,payload,section,panel):
@@ -215,7 +220,7 @@ def get_sidebar(db,payload,section,panel):
     
     if current_actor.role == 'cl':
         sections = []
-        panel = []
+        panel = get_panel(db,[payload.data['kind']] + payload.scopes,section,panel)
     else:
         sections = get_sections([payload.data['kind']] + payload.scopes,section)
         panel = get_panel(db,[payload.data['kind']] + payload.scopes,section,panel)

@@ -38,16 +38,16 @@ from .main import templates
 
 #Settings
 @router.get("/settings", name="settings")
-async def settings(request: Request, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
+async def settings(request: Request, section:str, panel: str, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
     current_actor = get_actor_by_id(db, payload.uid)
     available_targets = get_targets_register(db, 'outbound', 'ctr')
     checked_targets = current_actor.ctrs_alias
 
-    return templates.TemplateResponse("forms/form_settings.html", {"request": request, "actor_role": current_actor.role, "actor": current_actor, "available_targets": available_targets, 'checked_targets': checked_targets, "settings": get_settings_form(db,current_actor)})
+    return templates.TemplateResponse("forms/form_settings.html", {"request": request, "section": section, "panel": panel, "actor_role": current_actor.role, "actor": current_actor, "available_targets": available_targets, 'checked_targets': checked_targets, "settings": get_settings_form(db,current_actor)})
 
 ## Settings/profile part
 @router.post("/settings", name="settings")
-async def settings_post(request: Request, actor_id:int, db: Session = Depends(get_db), payload = Depends(get_payload_from_cookie)):
+async def settings_post(request: Request, actor_id:int, section: str, panel: str, db: Session = Depends(get_db), payload = Depends(get_payload_from_cookie)):
     current_actor = get_actor_by_id(db,payload.uid)
     edit_actor = get_actor_by_id(db,actor_id)
     provider = payload.provider
@@ -79,6 +79,9 @@ async def settings_post(request: Request, actor_id:int, db: Session = Depends(ge
                         scopes.append(f'ctr:viewer')
                     else:
                         scopes.append('cl')
+                else: # It is a ctr
+                    scopes.append('ctr')
+                    scopes.append('contact:ctr')
             elif kind == 'register':
                 if data[setting]:
                     scopes.append(f'{key}:{data[setting]}')
@@ -114,8 +117,8 @@ async def settings_post(request: Request, actor_id:int, db: Session = Depends(ge
     
     cookie_duration = 60 * 60 * 24 * 7 # 7 Days
     access_token = auth.create_access_token("sake",data=user_payload, scopes=current_actor.scopes,expires_delta=timedelta(seconds=cookie_duration))
-    
-    response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+    response = RedirectResponse(url=f"/?section={section}&panel={panel}", status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(
         key="access_token",
         value=access_token,
@@ -133,21 +136,10 @@ async def settings(request: Request, section: str, panel: str, db: Session = Dep
     ctr_alias, flow = panel[:-4].split('-')
     ctr = get_actor_by_alias(db, ctr_alias)
 
-    available_targets = get_targets_register(db, 'outbound', 'ctr')
-    checked_targets = ctr.ctrs_alias
+    available_targets = [] # get_targets_register(db, 'outbound', 'ctr')
+    checked_targets = [] #ctr.ctrs_alias
 
-    return templates.TemplateResponse("forms/form_settings_ctr.html", {"request": request, "actor_role": ctr.role, "actor": ctr, "available_targets": available_targets, 'checked_targets': checked_targets, "settings": get_settings_form(db,ctr)})
-
-## Settings/profile part
-@router.post("/settings_ctr", name="settings")
-async def settings_post(request: Request, section: str, panel: str, db: Session = Depends(get_db), payload = Depends(get_payload_from_cookie)):
-    current_actor = get_actor_by_id(db,payload.uid)
-    provider = payload.provider
-    form = await request.form()
-    data = dict(form)
-
-    ctrs = form.getlist('user_ids')
- 
+    return templates.TemplateResponse("forms/form_settings_ctr.html", {"request": request, "section": section, "panel": panel, "actor_role": ctr.role, "actor": ctr, "available_targets": available_targets, 'checked_targets': checked_targets, "settings": get_settings_form(db,ctr)})
 
 
 ## SIDEBAR
@@ -309,11 +301,12 @@ async def modify_record(request: Request, record_id: int, loop_index: int, secti
 
 
 @router.post("/modify_record_cl", response_class=HTMLResponse)
-async def modify_record(request: Request,ctr_alias: str, record_id: int, loop_index: int, section: str, panel: str, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
+async def modify_record(request: Request, record_id: int, loop_index: int, section: str, panel: str, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
     loop = Loop
     loop.index = loop_index
     form = await request.form()
     data = dict(form)
+    ctr_alias, flow = panel[:-4].split('-')
     
     #current_actor = get_actor_by_id(db, actor_id = payload.uid)
     ctr = get_actor_by_alias(db, ctr_alias)
@@ -322,6 +315,13 @@ async def modify_record(request: Request,ctr_alias: str, record_id: int, loop_in
     status = get_record_actor(db, record_id = record_id, actor_id = current_actor.id)
     status_section = get_record_actor(db, record_id = record_id, actor_id = ctr.id)
     
+    if data['submit_form'] == 'save_tags':
+        actor_tags = form.getlist("actor_tags")
+        status_section.params['actor_tags'] = actor_tags
+        db.add(status_section); db.commit(); db.refresh(status_section)
+
+        return templates.TemplateResponse('record/table_row_cl.html', {'request': request, 'section': section, 'panel': panel, 'record': record, 'status': status, 'status_section': status_section, 'current_actor': current_actor, 'loop': loop})
+
     new_targets = form.getlist("user_ids")
     set_new_targets = set(new_targets)
 

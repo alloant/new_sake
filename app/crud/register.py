@@ -18,7 +18,6 @@ def create_register(db: Session, alias: str, full_name: str) -> Register:
     return db_register
 
 def has_permission(actor_perms, required_perms):
-    print('ac-re',actor_perms, required_perms)
     if not required_perms:
         return True
 

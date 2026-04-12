@@ -2,10 +2,10 @@
 {% for group in sidebar['panel'] %}
   <div class="level is-mobile p-0 m-0">
     <div class="level-left">
-      <p class="menu-label has-text-weight-bold mb-0">{{_(group['title'])}}</p>
+      <p class="menu-label has-text-weight-bold mb-0">{{ group['title'] }}</p>
     </div>
     <div class="level-right">
-      {% if section == 'cl' %}
+      {% if group.has_settings %}
       <a class="button is-small is-responsive is-text has-tooltip-arrow has-tooltip-left"
         hx-get="/settings_ctr?section={{section}}&panel={{panel}}"
         hx-target="#modal-content-target"
@@ -22,7 +22,7 @@
   {% for item in group.items %}
     <li class="">
       <a  class="menu-link is-inline-flex is-justify-content-space-between is-align-items-center {{ item.active }}" 
-          href="{{ item.link }}">
+          href="{{ item.link }}" {{'target="_blank"' if item.blank else ''}}>
         <span>
           <i class="iconify" data-icon="{{ item.icon }}"></i>
           {{_(item.title)}}

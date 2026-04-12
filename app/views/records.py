@@ -1,5 +1,5 @@
 import math
-from app.crud import get_record_by_id, get_records, get_record_actor, get_record_actor_by_id, get_actor_registers, get_ctrs, get_all_deps, get_all_alias_deps, get_senders_register, get_targets_register, get_dispatcher_alias, get_tags
+from app.crud import get_record_by_id, get_records, get_record_actor, get_record_actor_by_id, get_actor_registers, get_ctrs, get_all_deps, get_all_alias_deps, get_senders_register, get_targets_register, get_dispatcher_alias, get_tags, get_actor_by_alias
 from app.routers.websocket import broadcast_channels
 
 def pagination(num_records: int, page: int, limit_records: int):
@@ -88,8 +88,16 @@ async def action_view(db: Session, record_id: int, status_id: int, action: str, 
         selected_targets = record.targets
         return "forms/form_targets.html", {'record': record, 'available_targets': available_targets, 'checked_targets': selected_targets}
     elif action == 'edit_actor_tags':
-        tags = current_actor.settings['actor_tags'].split(',') if 'actor_tags' in current_actor.settings else []
-        checked_tags = status.params['actor_tags'] if status and 'actor_tags' in status.params else []
+        if section == 'cl':
+            ctr_alias, flow = panel[:-4].split('-')
+            ctr = get_actor_by_alias(db,ctr_alias)
+            status_section = get_record_actor(db, record_id = record_id, actor_id = ctr.id)
+            tags = ctr.settings['actor_tags'].split(',') if 'actor_tags' in ctr.settings else []
+            checked_tags = status_section.params['actor_tags'] if status and 'actor_tags' in status_section.params else []
+
+        else:
+            tags = current_actor.settings['actor_tags'].split(',') if 'actor_tags' in current_actor.settings else []
+            checked_tags = status.params['actor_tags'] if status and 'actor_tags' in status.params else []
 
         return "forms/form_actor_tags.html", {'record': record, 'actor': current_actor, 'tags': tags, 'checked_tags': checked_tags}
     elif action == "start_circulation":

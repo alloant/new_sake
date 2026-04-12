@@ -8,7 +8,7 @@
     </button>
     -->
     <a class="button has-tooltip-arrow has-tooltip-left flex-shrink"
-      hx-get="/settings"
+      hx-get="/settings?section={{section}}&panel={{panel}}"
       hx-target="#modal-content-target"
       onclick="openModal()"
       title="Settings">
@@ -17,6 +17,7 @@
 
   </div>
 
+  {% if actor_role != 'cl' %}
   <!-- Here universal search bar -->
   <div id="global-search" class="item px-2" style="width: 100%;">
     <div class="field">
@@ -29,7 +30,7 @@
       </p>
     </div>
   </div>
-
+  {% endif %}
 </div>
 
 <div id="sidebar-top_control_menu">
