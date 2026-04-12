@@ -55,7 +55,7 @@ async def settings_post(request: Request, actor_id:int, section: str, panel: str
     data = dict(form)
 
     ctrs = form.getlist('user_ids')
-    
+    print(data) 
     scopes = []
     settings = {}
     for setting in data:
@@ -79,9 +79,6 @@ async def settings_post(request: Request, actor_id:int, section: str, panel: str
                         scopes.append(f'ctr:viewer')
                     else:
                         scopes.append('cl')
-                else: # It is a ctr
-                    scopes.append('ctr')
-                    scopes.append('contact:ctr')
             elif kind == 'register':
                 if data[setting]:
                     scopes.append(f'{key}:{data[setting]}')
@@ -91,7 +88,11 @@ async def settings_post(request: Request, actor_id:int, section: str, panel: str
             elif kind == 'perm':
                 if data[setting] == 'on':
                     scopes.append(key)
-    
+   
+    if not 'setting_kind' in data:
+        scopes.append('ctr')
+        scopes.append('contact:ctr')
+
     for ctr_id in ctrs:
         ctr = get_actor_by_id(db,ctr_id)
         scopes.append(f'ctr_{ctr.alias}:editor')

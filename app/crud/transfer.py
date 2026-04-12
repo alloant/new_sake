@@ -29,17 +29,20 @@ def transfer_registers():
         {'id':2, 'alias': 'asr', 'full_name': 'Regional Advisory', 'active': 1, 'protocol': {"inbound": "getattr(getattr(self,'sender'),'alias')","outbound": "'cr-asr'"}},
         {'id':3, 'alias': 'ctr', 'full_name': 'Centers', 'active': 1, 'protocol': {"inbound": "getattr(getattr(self,'sender'),'alias')","outbound": "'cr'"}},
         {'id':4, 'alias': 'r', 'full_name': 'Regions', 'active': 1, 'protocol': {"inbound": "getattr(getattr(self,'sender'),'alias')","outbound": "'Aes-r'"}},
-        {'id':5, 'alias': 'vcr', 'full_name': 'Regional Vicar', 'active': 1, 'protocol': {"inbound": "getattr(getattr(self,'sender'),'alias')","outbound": "'vcr'"}},
-        {'id':6, 'alias': 'vc', 'full_name': 'Regional Vicars', 'active': 1, 'protocol': {"inbound": "getattr(getattr(self,'sender'),'alias')","outbound": "'vc'"}},
-        {'id':7, 'alias': 'dg', 'full_name': 'Delegate', 'active': 1, 'protocol': {"inbound": "getattr(getattr(self,'sender'),'alias')","outbound": "'dg'"}},
-        {'id':8, 'alias': 'cc', 'full_name': 'cc', 'active': 1, 'protocol': {"inbound": "getattr(getattr(self,'sender'),'alias')","outbound": "'cc'"}},
-        {'id':9, 'alias': 'desr', 'full_name': 'Preffect', 'active': 1, 'protocol': {"inbound": "getattr(getattr(self,'sender'),'alias')","outbound": "'pffer'"}},
-        {'id':10, 'alias': 'prop', 'full_name': 'Proposals', 'active': 1, 'protocol': {"internal_cr": "getattr(getattr(self,'sender'),'alias')","outbound": "''"}}
+        {'id':5, 'alias': 'vcr', 'full_name': 'Regional Vicar', 'active': 1, 'protocol': {"inbound": "f'{getattr(getattr(self,\"sender\"),\"alias\")}-vcr'","outbound": "'vcr'"}},
+        {'id':6, 'alias': 'vc', 'full_name': 'Regional Vicars', 'active': 1, 'protocol': {"inbound": "f'{getattr(getattr(self,\"sender\"),\"alias\")}-vc'","outbound": "'vc'"}},
+        {'id':7, 'alias': 'dg', 'full_name': 'Delegate', 'active': 1, 'protocol': {"inbound": "f'{getattr(getattr(self,\"sender\"),\"alias\")}-dg'","outbound": "'dg'"}},
+        {'id':8, 'alias': 'cc', 'full_name': 'cc', 'active': 1, 'protocol': {"inbound": "f'{getattr(getattr(self,\"sender\"),\"alias\")}-cc'","outbound": "'cc'"}},
+        {'id':9, 'alias': 'pffer', 'full_name': 'Preffect', 'active': 1, 'protocol': {"inbound": "f'{getattr(getattr(self,\"sender\"),\"alias\")}-pffer'","outbound": "'pffer'"}},
+        {'id':10, 'alias': 'prop', 'full_name': 'Proposals', 'active': 1, 'type': 'proposal', 'protocol': {"internal_cr": "getattr(getattr(self,'sender'),'alias')","outbound": "''"}}
     ]
 
     for reg in regs:
         print(reg)
-        db_register = Register(id=reg['id'],alias=reg['alias'],full_name=reg['full_name'],active=reg['active'],protocol=reg['protocol'])
+        if 'type' in reg:
+            db_register = Register(id=reg['id'],alias=reg['alias'],full_name=reg['full_name'],active=reg['active'],type=reg['type'],protocol=reg['protocol'])
+        else:
+            db_register = Register(id=reg['id'],alias=reg['alias'],full_name=reg['full_name'],active=reg['active'],protocol=reg['protocol'])
         db.add(db_register)
 
     db.commit()
@@ -63,6 +66,7 @@ def transfer_find_depts():
                 dept = get_actor_by_alias(db,'dest')
             else:
                 dept = get_actor_by_alias(db,tag['text'])
+
             if dept:
                 record.unit_id = dept.id
                 db.add(record)
@@ -111,18 +115,54 @@ def transfer_users():
 
     for row in rows:
         if not row['alias'] in alias:
-            if row['category'] in ['dr','of','cl']:
+                        
+            if row['category'] == 'dr':
                 kind = 'user'
+                color = '#dddddd'
+                scopes = ['dr','cg:editor','asr:editor','ctr:editor','r:editor']
+            elif row['category'] == 'of':
+                kind = 'user'
+                color = '#dddddd'
+                scopes = ['of','cg:editor','asr:editor','ctr:editor','r:editor']
+            elif row['category'] == 'cl':
+                kind = 'user'
+                color = '#dddddd'
+                scopes = ['cl','cg:editor','asr:editor','ctr:editor','r:editor']
             elif row['category'] == 'contact':
                 kind = 'contact'
+                color = '#111111'
+                if row['alias'] == 'cg':
+                    scopes = ['cg','contact:cg','contact:vcr','contact:vc','contact:cc','contact:dg','contact:pffer']
+                elif row['alias'] == 'asr':
+                    scopes = ['asr','contact:asr','contact:vcr','contact:vc']
+                else:
+                    if 'vcr' in row['alias']:
+                        scopes = ['contact:vcr']
+                    elif 'vc' in row['alias']:
+                        scopes = ['contact:vc']
+                    else:
+                        scopes = ['contact:r']
             elif row['category'] == 'ctr':
                 kind = 'ctr'
+                color = '#69c98f'
+                scopes = ['ctr','contact:ctr']
             else:
                 kind = 'user'
+                color = '#dddddd'
+                scopes = []
+            
+            if row['category'] in ['dr','of','cl']:
+                ctrs = get_old_data(f'SELECT user.alias as alias from user, user_ctr WHERE user.id = user_ctr.ctr_id AND user_id = {row["id"]}')
+                for ctr in ctrs:
+                    scopes.append(f"ctr_{ctr['alias']}:editor")
 
             print(row['alias'],row['email'], row['name'])
+            if len(row['alias']) >= 2:
+                abbr = row['alias'][:2]
+            else:
+                abbr = row['alias']
 
-            db_actor = Actor(alias=row['alias'],kind=kind,email=row['email'],full_name=row['name'],created_at=row['date'], scopes=[row['category']])
+            db_actor = Actor(alias=row['alias'],kind=kind,email=row['email'],full_name=row['name'],created_at=row['date'], scopes=scopes, color=color, abbr=abbr)
             db.add(db_actor)
             alias.append(row['alias'])
 

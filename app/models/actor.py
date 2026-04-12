@@ -20,6 +20,8 @@ class ActorSettings(object):
         match setting:
             case 'limit_records':
                 return 20
+            case 'font_size':
+                return 2
             case 'theme':
                 return 'light'
             case 'admin_active':

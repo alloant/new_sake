@@ -11,7 +11,7 @@ class Register(SQLModel, table=True):
     alias: str = Field(unique=True, max_length=10)
     full_name: str | None = Field(max_length=50, default="")
     active: bool | None = Field(default=True)
-    type: Type = Field()
+    type: Type = Field(default='note')
 
     protocol: dict[str, object] = Field(sa_column=Column(JSON, nullable=False), default_factory=dict)
 
