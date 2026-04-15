@@ -54,7 +54,7 @@ async def home(request: Request, section: str | None = "board", panel: str | Non
                 panel = 'cg-in'
             case 'sccr':
                 panel = 'new_mail'
-            
+
     sidebar = get_sidebar(db,payload,section,panel)
     current_actor = get_actor_by_id(db,payload.uid)
     theme = current_actor.get_setting('theme') 

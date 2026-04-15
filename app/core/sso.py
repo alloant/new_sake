@@ -4,6 +4,7 @@ from datetime import timedelta
 import json
 from urllib.parse import urlencode
 
+
 from fastapi import FastAPI, Request, Response, Form, Depends, APIRouter, HTTPException, status, Header
 from fastapi.responses import RedirectResponse, HTMLResponse
 from itsdangerous import URLSafeSerializer, BadSignature
@@ -61,26 +62,34 @@ def load_session_cookie(val: str):
 _discovery_cache = {}
 _jwks_cache = {}
 
+
+
 async def get_discovery(provider: str = "synology"):
     global _discovery_cache, _jwks_cache
     
     # Check if we already have this specific provider's data
     if provider not in _discovery_cache:
         url = GOOGLE_DISCOVERY if provider == "google" else DISCOVERY
-        
-        async with httpx.AsyncClient(verify=True) as client:
-            # Fetch OpenID Configuration
-            r = await client.get(url, timeout=10)
-            r.raise_for_status()
-            disc = r.json()
-            _discovery_cache[provider] = disc
-            
-            # Fetch JWKS (Keys)
-            jwks_uri = disc.get("jwks_uri")
-            if jwks_uri:
-                r2 = await client.get(jwks_uri, timeout=10)
-                r2.raise_for_status()
-                _jwks_cache[provider] = r2.json()
+        try: 
+            async with httpx.AsyncClient(verify=True) as client:
+                # Fetch OpenID Configuration
+                r = await client.get(url, timeout=10)
+                r.raise_for_status()
+                disc = r.json()
+                _discovery_cache[provider] = disc
+                
+                # Fetch JWKS (Keys)
+                jwks_uri = disc.get("jwks_uri")
+                if jwks_uri:
+                    r2 = await client.get(jwks_uri, timeout=10)
+                    r2.raise_for_status()
+                    _jwks_cache[provider] = r2.json()
+        except httpx.HTTPError as exc:
+            # LOG THE ERROR HERE
+            print(f"SSO Discovery failed for {provider}: {exc}")
+            # Return None or raise a custom Exception that your UI can catch
+            return None, None
+
                 
     return _discovery_cache[provider], _jwks_cache.get(provider)
 

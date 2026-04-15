@@ -4,6 +4,7 @@ run_https
 run_babel
 run_imap
 run_query
+docker.sh
 *.key
 *.crt
 

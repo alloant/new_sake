@@ -155,6 +155,17 @@ def transfer_users():
                 ctrs = get_old_data(f'SELECT user.alias as alias from user, user_ctr WHERE user.id = user_ctr.ctr_id AND user_id = {row["id"]}')
                 for ctr in ctrs:
                     scopes.append(f"ctr_{ctr['alias']}:editor")
+            params = {}
+            if row['category'] in ['dr','of']:
+                params['departments'] = []
+                for dep in ['vcr','vc','df','vcsr','pffer','sccr','sm','dest','sg','sr','ar','aop']:
+                    if dep in row['description']:
+                        params['departments'].append(dep)
+            elif row['category'] == 'ctr':
+                params['works'] = []
+                for wk in ['sm','sg','sr','sss+']:
+                    if wk in row['description']:
+                        params['works'].append(wk)
 
             print(row['alias'],row['email'], row['name'])
             if len(row['alias']) >= 2:
@@ -162,7 +173,7 @@ def transfer_users():
             else:
                 abbr = row['alias']
 
-            db_actor = Actor(alias=row['alias'],kind=kind,email=row['email'],full_name=row['name'],created_at=row['date'], scopes=scopes, color=color, abbr=abbr)
+            db_actor = Actor(alias=row['alias'],kind=kind,email=row['email'],full_name=row['name'],created_at=row['date'], scopes=scopes, color=color, abbr=abbr, params=params)
             db.add(db_actor)
             alias.append(row['alias'])
 

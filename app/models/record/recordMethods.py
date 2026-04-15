@@ -204,7 +204,7 @@ class RecordMethod(object):
         
         if self.flow == 'inbound' and self.stage == 'despacho':
             actions.append(ActionGroup(title="Despacho",items=[]))
-            if state.params.get('dispatcher_signature'): # The has already sign 
+            if state and state.params.get('dispatcher_signature'): # The has already sign 
                 if not quick_access:
                     actions[-1].items.append(Action(record_id=self.id,**all_actions['edit_record']))
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['quick_unsign']))
@@ -277,13 +277,20 @@ class RecordMethod(object):
                 for target in self.targets:
                     if target.handled == 'approved':
                         cont += 1
-                        done.append(target.actor.alias)
+                        done.append(f'✔&#160;{target.actor.alias}')
                     elif current == target.target:
-                        now.append(target.actor.alias)
+                        now.append(f'➤&#160;{target.actor.alias}')
                     else:
-                        next.append(target.actor.alias)
+                        next.append(f'⏸&#160;{target.actor.alias}')
                 
-                title = f"Done:{'-'.join(done)}&#10;&#10;Now:{'-'.join(now)}&#10;&#10;Next:{'-'.join(next)}"
+                #title = f"Done:&#160;{' '.join(done)}&#10;&#10;Now:&#160;{' '.join(now)}&#10;&#10;Next:&#160;{' '.join(next)}"
+                if done and (now or next):
+                    done.append('⋯')
+                if now and next:
+                    now.append('⋯')
+
+                title = "\n".join(done+now+next)
+
                 if cont == 0:
                     return title, "hexagon-outline"
                 else:
