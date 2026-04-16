@@ -1,17 +1,30 @@
 // static/js/main.js
 //
-
-// Handle the burger menu for mobile to show the sidebar
-document.getElementById('navbar-burger').addEventListener('click', function() {
+document.addEventListener('DOMContentLoaded', () => {
+    const burger = document.getElementById('navbar-burger');
     const sidebar = document.getElementById('main-sidebar');
-    const content = document.getElementById('main-content');
+    const mainContent = document.getElementById('main-content');
 
-    sidebar.classList.toggle('is-active'); // Show the sidebar
-    content.classList.toggle('is-darkened'); // Darken main content
-
-    // Optionally, toggle the burger icon to indicate state
-    this.classList.toggle('is-active');
+    if (burger) {
+        burger.addEventListener('click', () => {
+            burger.classList.toggle('is-active');
+            sidebar.classList.toggle('is-active');
+            
+            // Optional: Darken content when sidebar is open
+            mainContent.classList.toggle('is-darkened');
+        });
+    }
+    
+    // Close sidebar if user clicks on main content while sidebar is open
+    mainContent.addEventListener('click', () => {
+        if (sidebar.classList.contains('is-active')) {
+            sidebar.classList.remove('is-active');
+            burger.classList.remove('is-active');
+            mainContent.classList.remove('is-darkened');
+        }
+    });
 });
+
 
 document.addEventListener('click', function (event) {
     const trigger = event.target.closest('.dropdown-trigger');

@@ -36,7 +36,7 @@ def get_actor_registers(db: Session, actor_perms, only_alias = True):
         for register in registers:
             available[register.alias] = has_permission(actor_perms,[register.alias])
     else:
-        return registers
+        return [register for register in registers if has_permission(actor_perms,[register.alias])]
 
     return available
 

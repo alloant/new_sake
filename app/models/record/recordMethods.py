@@ -92,16 +92,27 @@ class RecordMethod(object):
     @property
     def protocol_html(self):
         rst = self.protocol
-        color = 'style="color: var(--font-color-permanent);"' if self.audience == 'permanent' else ''
+        color = 'style="color: var(--text-permanent);"' if self.audience == 'permanent' else ''
         if self.register.type == 'proposal':
             return f'<span class="is-italic" {color}>{rst}</span>'
         
+        if self.flow == 'outbound' and len(self.targets) > 1:
+            title = ' '.join([target.actor.alias for target in self.targets])
+            return f'<span class="has-tooltip-multiline has-tooltip-right has-tooltip-arrow" data-tooltip="{title}" {color}>{rst}</span>'
+
+
         return f'<span {color}>{rst}</span>'
 
     @property
     def code(self):
         if self.flow.value in self.register.protocol:
-            return eval(self.register.protocol[self.flow.value])
+            rst = eval(self.register.protocol[self.flow.value])
+            if self.flow == 'outbound' and len(self.targets) == 1:
+                if self.register.alias == 'ctr':
+                    rst = rst.replace('cr',f'cr-{self.targets[0].actor.alias}')
+                elif self.register.alias == 'r':
+                    rst = rst.replace('Aes-r',f'Aes-{self.targets[0].actor.alias}')
+            return rst
         return ''
 
     @property

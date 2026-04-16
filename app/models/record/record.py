@@ -25,6 +25,7 @@ class Stage(str, Enum):
     SKETCH = "sketch"
     SHARED = "shared"
     CLOSED = "closed"
+    APPROVED = "approved"
 
 class State(str, Enum):
     ACTIVE = "active"

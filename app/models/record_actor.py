@@ -1,7 +1,10 @@
 from enum import Enum
+from pydantic import ConfigDict
+
 from sqlalchemy.dialects.mysql import JSON
 from sqlalchemy.ext.mutable import MutableDict
-from sqlmodel import SQLModel, Field, Relationship, Column
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlmodel import SQLModel, Field, Relationship, Column, select
 
 class HandledStatus(str, Enum):
     NONE = ""
@@ -20,6 +23,7 @@ class HandledStatus(str, Enum):
     
 
 class RecordActor(SQLModel, table=True):
+    model_config = ConfigDict(ignored_types=(hybrid_property,))
     id: int | None = Field(default=None, primary_key=True)
     actor_id: int = Field(foreign_key="actor.id")
     record_id: int = Field(foreign_key="record.id")
@@ -35,4 +39,4 @@ class RecordActor(SQLModel, table=True):
     record: "Record" = Relationship(back_populates="actors")
     actor: "Actor" = Relationship()
 
-
+    
