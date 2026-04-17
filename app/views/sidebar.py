@@ -137,9 +137,16 @@ def FULLMENU(section):
         MenuGroup(
             title=_("Documentation"),
             items=[
-                MenuItem(id="documentation", title=_("Documentation"), link="https://nas.prome.sg:5001/ns/sharing/QjDLA", icon="mdi-information", perms=[""], blank = True)
+                MenuItem(id="documentation_cl", title=_("Documentation"), link="https://nas.prome.sg:5001/ns/sharing/AOJHa", icon="mdi-information", perms=[""], blank = True),
             ]
         ),
+        MenuGroup(
+            title=_("Documentation"),
+            items=[
+                MenuItem(id="documentation_cr", title=_("Documentation"), link="https://nas.prome.sg:5001/ns/sharing/zQLJ9", icon="mdi-information", perms=[""], blank = True)
+            ]
+        ),
+
     ]
 
     FULL_MENU['settings'] = [
@@ -177,6 +184,7 @@ def get_panel(db,actor_perms,section,panel):
         if allowed_items:
             filtered_menu.append(MenuGroup(title=group.title, items=allowed_items))
 
+    filtered_menu.append(FULLMENU('pages')[0])
     return filtered_menu
 
 def get_panel_register_cr(db,actor_perms,panel):
@@ -210,6 +218,7 @@ def get_panel_register_cl(db,actor_perms,panel):
         items[-1].active = "is-active" if f"{ctr}-out_ctr" == panel else ""
 
         menu.append(MenuGroup(title=f'Register {ctr}', items=items, has_settings = True))
+    
     
     menu.append(FULLMENU('pages')[0])
     

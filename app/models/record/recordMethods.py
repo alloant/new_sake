@@ -97,7 +97,9 @@ class RecordMethod(object):
             return f'<span class="is-italic" {color}>{rst}</span>'
         
         if self.flow == 'outbound' and len(self.targets) > 1:
-            title = ' '.join([target.actor.alias for target in self.targets])
+            aliases = [target.actor.alias for target in self.targets]
+            aliases.sort(key=str.lower)
+            title = ' '.join(aliases)
             return f'<span class="has-tooltip-multiline has-tooltip-right has-tooltip-arrow" data-tooltip="{title}" {color}>{rst}</span>'
 
 
@@ -310,14 +312,14 @@ class RecordMethod(object):
         return None, None
 
 
-    def avatar_circle(self, align, title, avatar):
+    def avatar_circle(self, align, title, avatar, loop_index):
         if title:
-            return f'<div class="avatar-circle is-flex is-align-items-center is-justify-content-center has-tooltip-multiline has-tooltip-arrow has-tooltip-right has-tooltip-text-{align}" data-tooltip="{title}">{avatar}</div>'
+            orientation = 'has-toolip-top' if loop_index > 10 else 'has-tooltip-bottom'
+            return f'<div class="avatar-circle is-flex is-align-items-center is-justify-content-center has-tooltip-multiline {orientation} has-tooltip-text-{align}" data-tooltip="{title}">{avatar}</div>'
         
         return f'<div class="avatar-circle is-flex is-align-items-center is-justify-content-center">{avatar}</div>'
 
-    @property
-    def avatar_html(self):
+    def avatar_html(self, loop_index):
         match self.flow:
             case 'inbound':
                 targets = self.targets
@@ -351,7 +353,7 @@ class RecordMethod(object):
             case _:
                 return ''
 
-        return self.avatar_circle(align, title, avatar)
+        return self.avatar_circle(align, title, avatar, loop_index)
     
     def avatar_ctr_html(self, panel: str):
         ctr_alias, flow = panel[:-4].split('-')
