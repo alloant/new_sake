@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+
 document.addEventListener('click', function (event) {
     const trigger = event.target.closest('.dropdown-trigger');
     const insideMenu = event.target.closest('.dropdown-menu');
@@ -33,29 +34,37 @@ document.addEventListener('click', function (event) {
     if (trigger) {
         const dropdown = trigger.closest('.dropdown');
         
-        // 1. Close other dropdowns
+        // Close other dropdowns
         document.querySelectorAll('.dropdown.is-active').forEach(openDropdown => {
-            // ONLY close if it's not the one we clicked AND it's not a parent of the one we clicked
-            if (openDropdown !== dropdown && !openDropdown.contains(dropdown)) {
+            if (openDropdown !== dropdown) {
                 openDropdown.classList.remove('is-active');
             }
         });
 
-        // 2. Toggle the current one
+        // Toggle current
         dropdown.classList.toggle('is-active');
-        
         event.stopPropagation(); 
 
-    } else if (insideMenu) {
-        // If clicking inside the menu (form fields, labels), do nothing so it stays open
-        return;
-    } else {
-        // Clicked outside everything: close all
-        document.querySelectorAll('.dropdown.is-active').forEach(dropdown => {
-            dropdown.classList.remove('is-active');
-        });
+    } else if (!insideMenu) {
+        // Clicked outside: close all
+        closeAllDropdowns();
     }
 });
+
+// NEW: Close menu when mouse leaves the dropdown container
+document.querySelectorAll('.dropdown').forEach(dropdown => {
+    dropdown.addEventListener('mouseleave', () => {
+        dropdown.classList.remove('is-active');
+    });
+});
+
+function closeAllDropdowns() {
+    document.querySelectorAll('.dropdown.is-active').forEach(dropdown => {
+        dropdown.classList.remove('is-active');
+    });
+}
+
+
 
 
 

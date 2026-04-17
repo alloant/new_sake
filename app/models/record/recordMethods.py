@@ -100,7 +100,7 @@ class RecordMethod(object):
             aliases = [target.actor.alias for target in self.targets]
             aliases.sort(key=str.lower)
             title = ' '.join(aliases)
-            return f'<span class="has-tooltip-multiline has-tooltip-right has-tooltip-arrow" data-tooltip="{title}" {color}>{rst}</span>'
+            return f'<span class="has-tooltip-multiline has-tooltip-right" data-tooltip="{title}" {color}>{rst}</span>'
 
 
         return f'<span {color}>{rst}</span>'
@@ -235,7 +235,7 @@ class RecordMethod(object):
         
         if self.flow == 'internal_cr':
             actions.append(ActionGroup(title="Proposals", items=[]))
-            if current_actor.id in self.targets_id:
+            if current_actor.id in self.targets_id and state.handled != 'approved':
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['sign_record']))
             elif self.sender_id == current_actor.id:
                 if self.stage == 'sketch':

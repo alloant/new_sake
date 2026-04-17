@@ -151,15 +151,37 @@ footer:empty {
 }
 
 
-.has-tooltip-multiline::before {
-    font-size: 1em !important; /* Adjust this to your preferred size */
-    line-height: 1.4 !important;
 
-    width: auto !important; 
-    min-width: 10rem !important; 
+.has-tooltip-multiline::before {
+    font-size: 1em !important;
+    line-height: 1.4 !important;
+    /* Allows it to be small for short text, but expand further for long text */
+    width: fit-content !important; 
+    
+    /* Increased limit: 30rem or 50ch is usually the 'Goldilocks' zone */
+    max-width: 30rem !important; 
+    
     white-space: pre-wrap !important; 
     content: attr(data-tooltip);
     border-radius: 4px !important;
+    display: inline-block !important;
+    
+    /* Optional: Prevents weird gaps at the end of lines */
+    text-align: left; 
+    
+    /* Optional: Breaks very long words so they don't overflow */
+    word-break: break-word; 
+}
+
+.has-tooltip-multiline.has-tooltip-right::before {
+    /* The "Don't Squash Me" logic */
+    width: max-content !important; 
+    min-width: 10rem !important; /* Optional: sets a base thickness */
+    max-width: 30rem !important; 
+    
+    /* Allow wrapping only after reaching max-width */
+    white-space: pre-wrap !important;
+    display: block !important;
 }
 
 .has-tooltip-multiline::after {
@@ -201,6 +223,9 @@ footer:empty {
 }
 
 
+.modal, .modal-background, .modal-content, .modal-card {
+    z-index: 1000 !important;
+}
 
 .modal-content {
   height: auto; 
@@ -228,7 +253,7 @@ footer:empty {
 }
 
 .dropdown-item:hover {
-    background-color: var(--bg-main);
+    background-color: var(--bg-secondary);
 }
 
 
@@ -237,11 +262,26 @@ footer:empty {
     cursor: pointer;
 }
 
-/* Ensure the dropdown menu stays on top of other rows */
+/* Ensure the active dropdown is always on top of other content */
 .dropdown.is-active {
-  z-index: 20;
+    z-index: 60 !important;
+}
+/* 3. Ensure the menu itself is above everything */
+.dropdown-menu {
+    z-index: 70 !important;
 }
 
+/* 2. When a row contains an active dropdown, pin the WHOLE ROW to the top */
+/* This prevents neighboring rows from overlapping it */
+.hover-row:has(.dropdown.is-active),
+.hover-row-alternate:has(.dropdown.is-active) {
+    z-index: 50 !important;
+    position: relative;
+    /* Disable the 'lift' animation so the menu doesn't jitter */
+    transform: none !important; 
+}
+
+/* Specifically target the menu content to ensure it floats above rows */
 .dropdown.is-active .dropdown:not(.is-active) .dropdown-menu {
     display: none;
 }
@@ -395,15 +435,6 @@ footer:empty {
   background-color: #ababab;
   color: #7a7a7a;
 }
-
-
-
-
-
-
-
-
-
 
 /* 1. The Main Wrapper (Hidden by default by HTMX) */
 .htmx-indicator {
