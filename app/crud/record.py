@@ -14,7 +14,7 @@ from app.models.record_actor import RecordActor
 
 current_target_subquery = (
         select(func.min(RecordActor.target))
-        #.where(RecordActor.record_id == Record.id)
+        .where(RecordActor.record_id == Record.id)
         .where(RecordActor.handled == 'pending')
         .where(RecordActor.target > 0)
         .correlate(Record) # Ensures it checks target per record
@@ -135,6 +135,7 @@ def get_filter(db: Session, actor: Actor, section: str, panel: str):
             elif panel == 'inbox-archived':
                 pass
                 fn.append(Record.state == 'archived')
+        
         elif panel.startswith('outbox'):
             fn.append(Record.flow=='outbound')
             fn.append(Record.sender_id == actor.id)
@@ -142,14 +143,17 @@ def get_filter(db: Session, actor: Actor, section: str, panel: str):
                 fn.append(Record.stage == 'draft')
             elif panel == 'outbox-sent':
                 fn.append(Record.stage == 'sent')
+        
         elif panel.startswith('incoming-proposals'):
             fn.append(Record.flow=='internal_cr')
             fn.append(RecordActor.target > 0)
             if panel == 'incoming-proposals-to-sign':
+                fn.append(Record.stage=='shared')
                 fn.append(RecordActor.handled == 'pending')
                 fn.append(RecordActor.target == current_target_subquery)
             elif panel == 'incoming-proposals-signed':
                 fn.append(RecordActor.handled != 'pending')
+        
         elif panel.startswith('outcoming-proposals'):
             fn.append(Record.flow=='internal_cr')
             fn.append(Record.sender_id == actor.id)

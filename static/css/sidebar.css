@@ -81,11 +81,11 @@ nav.sidebar-section .item a.is-active {
     .is-main-sidebar {
         position: fixed;
         top: 0;
-        left: 0;
+        right: 0;
         width: 100%;
         /* 100dvh is the 'Dynamic Viewport Height' (perfect for mobile browsers) */
         height: 100dvh; 
-        transform: translateX(-100%);
+        transform: translateX(100%);
         background-color: var(--bg-sidebar);
         
         /* Enable scrolling for long menus */
@@ -99,13 +99,13 @@ nav.sidebar-section .item a.is-active {
     }
 
     .sidebar-top {
-        max-width: 100%; /* Allow it to use full width on mobile */
+        max-width: 12em;
+        min-width: 10em;
     }
 
     /* Inner wrapper must be allowed to expand */
     .sidebar {
         height: auto !important;
-        min-height: 100%;
         display: flex;
         flex-direction: column;
     }
@@ -125,7 +125,6 @@ nav.sidebar-section .item a.is-active {
     .sidebar {
         /* Ensure the logout button stays at the bottom if content is short, 
            but pushes down if content is long */
-        min-height: 100%;
         display: flex;
         flex-direction: column;
     }

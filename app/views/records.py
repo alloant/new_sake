@@ -108,7 +108,17 @@ async def action_view(db: Session, record_id: int, status_id: int, action: str, 
         record.stage = "sketch"
     elif action == "sign_record":
         status.handled = "approved"
-        sock_targets = [f'actor_{alias}' for alias in record.current_targets_alias]
+        done = True
+        for target in record.targets:
+            if target.actor_id != status.actor_id and target.handled != 'approved':
+                done = False
+                break
+        if done:
+            record.stage = 'closed'
+            db.add(record)
+            sock_targets = [f'actor_{record.sender.alias}']
+        else:
+            sock_targets = [f'actor_{alias}' for alias in record.current_targets_alias]
         await broadcast_channels(channels = sock_targets, actor_alias = current_actor.alias, msg = f'New proposal to sign {record.protocol}')
     elif action == "quick_sign": # Despacho action
         status.params['dispatcher_signature'] = True
@@ -120,7 +130,7 @@ async def action_view(db: Session, record_id: int, status_id: int, action: str, 
         await broadcast_channels(channels = sock_targets, actor_alias = current_actor.alias, msg = f'Note {record.protocol} was dispatched by other dr')
 
 
-    if action in ['mark_read','mark_unread','sign_record', 'quick_sign', 'quick_unsign']:
+    if action in ['mark_read','mark_unread','sign_record', 'quick_sign', 'quick_unsign', 'start_circulation', 'stop_circulation']:
         db.add(status); db.commit(); db.refresh(status)
     elif action in ['archive','restore','start_circulation','stop_circulation']:
         db.add(record); db.commit(); db.refresh(record)
