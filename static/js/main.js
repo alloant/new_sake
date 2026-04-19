@@ -25,6 +25,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// To toggle checkboxes in forms
+function toggleAllTargets(shouldCheck) {
+    // Select all checkboxes that are inside the searchable container
+    const container = document.getElementById('sortable-targets');
+    const checkboxes = container.querySelectorAll('.target-checkbox');
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = shouldCheck;
+        
+        // Optional: Trigger a change event so your existing 
+        // department auto-select logic runs if needed
+        checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+}
+// End toggle checkboxes /////
 
 
 document.addEventListener('click', function (event) {

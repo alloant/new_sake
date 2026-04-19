@@ -5,13 +5,15 @@
             <i class="iconify" data-icon="mdi:drag-vertical" style="font-size: 1.4rem;"></i>
         </span>
         
-        <label class="target-label is-flex-grow-1">
+        <label class="target-label is-flex-grow-1 has-tooltip-multiline {{'has-tooltip-bottom' if loop.index < 4 else ''}}" data-tooltip="{{ target.full_name }}">
             <input type="checkbox" name="user_ids" value="{{ target.id }}" 
                    class="target-checkbox"
                    data-dept="{{ target.params['departments'][0] if target.params['departments'] else '' }}"
                    {{ 'checked' if target.id in checked_targets or target.alias in checked_targets }}>
             
-                  <span class="is-flex-grow-1">{{ target.alias }}{{' (of)' if 'of' in target.scopes else ''}}</span>
+                    <span class="is-flex-grow-1">
+                        {{ target.alias }}{{' (of)' if 'of' in target.scopes else ''}}
+                    </span>
 
             <span class="is-size-7 ml-4">
               {{ target.target_description }}

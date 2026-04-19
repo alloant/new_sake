@@ -140,6 +140,15 @@ footer:empty {
     display: none;
 }
 
+/* 1. Ensure the list container doesn't force a clip on children */
+#sortable-targets {
+    overflow-y: auto;
+    /* This creates a new stacking context that allows children to escape */
+    position: relative; 
+    /* This allows the tooltip to render outside the container bounds */
+    contain: content; 
+}
+
 @media (hover: none) {
     .parent-box:hover .has-tooltip-multiline[data-tooltip]::before,
     .parent-box:focus .has-tooltip-multiline[data-tooltip]::before,
@@ -147,6 +156,10 @@ footer:empty {
     .parent-box:focus .has-tooltip-multiline[data-tooltip]::after {
         opacity: 1 !important;
         visibility: visible !important;
+z-index: 10000 !important;
+    /* This ensures it isn't clipped by the 'overflow-y: auto' of the parent */
+    position: fixed !important; 
+
     }
 }
 

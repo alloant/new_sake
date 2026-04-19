@@ -1,19 +1,32 @@
 <div class="panel-block p-0 mr-2">
-    <p class="control has-icons-left">
-        <input class="input" type="text" name="query" placeholder="Search targets..."
-            {% if record is defined %}
-                hx-get="/users/search?record_id={{record.id}}"
-            {% else %}
-                hx-get="/users/search"
-            {% endif %}
+    <div class="field has-addons" style="width: 100%;">
+        <p class="control">
+            <button type="button" class="button is-small" onclick="toggleAllTargets(true)" title="Check All">
+                <span class="icon is-small"><i class="iconify" data-icon="mdi:check-all"></i></span>
+            </button>
+        </p>
+        <p class="control">
+            <button type="button" class="button is-small" onclick="toggleAllTargets(false)" title="Uncheck All">
+                <span class="icon is-small"><i class="iconify" data-icon="mdi:checkbox-blank-outline"></i></span>
+            </button>
+        </p>
+        <p class="control is-expanded has-icons-left">
+            <input class="input is-small" type="text" name="query" placeholder="Search targets..."
+                {% if record is defined %}
+                    hx-get="/users/search?record_id={{record.id}}"
+                {% else %}
+                    hx-get="/users/search"
+                {% endif %}
                 hx-target="#sortable-targets" 
                 hx-include="#sortable-targets"
                 hx-trigger="keyup changed delay:300ms">
-        <span class="icon is-small is-left">
-            <i class="iconify" data-icon="mdi-magnify"></i>
-        </span>
-    </p>
+            <span class="icon is-small is-left">
+                <i class="iconify" data-icon="mdi-magnify"></i>
+            </span>
+        </p>
+    </div>
 </div>
+
 
 <div class="checkbox-list mr-2 py-2 px-1 mt-4" id="sortable-targets">
     {% include "forms/select_targets_items.html" %}
