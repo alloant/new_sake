@@ -239,18 +239,20 @@ async def modify_record(request: Request, record_id: int, loop_index: int, secti
     if data['submit_form'] == 'save_tags':
         actor_tags = form.getlist("actor_tags")
         status.params['actor_tags'] = actor_tags
+        if data['due_date']:
+            status.due_date = data['due_date']
         db.add(status); db.commit(); db.refresh(status)
 
         return templates.TemplateResponse('record/table_row.html', {'request': request, 'record': record, 'status': status, 'current_actor': current_actor, 'loop': loop})
 
-    list_new_actors = form.getlist("user_ids")
-    new_actors = set(list_new_actors)
     
     if data['submit_form'] == 'save_sign':
         status.params['dispatcher_signature'] = True
         db.add(status)
 
-    
+    list_new_actors = form.getlist("user_ids")
+    new_actors = set(list_new_actors)
+   
     map_actors = {str(ra.actor_id): ra for ra in record.actors}
     current_actors = set(map_actors.keys())
    

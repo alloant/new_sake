@@ -23,6 +23,10 @@
   {% endfor %}
   {% endif %}
 
+  {% if status and status.due_date %}
+    <span class="tag mx-0 is-hidden-mobile is-link" style="font-size: 0.65rem; color: var(--text-main);">{{ status.due_date }}</span>
+  {% endif %}
+
   <div class="action-buttons is-hidden-mobile is-rounded">
     {% include 'record/table_row_actions.html' %}
   </div>
