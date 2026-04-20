@@ -78,7 +78,7 @@ def FULLMENU(section):
             title="My inbox",
             items=[
                 MenuItem(id="inbox", title=_("Inbox"), link="/?section=board&panel=inbox", icon="mdi-inbox-arrow-down", perms=["user"], show_count=True, hx_trigger=", record_state_changed from:body, socket-updated from:body"),
-                MenuItem(id="inbox-snooze", title=_("On hold"), link="/?section=board&panel=inbox-snooze", icon="mdi-car-brake-hold", perms=["user"], show_count=True),
+                MenuItem(id="inbox-snooze", title=_("On hold"), link="/?section=board&panel=inbox-snooze", icon="mdi-car-brake-hold", perms=["user"], hx_trigger=", record_state_changed from:body, socket-updated from:body", show_count=True),
                 MenuItem(id="inbox-archived", title=_("Archived"), link="/?section=board&panel=inbox-archived", icon="mdi-archive", perms=["user"]),
             ],
         ),

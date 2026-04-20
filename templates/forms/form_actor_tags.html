@@ -2,7 +2,6 @@
     <div class="level mb-5">
         <div class="level-left">
             <div>
-                <h2 class="title is-4 mb-0">My tags</h2>
             </div>
         </div>
         <div class="level-right">
@@ -14,25 +13,45 @@
             </div>
         </div>
     </div>
+    
+    {% if record.flow == 'inbound' and section != 'cl' or record.flow == 'outbound' and section == 'cl' %}
+    <div class="field mb-5">
+        <label class="label">Status</label>
+        <div class="control">
+            <div class="select is-fullwidth">
+                <select name="status">
+                    <option value="pending" {{ 'selected' if status.handled == 'pending' }}>Pending</option>
+                    <option value="done" {{ 'selected' if status.handled == 'done' }}>Done</option>
+                    <option value="onhold" {{ 'selected' if status.handled == 'onhold' }}>On Hold</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if record.flow == 'inbound' and section != 'cl' or record.flow == 'outbound' and section == 'cl' or record.flow in ['internal_cr','internal_cl'] %}
     <div class="field mb-5">
         <label class="label">Due Date</label>
         <div class="control">
             <input class="input" type="date" name="due_date" value="{{ status.due_date }}">
         </div>
     </div>
+    {% endif %}
 
-    
-    <div class="checkbox-list">
-    {% for tag in tags %}
-        <div class="panel-block compact-target">
-            <label class="target-label">
-            <input type="checkbox" name="actor_tags" value="{{ tag }}" 
-               class="target-checkbox"
-               {{ 'checked' if tag in checked_tags }}>
-              <span class="is-flex-grow-1">{{ tag }}</span>
-            </label>
+    <div class="field mb-5">
+        <label class="label">Tags</label>
+        <div class="checkbox-list">
+        {% for tag in tags %}
+            <div class="panel-block compact-target">
+                <label class="target-label">
+                <input type="checkbox" name="actor_tags" value="{{ tag }}" 
+                class="target-checkbox"
+                {{ 'checked' if tag in checked_tags }}>
+                <span class="is-flex-grow-1">{{ tag }}</span>
+                </label>
+            </div>
+        {% endfor %}
         </div>
-    {% endfor %}
     </div>
 
 </form>

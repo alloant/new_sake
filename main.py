@@ -20,7 +20,7 @@ from app.routers import router
 
 from app.models import Register, Record, Actor, RecordActor, File, RecordRecord
 
-from app.crud.transfer import transfer_notes, transfer_users, transfer_registers, transfer_note_user, transfer_tags, transfer_record_tag, transfer_find_depts, transfer_files, transfer_references
+from app.crud.transfer import transfer_notes, transfer_users, transfer_registers, transfer_note_user, transfer_tags, transfer_record_tag, transfer_find_depts, transfer_files, transfer_references, transfer_status
 
 
 from app.routers.main import templates
@@ -126,6 +126,7 @@ def transfer_all():
     transfer_find_depts()
     transfer_files()
     transfer_references()
+    transfer_status()
 
 
 # To run: uvicorn main:app --reload

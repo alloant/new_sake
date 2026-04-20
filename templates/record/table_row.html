@@ -27,12 +27,12 @@
   
   {% if status and 'actor_tags' in status.params %}
   {% for tag in status.params['actor_tags'] %}
-    <span class="tag mx-0 is-hidden-mobile is-danger" style="font-size: 0.65rem; color: var(--text-main);">{{ tag }}</span>
+    <span class="tag mx-0 is-hidden-mobile is-success" style="font-size: 0.65rem; color: var(--text-main);">{{ tag }}</span>
   {% endfor %}
   {% endif %}
   
   {% if status and status.due_date %}
-    <span class="tag mx-0 is-hidden-mobile is-link" style="font-size: 0.65rem; color: var(--text-main);">{{ status.due_date }}</span>
+<span class="tag mx-0 is-hidden-mobile {{'is-link' if status.due_date >= today() else 'is-danger'}}" style="font-size: 0.65rem; color: var(--text-main);">{{ status.due_date }}</span>
   {% endif %}
 
   <div class="action-buttons is-hidden-mobile is-rounded">

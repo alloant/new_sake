@@ -1,5 +1,5 @@
 # app/routers/main.py
-from datetime import timedelta
+from datetime import timedelta, date
 
 from fastapi import APIRouter, Request, Depends, status
 from fastapi.templating import Jinja2Templates
@@ -43,6 +43,7 @@ router = APIRouter()
 #templates = Jinja2Templates(directory="templates")
 templates = AppTemplates(directory="templates")
 templates.env.globals.update(_=_)
+templates.env.globals["today"] = date.today
 
 @router.get("/", name="homepage")
 async def home(request: Request, section: str | None = "board", panel: str | None = None, search: str = "", db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):

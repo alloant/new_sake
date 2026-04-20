@@ -199,9 +199,9 @@ class RecordMethod(object):
         elif not status:
             if self.created_at > actor.created_at:
                 read = False
-        elif status.handled != 'read' and self.created_at > actor.created_at:
+        elif status.handled in ['unread','mustread'] and self.created_at > actor.created_at:
             read = False
-        elif status.handled == 'read' and self.created_at <= actor.created_at:
+        elif not status.handled in ['unread','mustread'] and self.created_at <= actor.created_at:
             read = False
         
         return '' if read else 'has-text-weight-bold'
@@ -228,9 +228,9 @@ class RecordMethod(object):
 
         if self.flow == 'inbound' and self.stage == 'registered':
             actions.append(ActionGroup(title="Read",items=[]))
-            if not state or (state.handled != 'read' and self.created_at > current_actor.created_at) or (state.handled == 'read' and self.created_at <= current_actor.created_at):
+            if not state or (state.handled in ['unread','mustread'] and self.created_at > current_actor.created_at) or (not state.handled in ['unread','mustread'] and self.created_at <= current_actor.created_at):
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['mark_read']))
-            elif not quick_access:
+            elif not quick_access and state.handled == 'pending':
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['mark_unread']))
         
         if self.flow == 'internal_cr':
@@ -355,7 +355,7 @@ class RecordMethod(object):
 
         return self.avatar_circle(align, title, avatar, loop_index)
     
-    def avatar_ctr_html(self, panel: str):
+    def avatar_ctr_html(self, panel: str, loop_index: int):
         ctr_alias, flow = panel[:-4].split('-')
 
         match self.flow:
@@ -386,7 +386,7 @@ class RecordMethod(object):
             case _:
                 return ''
 
-        return self.avatar_circle(align, title, avatar)
+        return self.avatar_circle(align, title, avatar, loop_index)
 
     @hybrid_method
     def has_actor_target(self, actor_id: int) -> bool:

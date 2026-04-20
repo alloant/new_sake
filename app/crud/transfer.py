@@ -5,6 +5,7 @@ from app.core.database import engine, get_old_data
 from app.models import Actor, Record, RecordActor, Register, File, RecordRecord
 from app.models.record.record import Tag, RecordTag
 
+from app.crud import get_record_actor
 from app.crud.actor import get_actor_by_alias, get_actors
 from app.crud.register import get_register_by_alias
 from app.crud.record import create_record, get_all_records, get_record_by_params
@@ -371,4 +372,20 @@ def transfer_references():
             db.add(recordref)
 
         db.commit()
+
+def transfer_status():
+    db = Session(engine)
+    records = get_all_records(db)
+
+    for record in records:
+        if record.flow != 'inbound':
+            continue
+        print(record.id,record.title)
+        handled = 'pending' if record.state == 'active' else 'done'
+        for target in record.targets:
+            status = get_record_actor(db, record.id, target.actor_id)
+            status.handled = handled
+            db.add(status); db.commit(); db.refresh(status)
+
+
 

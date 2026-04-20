@@ -9,7 +9,7 @@
 </div>
 
 <div class="column is-narrow has-order-4-mobile">
-  {{ record.avatar_ctr_html(panel) | safe}}
+  {{ record.avatar_ctr_html(panel, loop.index) | safe}}
 </div>
 
 <div class="column position-relative is-flex is-align-items-center has-order-7-mobile">
@@ -24,7 +24,7 @@
   {% endif %}
 
   {% if status and status.due_date %}
-    <span class="tag mx-0 is-hidden-mobile is-link" style="font-size: 0.65rem; color: var(--text-main);">{{ status.due_date }}</span>
+    <span class="tag mx-0 is-hidden-mobile {{'is-link' if status.due_date >= today() else 'is-danger'}}" style="font-size: 0.65rem; color: var(--text-main);">{{ status.due_date }}</span>
   {% endif %}
 
   <div class="action-buttons is-hidden-mobile is-rounded">

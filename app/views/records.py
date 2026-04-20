@@ -56,18 +56,26 @@ async def action_view(db: Session, record_id: int, status_id: int, action: str, 
   
     if action == "mark_read":
         if record.created_at > current_actor.created_at:
-            status.handled = "read"
+            if status.target > 0:
+                status.handled = "pending"
+            else:
+                status.handled = "read"
         else:
             status.handled = "unread"
     elif action == "mark_unread":
         if record.created_at > current_actor.created_at:
             status.handled = "unread"
         else:
-            status.handled = "read"
+            if status.target > 0:
+                status.handled = "read"
+            else:
+                status.handled = "pending"
     elif action == "archive":
-        record.state = "archived"
+        status.handled = "done"
+        #record.state = "archived"
     elif action == "restore":
-        record.state = "active"
+        status.handled = "pending"
+        #record.state = "active"
     elif action in ["edit_record","sign_note"]:
         registers = get_actor_registers(db,current_actor.scopes)
         departments = get_all_alias_deps(db)

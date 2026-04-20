@@ -61,19 +61,19 @@ class RecordRecord(SQLModel, table=True):
 
 class Record(SQLModel, RecordMethod, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    state: State = Field(max_length=20)
-    stage: Stage = Field(max_length=20)
+    state: State = Field(max_length=20, index=True)
+    stage: Stage = Field(max_length=20, index=True)
     audience: Audience = Field(default=Audience.ALL, max_length=10)
     title: str | None = Field(max_length=500, default="")
-    flow: Flow = Field(max_length=20)
+    flow: Flow = Field(max_length=20, index=True)
     sequence: int = Field(description="Sequential number (nn)")
     year: int = Field(description="Year (yy)")
-    register_id: int | None = Field(default=None, foreign_key="register.id", description="Register")
+    register_id: int | None = Field(default=None, foreign_key="register.id", description="Register", index=True)
     area: Area = Field(max_length=4, default="aes")
     params: dict[str,str] = Field(sa_column=Column(JSON, nullable=False), default_factory=dict)
 
-    sender_id: int | None = Field(default=None, foreign_key="actor.id", description="Actor sending/producing the note")
-    unit_id: int | None = Field(default=None, foreign_key="actor.id", description="Department in charge of the record")
+    sender_id: int | None = Field(default=None, foreign_key="actor.id", description="Actor sending/producing the note", index=True)
+    unit_id: int | None = Field(default=None, foreign_key="actor.id", description="Department in charge of the record", index=True)
 
     sender: "Actor" = Relationship(
         sa_relationship_kwargs={

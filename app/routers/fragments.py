@@ -239,12 +239,18 @@ async def modify_record(request: Request, record_id: int, loop_index: int, secti
     if data['submit_form'] == 'save_tags':
         actor_tags = form.getlist("actor_tags")
         status.params['actor_tags'] = actor_tags
-        if data['due_date']:
+        if data['due_date'] and (record.flow == 'inbound' and section != 'cl' or record.flow == 'outbound' and section == 'cl' or record.flow in ['internal_cr','internal_cl']):
             status.due_date = data['due_date']
+        if record.flow == 'inbound' and section != 'cl' or record.flow == 'outbound' and section == 'cl':
+            status.handled = data['status']
         db.add(status); db.commit(); db.refresh(status)
 
-        return templates.TemplateResponse('record/table_row.html', {'request': request, 'record': record, 'status': status, 'current_actor': current_actor, 'loop': loop})
+        response = templates.TemplateResponse('record/table_row.html', {'request': request, 'record': record, 'status': status, 'current_actor': current_actor, 'loop': loop})
 
+        if record.flow == 'inbound' and section != 'cl' or record.flow == 'outbound' and section == 'cl':
+            response.headers['HX-Trigger'] = 'record_state_changed'
+        
+        return response
     
     if data['submit_form'] == 'save_sign':
         status.params['dispatcher_signature'] = True

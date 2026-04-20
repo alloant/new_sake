@@ -32,6 +32,7 @@ def get_record_actor(db: Session, record_id: int, actor_id: int) -> RecordActor:
     status = db.exec(smnt).first()
 
     if not status:
+        print('NEW ONE:')
         status = RecordActor(actor_id=actor_id, record_id=record_id)
         db.add(status)
         db.commit()
@@ -115,7 +116,7 @@ def get_filter(db: Session, actor: Actor, section: str, panel: str):
                 fn.append(Record.flow=='inbound')
                 fn.append(or_(
                     and_(RecordActor == None, Record.created_at > actor.created_at),
-                    and_(RecordActor.handled != 'read', Record.created_at > actor.created_at),
+                    and_(RecordActor.handled.in_(['unread','mustread']), Record.created_at > actor.created_at),
                     and_(RecordActor.handled == 'read', Record.created_at <= actor.created_at)
                     )
                 )
@@ -129,12 +130,15 @@ def get_filter(db: Session, actor: Actor, section: str, panel: str):
             fn.append(Record.flow=='inbound')
             fn.append(RecordActor.target > 0)
             if panel == 'inbox':
-                fn.append(Record.state == 'active')
+                #fn.append(Record.state == 'active') For global state record for all actors
+                fn.append(RecordActor.handled == 'pending')
             if panel == 'inbox-snooze':
-                fn.append(Record.state == 'snooze')
+                #fn.append(Record.state == 'snooze')
+                fn.append(RecordActor.handled == 'onhold')
             elif panel == 'inbox-archived':
                 pass
-                fn.append(Record.state == 'archived')
+                #fn.append(Record.state == 'archived')
+                fn.append(RecordActor.handled == 'done')
         
         elif panel.startswith('outbox'):
             fn.append(Record.flow=='outbound')
