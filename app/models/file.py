@@ -68,10 +68,11 @@ class File(SQLModel, table=True):
     @property
     def html_icon(self):
         rst = f"""
-            <span class="icon">
-                <span class="iconify has-text-{self.icon[0]}" data-width="1.7em" data-icon="mdi-{self.icon[1]}"></span>
+            <span class="icon is-small">
+                <span class="iconify has-text-{self.icon[0]}" data-width="1.2em" data-icon="mdi-{self.icon[1]}"></span>
             </span>
               """
+
         return rst
 
     @property

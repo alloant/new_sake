@@ -37,7 +37,7 @@ _discovery = None
 _jwks = None
 
 def get_session(request: Request):
-    session_val = request.cookies.get("session")
+    session_val = request.cookies.get("access_token")
     if not session_val:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
     user = load_session_cookie(session_val)   # reuse serializer.loads function from your app
@@ -70,7 +70,7 @@ async def get_discovery(provider: str = "synology"):
     # Check if we already have this specific provider's data
     if provider not in _discovery_cache:
         url = GOOGLE_DISCOVERY if provider == "google" else DISCOVERY
-        try: 
+        try: # DEBUG verify should be True
             async with httpx.AsyncClient(verify=True) as client:
                 # Fetch OpenID Configuration
                 r = await client.get(url, timeout=10)
@@ -96,7 +96,6 @@ async def get_discovery(provider: str = "synology"):
 async def login_by_sso(provider: str = "synology"):
     # Get the correct discovery data from our new dict cache
     disc, _ = await get_discovery(provider)
-    
     auth_ep = disc["authorization_endpoint"]
     
     # Select credentials based on provider
@@ -139,7 +138,7 @@ async def callback(request: Request, db: Session, code: str = None, state: str =
     token_ep = disc["token_endpoint"]
     userinfo_ep = disc.get("userinfo_endpoint")
     
-    async with httpx.AsyncClient(verify=False) as client:
+    async with httpx.AsyncClient(verify=True) as client:
         # exchange code for tokens
         data = {
             "grant_type": "authorization_code",
@@ -203,24 +202,48 @@ async def callback(request: Request, db: Session, code: str = None, state: str =
         "google_access_token": access_token if provider == "google" else None,
         "google_refresh_token": refresh_token if provider == "google" else None,
     }
-    
+
+    return create_cookie_response(user_payload=user_payload, provider=provider)
+
+def create_cookie_response(user_payload: dict, provider: str):
     cookie_duration = 60 * 60 * 24 * 7 # 7 Days
-    access_token = auth.create_access_token("sake",data=user_payload, scopes=actor.scopes, expires_delta=timedelta(seconds=cookie_duration))
-
-    response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=True,
-        secure=True, 
-        samesite="lax",
-        max_age=cookie_duration, # Correctly set to seconds
-    )   
-    
+    access_token = auth.create_access_token("sake",data=user_payload, expires_delta=timedelta(seconds=cookie_duration))
+        
+    html_content = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta http-equiv="refresh" content="0; url=/">
+    </head>
+    <body>
+        <script>window.location.href = "/";</script>
+    </body>
+    </html>
+    """
+    response = HTMLResponse(content=html_content, status_code=200)
+   
+    if provider == 'synology':
+        response.set_cookie(
+            key="access_token",
+            value=access_token,
+            httponly=True,
+            secure=True,   # Keep this True since you are using HTTPS!
+            samesite="lax",
+            max_age=cookie_duration,
+            domain=DSM # Explicitly tell the browser to trust the whole domain
+        )   
+    else:
+        response.set_cookie(
+            key="access_token",
+            value=access_token,
+            httponly=True,
+            secure=True,   # Keep this True since you are using HTTPS!
+            samesite="lax",
+            max_age=cookie_duration
+        )
     return response
-
 
 async def logout():
     resp = RedirectResponse(url="/")
-    resp.delete_cookie("session")
+    resp.delete_cookie("access_token")
     return resp

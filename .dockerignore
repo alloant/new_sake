@@ -1,0 +1,22 @@
+# Secrets and Config
+.env
+*.key
+*.crt
+
+# Git and Metadata
+.git
+.gitignore
+README.md
+
+# Python Junk
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+poetry.lock
+pyproject.toml
+
+# Local Scripts
+deploy.sh
+docker_db.sh
+run*

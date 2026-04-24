@@ -24,12 +24,12 @@ class Settings(BaseSettings):
     EMAIL_CARDUMEN_USER: str = os.environ.get('EMAIL_CARDUMEN_USER')
     EMAIL_CARDUMEN_SERVER: str = os.environ.get('EMAIL_CARDUMEN_SERVER')
     EMAIL_CARDUMEN_SECRET: str = os.environ.get('EMAIL_CARDUMEN_SECRET')
-    SOCK_SERVER: str = os.environ.get('SOCK_SERVER')
     SYNOLOGY_FOLDER_NOTES: str = os.environ.get('SYNOLOGY_FOLDER_NOTES')
     SYNOLOGY_SERVER: str = os.environ.get('SYNOLOGY_SERVER')
     SYNOLOGY_PORT: str = os.environ.get('SYNOLOGY_PORT')
     EMAIL_ADDRESS: str = os.environ.get('EMAIL_ADDRESS')
     EMAIL_SECRET: str = os.environ.get('EMAIL_SECRET')
     SECRET_KEY: str = os.environ.get('SECRET_KEY')
+    REDIS_URL: str = os.environ.get('REDIS_URL')
 
 settings = Settings()

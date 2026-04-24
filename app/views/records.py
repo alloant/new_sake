@@ -71,11 +71,23 @@ async def action_view(db: Session, record_id: int, status_id: int, action: str, 
             else:
                 status.handled = "pending"
     elif action == "archive":
-        status.handled = "done"
-        #record.state = "archived"
+        if record.flow == 'inbound':
+            status.handled = "done"
+            all_done = True
+            for target in record.targets:
+                if target.handled != 'done':
+                    all_done = False
+                    break
+            if all_done:
+                record.state = "done"
+        elif record.flow == 'internal_cr':
+            record.state = "done"
     elif action == "restore":
-        status.handled = "pending"
-        #record.state = "active"
+        if record.flow == 'inbound':
+            record.state = "pending"
+            status.handled = "pending"
+        elif record.flow == 'internal_cr':
+            record.state = "pending"
     elif action in ["edit_record","sign_note"]:
         registers = get_actor_registers(db,current_actor.scopes)
         departments = get_all_alias_deps(db)
@@ -106,7 +118,7 @@ async def action_view(db: Session, record_id: int, status_id: int, action: str, 
         else:
             tags = current_actor.settings['actor_tags'].split(',') if 'actor_tags' in current_actor.settings else []
             checked_tags = status.params['actor_tags'] if status and 'actor_tags' in status.params else []
-
+        
         return "forms/form_actor_tags.html", {'record': record, 'status': status, 'actor': current_actor, 'tags': tags, 'checked_tags': checked_tags}
     elif action == "start_circulation":
         record.stage = "shared"

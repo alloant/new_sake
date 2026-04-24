@@ -10,7 +10,7 @@ from app.crud.actor import get_actor_by_id, get_actor_by_alias
 
 from app.models.record import Record, RecordRecord, Tag
 from app.models.record_actor import RecordActor
-
+from app.models.actor import Actor
 
 current_target_subquery = (
         select(func.min(RecordActor.target))
@@ -163,17 +163,17 @@ def get_filter(db: Session, actor: Actor, section: str, panel: str):
             fn.append(Record.sender_id == actor.id)
             if panel == 'outcoming-proposals-drafts':
                 fn.append(Record.stage == 'sketch')
-                fn.append(Record.state == 'active')
+                fn.append(Record.state == 'pending')
             elif panel == 'outcoming-proposals-circulating':
                 fn.append(Record.stage == 'shared')
-                fn.append(Record.state == 'active')
+                fn.append(Record.state == 'pending')
             elif panel == 'outcoming-proposals-done':
                 fn.append(Record.stage == 'closed')
-                fn.append(Record.state == 'active')
+                fn.append(Record.state == 'pending')
             elif panel == 'outcoming-proposals-snooze':
-                fn.append(Record.state == 'snooze')
+                fn.append(Record.state == 'onhold')
             elif panel == 'outcoming-proposals-archived':
-                fn.append(Record.state == 'archived')
+                fn.append(Record.state == 'done')
 
 
     return fn
@@ -254,10 +254,11 @@ def get_advance_search_filter(db: Session, data: dict):
         fn.append(Record.register_id==data['register'])
     
     if 'sender' in data and data['sender']:
-        fn.append(Record.sender.alias==data['sender'])
+        fn.append(Record.sender.has(Actor.alias==data['sender']))
     
-    if 'target-' in data and data['target']:
-        fn.append(Record.actors==data['flow'])
+    if 'target' in data and data['target']:
+        print(data['target'])
+        fn.append(Record.actors.any(RecordActor.actor.has(Actor.alias==data['target'])))
     
     if 'department' in data and data['department']:
         fn.append(Record.unit_id==data['department'])
@@ -278,6 +279,7 @@ def get_advance_search_filter(db: Session, data: dict):
 
 def get_records(db: Session, actor: Actor, section: str, panel: str, search: str = None, data: dict = None, limit: int = None, offset: int = None, just_number: bool = False) -> list[Record] | int:
     if section == 'cl':
+        print('panel:',panel)
         ctr_alias, flow = panel[:-4].split('-')
         ctr = get_actor_by_alias(db,ctr_alias)
     

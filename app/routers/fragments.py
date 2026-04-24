@@ -19,6 +19,7 @@ from authx import TokenPayload
 from app.core.auth import auth, get_current_actor_alias_from_cookie, get_payload_from_cookie
 from app.core.imap import get_unseen_mails, get_all_mails, add_mails_db, get_last_mails, add_last_mails_db
 from app.core.database import get_db
+from app.core.sso import create_cookie_response
 
 from app.models.mail import Attachment
 
@@ -55,7 +56,6 @@ async def settings_post(request: Request, actor_id:int, section: str, panel: str
     data = dict(form)
 
     ctrs = form.getlist('user_ids')
-    print(data) 
     scopes = []
     settings = {}
     for setting in data:
@@ -116,21 +116,9 @@ async def settings_post(request: Request, actor_id:int, section: str, panel: str
         "google_refresh_token": payload.refresh_token if provider == "google" else None,
     }
     
-    cookie_duration = 60 * 60 * 24 * 7 # 7 Days
-    access_token = auth.create_access_token("sake",data=user_payload, scopes=current_actor.scopes,expires_delta=timedelta(seconds=cookie_duration))
+    return create_cookie_response(user_payload=user_payload, provider=provider)
 
-    response = RedirectResponse(url=f"/?section={section}&panel={panel}", status_code=status.HTTP_303_SEE_OTHER)
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=True,
-        secure=True,
-        samesite="lax",
-        max_age=cookie_duration
-    )
-
-    return response
-
+    
 @router.get("/settings_ctr", name="settings")
 async def settings(request: Request, section: str, panel: str, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
     #current_actor = get_actor_by_id(db, payload.uid)
@@ -220,7 +208,7 @@ async def action(request: Request, record_id: int, recordactor_id: str, action: 
         response.headers['HX-Trigger'] = 'record_state_changed'
     elif action in ['sign_record']:
         response.headers['HX-Trigger'] = 'proposal_sign_changed'
-    elif action in ['start_circulation','stop_circulation']:
+    elif action in ['start_circulation','stop_circulation', '']:
         response.headers['HX-Trigger'] = 'proposal_state_changed'
 
     return response
@@ -243,12 +231,21 @@ async def modify_record(request: Request, record_id: int, loop_index: int, secti
             status.due_date = data['due_date']
         if record.flow == 'inbound' and section != 'cl' or record.flow == 'outbound' and section == 'cl':
             status.handled = data['status']
-        db.add(status); db.commit(); db.refresh(status)
+        elif record.flow == 'internal_cr':
+            record.state = data['status']
+        
+        db.add(record)
+        db.add(status)
+        db.commit()
+        db.refresh(status)
+        db.refresh(record)
 
         response = templates.TemplateResponse('record/table_row.html', {'request': request, 'record': record, 'status': status, 'current_actor': current_actor, 'loop': loop})
 
         if record.flow == 'inbound' and section != 'cl' or record.flow == 'outbound' and section == 'cl':
             response.headers['HX-Trigger'] = 'record_state_changed'
+        elif record.flow == 'internal_cr':
+            response.headers['HX-Trigger'] = 'proposal_state_changed'
         
         return response
     

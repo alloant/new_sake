@@ -14,22 +14,26 @@
         </div>
     </div>
     
-    {% if record.flow == 'inbound' and section != 'cl' or record.flow == 'outbound' and section == 'cl' %}
+    {% if record.flow == 'inbound' and section != 'cl' or record.flow == 'outbound' and section == 'cl' or record.flow in ['internal_cr','internal_cl'] and record.sender_id == actor.id %}
     <div class="field mb-5">
         <label class="label">Status</label>
         <div class="control">
             <div class="select is-fullwidth">
                 <select name="status">
-                    <option value="pending" {{ 'selected' if status.handled == 'pending' }}>Pending</option>
-                    <option value="done" {{ 'selected' if status.handled == 'done' }}>Done</option>
-                    <option value="onhold" {{ 'selected' if status.handled == 'onhold' }}>On Hold</option>
+                    {% if record.flow == 'internal_cr' %}
+                        <option value="pending" {{ 'selected' if record.state == 'pending' }}>Pending</option>
+                        <option value="done" {{ 'selected' if record.state == 'done' }}>Done</option>
+                        <option value="onhold" {{ 'selected' if record.state == 'onhold' }}>On Hold</option>
+                    {% else %}
+                        <option value="pending" {{ 'selected' if status.handled == 'pending' }}>Pending</option>
+                        <option value="done" {{ 'selected' if status.handled == 'done' }}>Done</option>
+                        <option value="onhold" {{ 'selected' if status.handled == 'onhold' }}>On Hold</option>
+                    {% endif %}
                 </select>
             </div>
         </div>
     </div>
-    {% endif %}
 
-    {% if record.flow == 'inbound' and section != 'cl' or record.flow == 'outbound' and section == 'cl' or record.flow in ['internal_cr','internal_cl'] %}
     <div class="field mb-5">
         <label class="label">Due Date</label>
         <div class="control">

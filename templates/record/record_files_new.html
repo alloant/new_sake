@@ -1,0 +1,51 @@
+
+<div class="field has-addons" style="flex-wrap: nowrap;">
+  {% if record.files %}
+    {% if record.files | length == 1 %}
+      <span class="control">
+        <a href="{{ record.files[0].link }}" 
+          target="_blank" 
+          data-tooltip="{{record.files[0].name}}"
+          class="button is-rounded py-0 px-2 has-tooltip-multiline">
+            {{ record.files[0].html_icon | safe }}
+        </a>
+      </span>
+    {% else %}
+      <span class="control">
+        <a href="{{ record.files[0].link }}" 
+          target="_blank" 
+          data-tooltip="{{record.files[0].name}}"
+          class="button is-rounded py-0 px-2 has-tooltip-multiline">
+            <span class="icon is-small">
+                <span class="iconify has-text-grey" data-width="1.2em" data-icon="mdi:file-document-multiple"></span>
+            </span>
+        </a>
+      </span>
+    {% endif %}
+  {% else %}
+    <span class="iconify has-text-grey" data-icon="mdi-document"></span>
+  {% endif %}
+
+  <span class="control">
+    <div class="dropdown {{ 'is-up' if loop.index >= 10 }} is-centered">
+      
+      <div class="dropdown-trigger" aria-haspopup="true" aria-controls="dropdown-{{ record.id }}">
+        <button class="button is-rounded py-0 px-2" aria-haspopup="true" aria-controls="dropdown-menu">
+          <span class="icon is-small">
+            <i class="iconify" data-icon="mdi:chevron{{'-double' if record.references else ''}}-down"></i>
+          </span>
+        </button>
+      </div>
+
+      <div class="dropdown-menu" id="dropdown-{{ record.id }}" role="menu" style="width: auto; min-width: 15em;">
+        <div class="dropdown-content">
+          {% include 'record/record_files_files.html' %}
+          <hr class="dropdown-divider">
+          {% include 'record/record_files_actions.html' %}
+        </div>
+      </div>
+    
+    </div> <!-- End dropdown -->
+  </span>
+</div>
+

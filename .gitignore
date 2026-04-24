@@ -4,9 +4,11 @@ run_https
 run_babel
 run_imap
 run_query
-docker.sh
+docker_db.sh
+deploy.sh
 *.key
 *.crt
+.env
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

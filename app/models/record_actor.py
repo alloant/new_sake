@@ -19,8 +19,8 @@ class HandledStatus(str, Enum):
     DONE = "done"
     ONHOLD = "onhold"
     # Proposals
-    UNSIGNED = "unsigned"
-    RETURN = "return"
+    #PENDING = "pending"
+    #ONHOLD = "onhold"
     DENY = "deny"
     APPROVED = "approved"
     

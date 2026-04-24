@@ -212,9 +212,9 @@ def get_panel_register_cl(db,actor_perms,panel):
 
     for ctr in ctrs:
         items = []
-        items.append(MenuItem(id=f"{ctr}-in",title=f"Inbox {ctr}",link=f"/?section=cl&panel={ctr}-in_ctr",icon="mdi-inbox-arrow-down"))
+        items.append(MenuItem(id=f"{ctr}-in_ctr",title=f"Inbox {ctr}",link=f"/?section=cl&panel={ctr}-in_ctr",icon="mdi-inbox-arrow-down"))
         items[-1].active = "is-active" if f"{ctr}-in_ctr" == panel else ""
-        items.append(MenuItem(id=f"{ctr}-out",title=f"Outbox {ctr}",link=f"/?section=cl&panel={ctr}-out_ctr",icon="mdi-email-fast"))
+        items.append(MenuItem(id=f"{ctr}-out_ctr",title=f"Outbox {ctr}",link=f"/?section=cl&panel={ctr}-out_ctr",icon="mdi-email-fast"))
         items[-1].active = "is-active" if f"{ctr}-out_ctr" == panel else ""
 
         menu.append(MenuGroup(title=f'Register {ctr}', items=items, has_settings = True))
@@ -226,12 +226,11 @@ def get_panel_register_cl(db,actor_perms,panel):
 
 def get_sidebar(db,payload,section,panel):
     current_actor = get_actor_by_id(db,payload.uid)
-    
     if current_actor.role == 'cl':
         sections = []
-        panel = get_panel(db,[payload.data['kind']] + payload.scopes,section,panel)
+        panel = get_panel(db,[payload.data['kind']] + current_actor.scopes,section,panel)
     else:
-        sections = get_sections([payload.data['kind']] + payload.scopes,section)
-        panel = get_panel(db,[payload.data['kind']] + payload.scopes,section,panel)
+        sections = get_sections([payload.data['kind']] + current_actor.scopes,section)
+        panel = get_panel(db,[payload.data['kind']] + current_actor.scopes,section,panel)
 
     return {'actor_alias': payload.alias, 'sections': sections, 'panel': panel}

@@ -281,7 +281,7 @@ def transfer_notes():
             case 'despacho':
                 stage = 'despacho'
 
-        state = 'active' if row['archived'] == 0 else 'archived'
+        state = 'pending' if row['archived'] == 0 else 'done'
 
         print(title)
         db_record = Record(title=title,stage=stage,state=state,register_id=register_id,sequence=sequence,year=year,flow=flow,sender_id=actor.id, created_at=row['n_date'], updated_at=row['n_date'], params={'old_id': row['id']})

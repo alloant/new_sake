@@ -28,9 +28,9 @@ class Stage(str, Enum):
     APPROVED = "approved"
 
 class State(str, Enum):
-    ACTIVE = "active"
-    ARCHIVED = "archived"
-    SNOOZE = "snooze"
+    PENDING = 'pending'
+    DONE = 'done'
+    ONHOLD = 'onhold'
 
 class Area(str, Enum):
     AES = "aes"
@@ -105,7 +105,7 @@ class Record(SQLModel, RecordMethod, table=True):
     )
 
     def stage_icon(self, status):
-        if self.state == 'archived':
+        if self.state == 'done':
             title = 'Archived'
             if self.register.type == 'note':
                 color, icon = 'text-inactive', 'archive-outline'

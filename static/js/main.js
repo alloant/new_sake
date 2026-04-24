@@ -1,4 +1,23 @@
 // static/js/main.js
+// Active the menu in the sidebar
+function updateSidebarActive(clickedElement) {
+    // 1. Get the actual <a> tag even if they clicked the icon inside it
+    const link = clickedElement.closest('a');
+    if (!link) return;
+
+    // 2. Find the parent menu to clear old states
+    const sidebar = link.closest('.menu');
+    
+    // 3. Clear ALL active states in this menu
+    sidebar.querySelectorAll('.is-active').forEach(item => {
+        item.classList.remove('is-active');
+    });
+
+    // 4. Add to the link
+    link.classList.add('is-active');
+}
+// End sidebar active
+
 //
 document.addEventListener('DOMContentLoaded', () => {
     const burger = document.getElementById('navbar-burger');
