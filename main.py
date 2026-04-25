@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, Depends, HTTPException
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from fastapi_babel import _
 from fastapi_babel import Babel, BabelConfigs
@@ -24,7 +25,7 @@ from app.crud.transfer import transfer_notes, transfer_users, transfer_registers
 
 
 from app.routers.main import templates
-from jose import JWTError, jwt
+from joserfc import jwt
 from app.core.config import settings
 
 from contextlib import asynccontextmanager
@@ -81,6 +82,8 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Sake", lifespan=lifespan)
 
+#app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
+
 app.add_middleware(
     BabelMiddleware,
     babel_configs=babel_configs,
@@ -92,7 +95,6 @@ app.add_middleware(
     SessionMiddleware,
     secret_key="my-secret-key",
     http_only=True,
-    secure=False,
     max_age=36000,
     session_cookie="sid",
     session_object="session",

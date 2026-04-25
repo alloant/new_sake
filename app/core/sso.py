@@ -9,7 +9,7 @@ from fastapi import FastAPI, Request, Response, Form, Depends, APIRouter, HTTPEx
 from fastapi.responses import RedirectResponse, HTMLResponse
 from itsdangerous import URLSafeSerializer, BadSignature
 import httpx
-from authlib.jose import JsonWebKey, jwt
+from joserfc import jwk, jwt
 
 from app.crud import get_actor_by_alias, get_actor_by_email
 from app.core.auth import auth
@@ -73,10 +73,12 @@ async def get_discovery(provider: str = "synology"):
         try: # DEBUG verify should be True
             async with httpx.AsyncClient(verify=True) as client:
                 # Fetch OpenID Configuration
+                print('url:',url)
                 r = await client.get(url, timeout=10)
                 r.raise_for_status()
                 disc = r.json()
                 _discovery_cache[provider] = disc
+                print('disc',disc)
                 
                 # Fetch JWKS (Keys)
                 jwks_uri = disc.get("jwks_uri")
@@ -93,9 +95,12 @@ async def get_discovery(provider: str = "synology"):
                 
     return _discovery_cache[provider], _jwks_cache.get(provider)
 
-async def login_by_sso(provider: str = "synology"):
+async def login_by_sso(state: str, provider: str = "synology"):
     # Get the correct discovery data from our new dict cache
     disc, _ = await get_discovery(provider)
+    if not disc:
+        return None
+
     auth_ep = disc["authorization_endpoint"]
     
     # Select credentials based on provider
@@ -107,13 +112,13 @@ async def login_by_sso(provider: str = "synology"):
         client_id = CLIENT_ID
         redirect_uri = REDIRECT_URI
         scope = "openid"
-
+    
     params = {
         "response_type": "code",
         "client_id": client_id,
         "redirect_uri": redirect_uri,
         "scope": scope,
-        "state": f"state_{provider}", # Good practice to make state unique
+        "state": state, # Good practice to make state unique
         "access_type": "offline",      # CRITICAL for background access
         "prompt": "consent",
     }
@@ -158,7 +163,7 @@ async def callback(request: Request, db: Session, code: str = None, state: str =
         claims = {}
         if id_token and _jwks:
             # verify id_token signature and basic claims (simplified)
-            jwk_set = JsonWebKey.import_key_set(_jwks)
+            jwk_set = jwk.import_key_set(_jwks)
             try:
                 claims = jwt.decode(id_token, jwk_set)
                 claims.validate_exp()

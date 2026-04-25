@@ -6,7 +6,7 @@ from authx import AuthX, AuthXConfig, RequestToken
 
 from types import SimpleNamespace
 
-from jose import JWTError, jwt
+from joserfc import jwt
 
 from app.core.config import settings
 from app.models.actor import Actor
@@ -36,7 +36,7 @@ async def get_current_actor_alias_from_cookie(request: Request):
         if alias is None:
             raise HTTPException(status_code=401, detail="Invalid token")
 
-    except JWTError:
+    except:
         raise HTTPException(status_code=401, detail="Invalid token")
     
     return alias
@@ -54,7 +54,7 @@ async def get_current_actor_lang_from_cookie(request: Request):
 
         if lang is None:
             lang = "en"
-    except JWTError:
+    except:
         #raise HTTPException(status_code=401, detail="Invalid token")
         lang = "en"
     
@@ -68,7 +68,7 @@ async def get_payload_from_cookie(request: Request):
     try:
         raw_payload = jwt.decode(token, config.JWT_SECRET_KEY, algorithms=["HS256"], options={"leeway": 30})
         payload = SimpleNamespace(**raw_payload)
-    except JWTError:
+    except:
         raise HTTPException(status_code=401, detail="Invalid token")
     
     return payload

@@ -1,6 +1,6 @@
 # --- STAGE 1: Builder (Remains the same) ---
 FROM python:3.14.4-slim AS builder
-#RUN apk add --no-cache build-base git
+RUN apk add --no-cache build-base git
 WORKDIR /setup
 COPY requirements.txt .
 RUN --mount=type=cache,target=/root/.cache/pip \

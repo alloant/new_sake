@@ -1,4 +1,5 @@
 # app/routers/main.py
+import secrets
 from typing import Annotated
 from fastapi.responses import RedirectResponse
 from fastapi import APIRouter, Request, Depends, Form, Response, status, HTTPException
@@ -22,15 +23,31 @@ def logout():
 
 @router.get('/login')
 async def login_form(request: Request):
-    auth_url =  await login_by_sso("synology")
-    auth_url_google =  await login_by_sso("google")
+    # 1. Generate unique states for this specific visit
+    state_syno = secrets.token_urlsafe(16)
+    state_goog = secrets.token_urlsafe(16)
+
+    # 2. Save them in the session immediately
+    # This ensures that when the user clicks the button, the 'valid' state is already in their cookie
+    #request.session["state_synology"] = state_syno
+    #request.session["state_google"] = state_goog
+    
+    # 3. Generate the URLs using these states
+    auth_url = await login_by_sso(state_syno,"synology")
+    auth_url_google = await login_by_sso(state_goog,"google")
+
     # 1. Check if this is an HTMX request
     if request.headers.get("HX-Request"):
         # 2. Tell HTMX to redirect the entire window to the SSO page
         return Response(
             headers={"HX-Redirect": "/login"} 
         )
-
+    
+    return templates.TemplateResponse(
+        request=request, 
+        name="auth/sso.html", 
+        context={"auth_url": auth_url, "auth_url_google": auth_url_google}
+    )
     return templates.TemplateResponse("auth/sso.html", {"request": request, "auth_url": auth_url, "auth_url_google": auth_url_google})
 
 @router.get("/auth/callback")

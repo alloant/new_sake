@@ -303,7 +303,13 @@ def transfer_note_user():
             add_it = True
             target = 0
             if record.flow == 'inbound':
-                handled = "read" if state['read'] == 1 else "unread"
+                if state['target'] > 0:
+                    if record.state == 'archived':
+                        handled = "done" if state['read'] == 1 else "unread"
+                    else:
+                        handled = "pending" if state['read'] == 1 else "unread"
+                else:
+                    handled = "read" if state['read'] == 1 else "unread"
                 target = state['target']
             elif record.flow == 'internal_cr':
                 if state['target'] == 1:

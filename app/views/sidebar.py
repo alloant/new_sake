@@ -21,7 +21,6 @@ def SECTIONS():
         MenuSection(id='register',title=_('Registers'),icon='mdi-file-cabinet',perms=['dr','of']),
         MenuSection(id='sccr',title=_('Secretary'),icon='mdi-mail',perms=['sccr']),
         MenuSection(id='cl',title=_('Cl work'),icon='mdi-calendar-check',perms=['user']),
-        MenuSection(id='pages',title=_('Pages'),icon='mdi-folder-information',perms=['user'])
     ]
 
 def get_sections(actor_perms,active_section: str):

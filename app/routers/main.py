@@ -30,13 +30,36 @@ def is_false(obj,condition,text=""):
             return ""
     return text
 
-
+"""
 class AppTemplates(Jinja2Templates):
     def TemplateResponse(self, name: str, context: dict[str, Any], status_code: int = 200):
         context.setdefault("is_true", is_true)
         context.setdefault("is_false", is_false)
         return super().TemplateResponse(name, context, status_code=status_code)
-
+"""
+class AppTemplates(Jinja2Templates):
+    # Add 'request' as the FIRST argument to match the new Starlette signature
+    def TemplateResponse(
+        self, 
+        request: Request, 
+        name: str, 
+        context: dict[str, Any] = None, 
+        status_code: int = 200
+    ):
+        if context is None:
+            context = {}
+            
+        # Add your custom globals to the context
+        context.setdefault("is_true", is_true)
+        context.setdefault("is_false", is_false)
+        
+        # Pass the request through to the parent class
+        return super().TemplateResponse(
+            request=request, 
+            name=name, 
+            context=context, 
+            status_code=status_code
+        )
 # Initialize the router and templates
 router = APIRouter()
 

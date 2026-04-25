@@ -248,7 +248,7 @@ class RecordMethod(object):
             actions.append(ActionGroup(title="Inbox",items=[]))
             if self.flow == 'internal_cr' and panel == 'outcoming-proposals-drafts':
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['edit_record']))
-            elif self.flow == 'internal_cr' and self.state != 'done' or self.flow == 'inbound' and state.handled == 'pending':
+            elif self.flow == 'internal_cr' and self.state != 'done' or self.flow == 'inbound' and (not state or state.handled == 'pending'):
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['archive']))
             else:
                 actions[-1].items.append(Action(record_id=self.id,**all_actions['restore']))
