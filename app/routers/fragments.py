@@ -142,7 +142,7 @@ async def settings_post(request: Request, actor_id:int, section: str, panel: str
 @router.get("/settings_ctr", name="settings")
 async def settings(request: Request, section: str, panel: str, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
     #current_actor = get_actor_by_id(db, payload.uid)
-    ctr_alias, flow = panel[:-4].split('-')
+    ctr_alias = panel
     ctr = get_actor_by_alias(db, ctr_alias)
 
     available_targets = [] # get_targets_register(db, 'outbound', 'ctr')

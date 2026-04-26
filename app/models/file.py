@@ -40,7 +40,7 @@ class File(SQLModel, table=True):
 
     @property
     def link(self):
-        return f"https://{settings.SYNOLOGY_SERVER}:8001/oo/r/{self.permanent_link}"
+        return f"https://{settings.SYNOLOGY_SERVER}:{settings.SYNOLOGY_PORT}/oo/r/{self.permanent_link}"
 
     @property
     def icon(self):

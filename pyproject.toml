@@ -9,8 +9,8 @@ readme = "README.md"
 requires-python = ">=3.14,<4.0"
 dependencies = [
     "fastapi (>=0.136.1,<0.137.0)",
-    "sqlmodel (>=0.0.31,<0.0.32)",
-    "uvicorn[standard] (>=0.40.0,<0.41.0)",
+    "sqlmodel (>=0.0.38,<0.0.39)",
+    "uvicorn (>=0.46.0,<0.47.0)",
     "pydantic-settings (>=2.12.0,<3.0.0)",
     "authx (>=1.5.2,<2.0.0)",
     "authx-extra (>=1.2.0,<2.0.0)",

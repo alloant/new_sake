@@ -8,7 +8,7 @@
     <div class="level-right">
       {% if group.has_settings %}
       <a class="button is-small is-responsive is-text has-tooltip-arrow has-tooltip-left"
-        hx-get="/settings_ctr?section={{section}}&panel={{panel}}"
+        hx-get="/settings_ctr?section={{section}}&panel={{group.panel}}"
         hx-target="#modal-content-target"
         onclick="openModal()"
         title="Settings ctr">

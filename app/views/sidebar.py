@@ -50,6 +50,7 @@ class MenuGroup(BaseModel):
     title: str
     items: list[MenuItem]
     has_settings: bool = False
+    panel: str = ""
 
 # Your master menu definition
 
@@ -216,7 +217,7 @@ def get_panel_register_cl(db,actor_perms,panel):
         items.append(MenuItem(id=f"{ctr}-out_ctr",title=f"Outbox {ctr}",link=f"/?section=cl&panel={ctr}-out_ctr",icon="mdi-email-fast"))
         items[-1].active = "is-active" if f"{ctr}-out_ctr" == panel else ""
 
-        menu.append(MenuGroup(title=f'Register {ctr}', items=items, has_settings = True))
+        menu.append(MenuGroup(title=f'Register {ctr}', items=items, has_settings = True, panel = ctr))
     
     
     menu.append(FULLMENU('pages')[0])
