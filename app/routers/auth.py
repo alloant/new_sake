@@ -16,10 +16,14 @@ from app.routers.main import templates
 
 @router.get('/logout')
 def logout():
-    response = RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
-    response.delete_cookie("sake")
-    
+    response = RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
+    response.delete_cookie("access_token")  # <--- MUST MATCH YOUR SSO COOKIE
+    response.delete_cookie("sid")           # Good practice to clear session too
     return response
+    #response = RedirectResponse(url="/login", status_code=status.HTTP_302_FOUND)
+    #response.delete_cookie("sake")
+    
+    #return response
 
 @router.get('/login')
 async def login_form(request: Request):
@@ -48,7 +52,6 @@ async def login_form(request: Request):
         name="auth/sso.html", 
         context={"auth_url": auth_url, "auth_url_google": auth_url_google}
     )
-    return templates.TemplateResponse("auth/sso.html", {"request": request, "auth_url": auth_url, "auth_url_google": auth_url_google})
 
 @router.get("/auth/callback")
 async def callback_route(request: Request, code: str = None, state: str = None, db: Session = Depends(get_db)):

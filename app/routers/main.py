@@ -30,13 +30,6 @@ def is_false(obj,condition,text=""):
             return ""
     return text
 
-"""
-class AppTemplates(Jinja2Templates):
-    def TemplateResponse(self, name: str, context: dict[str, Any], status_code: int = 200):
-        context.setdefault("is_true", is_true)
-        context.setdefault("is_false", is_false)
-        return super().TemplateResponse(name, context, status_code=status_code)
-"""
 class AppTemplates(Jinja2Templates):
     # Add 'request' as the FIRST argument to match the new Starlette signature
     def TemplateResponse(
@@ -83,8 +76,12 @@ async def home(request: Request, section: str | None = "board", panel: str | Non
     current_actor = get_actor_by_id(db,payload.uid)
     theme = current_actor.get_setting('theme') 
     font_size = f"1.{int(current_actor.get_setting('font_size'))-1}"
-    
-    return templates.TemplateResponse("index.html", {"request": request, "theme": theme, "font_size": font_size, "actor_role": current_actor.role, "sidebar": sidebar, "section": section, "panel": panel, "search": search})
+ 
+    return templates.TemplateResponse(
+        request=request, 
+        name="index.html", 
+        context={"theme": theme, "font_size": font_size, "actor_role": current_actor.role, "sidebar": sidebar, "section": section, "panel": panel, "search": search}
+    )
 
 # Here is only for all_search. It will always have a section and panel
 @router.post("/", name="homepage_search")
@@ -97,8 +94,9 @@ async def home_search(request: Request, section: str | None = "board", panel: st
     form = await request.form()
     data = dict(form)
     search = data.get("all_search")
-    
-    return templates.TemplateResponse("index.html", {"request": request, "theme": theme, "font_size": font_size, "actor_role": current_actor.role, "sidebar": sidebar, "section": section, "panel": panel, "search": search})
-
-
-
+ 
+    return templates.TemplateResponse(
+        request=request, 
+        name="index.html", 
+        context={"theme": theme, "font_size": font_size, "actor_role": current_actor.role, "sidebar": sidebar, "section": section, "panel": panel, "search": search}
+    )

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Depends, HTTPException
+from fastapi import FastAPI, Request, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
@@ -31,29 +31,62 @@ from app.core.config import settings
 from contextlib import asynccontextmanager
 from app.core.redis_bus import broadcast # Import the shared instance
 
+import base64
+import json
+from fastapi import Request
 
 def locale_selector(request: Request):
+    token = request.cookies.get("access_token")
+    
+    if token:
+        try:
+            # A JWT is formatted as: header.payload.signature
+            parts = token.split(".")
+            if len(parts) == 3:
+                payload_b64 = parts[1]
+                
+                # Base64 requires the string length to be a multiple of 4
+                # We add standard padding ('=') to fix it before decoding
+                payload_b64 += "=" * ((4 - len(payload_b64) % 4) % 4)
+                
+                # Decode the base64 payload into a JSON string, then parse it
+                payload_json = base64.urlsafe_b64decode(payload_b64).decode('utf-8')
+                payload = json.loads(payload_json)
+                
+                # Return the language, default to English if missing
+                return payload.get("lang", "en")
+                
+        except Exception as e:
+            # If this fails, we will know exactly why now
+            print(f"Base64 Locale Extraction Failed: {e}")
+            return "ja"
+            
+    # Fallback if no cookie is found
+    return "ja"
+
+def locale_selector_old(request: Request):
     # 1. Try to get the raw cookie that holds your token
     # Adjust "access_token" to whatever your authx cookie name is
     token = request.cookies.get("access_token")
     
     if token:
         try:
-            # 2. Manually decode the token (Use your SAME secret key and algorithm)
+            # 1. Encode the secret key as bytes using .encode('utf-8')
+            secret_bytes = settings.SECRET_KEY.encode('utf-8')        # 2. Manually decode the token (Use your SAME secret key and algorithm)
             # This is what 'get_payload_from_cookie' does behind the scenes
             payload = jwt.decode(
                 token, 
-                settings.SECRET_KEY, 
+                secret_bytes, 
                 algorithms=["HS256"]
             )
             # 3. Grab the lang from the payload
             return payload.get("lang", "en")
         except Exception as e:
             print(f"Error decoding token in selector: {e}")
-            return "ja"
+            return "en"
             
     # Fallback if no cookie is found
-    return "ja"
+    return "en"
 
 
 
@@ -93,7 +126,7 @@ app.add_middleware(
 
 app.add_middleware(
     SessionMiddleware,
-    secret_key="my-secret-key",
+    secret_key=settings.SECRET_KEY,
     http_only=True,
     max_age=36000,
     session_cookie="sid",
@@ -107,8 +140,8 @@ auth.handle_errors(app)
 @app.exception_handler(RevokedTokenError)
 @app.exception_handler(JWTDecodeError)
 @app.exception_handler(MissingTokenError)
-
 async def auth_exception_handler(request: Request, exc: Exception):
+    return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
     return RedirectResponse(url="/login")
 
 # Mount Static Files

@@ -234,8 +234,7 @@ def create_cookie_response(user_payload: dict, provider: str):
             httponly=True,
             secure=True,   # Keep this True since you are using HTTPS!
             samesite="lax",
-            max_age=cookie_duration,
-            domain=DSM # Explicitly tell the browser to trust the whole domain
+            max_age=cookie_duration
         )   
     else:
         response.set_cookie(

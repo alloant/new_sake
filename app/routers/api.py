@@ -18,14 +18,14 @@ async def search_targets(request: Request, record_id: int = None, query: str = "
         rst = get_targets_register(db, record.flow, record.register.alias, query=query)
     else:
         rst = get_targets_register(db, 'outbound', 'ctr', query=query)
-    
+
     checked = get_actor_by_ids(db,user_ids)
     available_targets = checked + [target for target in rst if not target in checked]
-    
-    # Return ONLY the list items for the left column
+
     return templates.TemplateResponse(
-        "forms/select_targets_items.html", 
-        {"request": request, "available_targets": available_targets, "checked_targets": user_ids}
+        request=request, 
+        name="forms/select_targets_items.html", 
+        context={"available_targets": available_targets, "checked_targets": user_ids}
     )
 
 @router.get("/record_form_data", response_class=HTMLResponse)
