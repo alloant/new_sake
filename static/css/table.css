@@ -1,63 +1,56 @@
 @media screen and (max-width: 768px) {
-  /* 1. Ensure the row allows wrapping and stays a flexbox */
+  /* 1. Force the row to stay within screen limits */
   .columns.is-mobile.is-multiline {
     display: flex !important;
     flex-wrap: wrap !important;
+    margin-left: 0 !important;   /* Remove Bulma's negative margins */
+    margin-right: 0 !important;  /* which often cause 10-15px overflow */
+    width: 100% !important;
   }
 
-  /* 2. Reset ALL columns 1-6 so they don't "eat" the gap space */
+  /* 2. Fixed-width elements (Icons, Avatar, Menu) */
   .column.has-order-1-mobile,
-  .column.has-order-2-mobile,
   .column.has-order-3-mobile,
   .column.has-order-4-mobile,
   .column.has-order-5-mobile,
   .column.has-order-6-mobile {
-    flex: 0 0 auto !important; /* Do not grow, do not shrink, use content width */
+    flex: 0 0 auto !important; 
     width: auto !important;
-    display: block !important; /* Reset any is-flex that might interfere with margins */
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
   }
 
-  /* 3. Handle the 1.5 column specifically if it needs more space */
+  /* 3. THE FIX: The Protocol Column (Order 2) */
+  /* We make this the "elastic" element that absorbs the remaining space */
   .column.is-1-5.has-order-2-mobile {
-    width: 15% !important; /* Adjust this % if 'kk' is too squished */
-    min-width: fit-content !important;
+    flex: 1 1 0% !important;    /* Grow and Shrink as needed */
+    min-width: 0 !important;     /* CRITICAL: allows flex child to shrink below content width */
+    width: auto !important;
+    overflow: hidden;
   }
 
-  /* 4. THE SPLIT: Push 5 and 6 to the right */
-  .has-order-5-mobile {
-    margin-left: auto !important; 
-    order: 5 !important;
-  }
-  .has-order-6-mobile { 
-    order: 6 !important; 
-  }
-
-  /* 5. THE CENTERED SECOND LINE: Element 7 */
-  .has-order-7-mobile {
-    order: 7 !important;
-    flex: 0 0 100% !important; /* Force 100% width to break line */
-    width: 100% !important;
-    
-    /* Center the contents of the column */
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    text-align: center;
-    
-    padding: 0.5rem 0 !important;
-  }
-
-  /* Prevent text overflow in centered title */
-  .has-order-7-mobile span {
-    max-width: 90%;
+  /* Truncate the protocol text so it doesn't push others off-screen */
+  .column.is-1-5.has-order-2-mobile span {
+    display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    max-width: 100%;
   }
 
-  /* Ensure the hidden-mobile columns stay hidden */
-  .column.is-hidden-mobile {
-    display: none !important;
+  /* 4. Ensure Order 5 and 6 stay on the far right */
+  .has-order-5-mobile {
+    margin-left: auto !important; 
+  }
+
+  /* 5. Second Line (Title) */
+  .has-order-7-mobile {
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    order: 7 !important;
+    display: flex !important;
+    justify-content: center !important;
+    padding: 0.4rem 0.5rem !important;
   }
 }
 

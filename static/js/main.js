@@ -1,4 +1,5 @@
 // static/js/main.js
+
 // Active the menu in the sidebar
 function updateSidebarActive(clickedElement) {
     // 1. Get the actual <a> tag even if they clicked the icon inside it
@@ -18,31 +19,30 @@ function updateSidebarActive(clickedElement) {
 }
 // End sidebar active
 
-//
+// To control sidebar and close it while clicking anywhere
 document.addEventListener('DOMContentLoaded', () => {
     const burger = document.getElementById('navbar-burger');
     const sidebar = document.getElementById('main-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
     const mainContent = document.getElementById('main-content');
 
+    function toggleMenu() {
+        burger.classList.toggle('is-active');
+        sidebar.classList.toggle('is-active');
+        overlay.classList.toggle('is-active');
+        if (mainContent) mainContent.classList.toggle('is-darkened');
+    }
+
     if (burger) {
-        burger.addEventListener('click', () => {
-            burger.classList.toggle('is-active');
-            sidebar.classList.toggle('is-active');
-            
-            // Optional: Darken content when sidebar is open
-            mainContent.classList.toggle('is-darkened');
-        });
+        burger.addEventListener('click', toggleMenu);
     }
     
-    // Close sidebar if user clicks on main content while sidebar is open
-    mainContent.addEventListener('click', () => {
-        if (sidebar.classList.contains('is-active')) {
-            sidebar.classList.remove('is-active');
-            burger.classList.remove('is-active');
-            mainContent.classList.remove('is-darkened');
-        }
-    });
+    // Close sidebar if user clicks the overlay
+    if (overlay) {
+        overlay.addEventListener('click', toggleMenu);
+    }
 });
+
 
 // To toggle checkboxes in forms
 function toggleAllTargets(shouldCheck) {

@@ -23,17 +23,17 @@
     </div>
     
     <div class="columns is-variable is-5 is-align-items-stretch">
-        <div class="column is-8 is-flex is-flex-direction-column">
+        <div class="column is-8">
             <div class="columns is-multiline is-mobile">
                 <div class="column is-4-tablet is-6-mobile">
                     <label class="label is-small">Flow</label>
-                    <div class="select is-fullwidth">
+                    <div class="control"><div class="select is-fullwidth">
                         <select name="flow">
                             <option {{ 'selected' if record.flow.value == 'inbound' }} value="inbound">Inbound</option>
                             <option {{ 'selected' if record.flow.value == 'outbound' }} value="outbound">Outbound</option>
                             <option {{ 'selected' if record.flow.value == 'internal_cr' }} value="internal_cr">Internal CR</option>
                         </select>
-                    </div>
+                    </div></div>
                 </div>
                 <div class="column is-4-tablet is-6-mobile">
                     <label class="label is-small">Register</label>
