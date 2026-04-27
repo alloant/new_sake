@@ -304,22 +304,22 @@ def transfer_note_user():
             target = 0
             if record.flow == 'inbound':
                 if state['target'] > 0:
-                    if record.state == 'archived':
-                        handled = "done" if state['read'] == 1 else "unread"
+                    if record.state == 'done':
+                        handled = "done"
                     else:
                         handled = "pending" if state['read'] == 1 else "unread"
                 else:
                     handled = "read" if state['read'] == 1 else "unread"
                 target = state['target']
             elif record.flow == 'internal_cr':
-                if state['target'] == 1:
+                if state['target'] > 0:
                     target = state['target_order'] + 1
                     handled = 'approved' if state['target_acted'] == 1 else 'pending'
                 else:
                     target = 0
                     handled = 'pending'
             elif record.flow == 'outbound':
-                if state['target'] == 1:
+                if state['target'] > 0:
                     target = 1
                     handled = 'done' if state['target_acted'] == 1 else 'pending'
                 else:

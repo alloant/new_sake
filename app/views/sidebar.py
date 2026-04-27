@@ -20,7 +20,7 @@ def SECTIONS():
         MenuSection(id='board',title=_('Dashboard'),icon='mdi-bulletin-board',perms=['dr','of']),
         MenuSection(id='register',title=_('Registers'),icon='mdi-file-cabinet',perms=['dr','of']),
         MenuSection(id='sccr',title=_('Secretary'),icon='mdi-mail',perms=['sccr']),
-        MenuSection(id='cl',title=_('Cl work'),icon='mdi-calendar-check',perms=['user']),
+        MenuSection(id='cl',title=_('Cl work'),icon='mdi-calendar-check',perms=['ctr_*']),
     ]
 
 def get_sections(actor_perms,active_section: str):

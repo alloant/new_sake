@@ -23,8 +23,12 @@ def has_permission(actor_perms, required_perms):
 
     for u_perm in actor_perms:
         for r_perm in required_perms:
-            if u_perm == r_perm or u_perm.startswith(f"{r_perm}:"):
-                return u_perm
+            if r_perm.endswith('*'):
+                if u_perm.startswith(f"{r_perm[:-1]}"):
+                    return u_perm
+            else:
+                if u_perm == r_perm or u_perm.startswith(f"{r_perm}:"):
+                    return u_perm
 
     return ''
 
