@@ -86,7 +86,7 @@ def FULLMENU(section):
         MenuGroup(
             title="My outbox",
             items=[
-                MenuItem(id="outbox-drafts", title=_("Drafts"), link="/?section=board&panel=outbox-drafts", icon="mdi-note-edit", perms=["user"], show_count=True, hx_trigger=", socket-updated from:body"),
+                MenuItem(id="outbox-drafts", title=_("Drafts"), link="/?section=board&panel=outbox-drafts", icon="mdi-note-edit", perms=["user"], show_count=True, hx_trigger=", socket-updated from:body, record_state_changed from:body"),
                 MenuItem(id="outbox-sent", title=_("Sent"), link="/?section=board&panel=outbox-sent", icon="mdi-email-fast", perms=["user"]),
             ]
         ),

@@ -11,29 +11,30 @@
   <!-- menu elements -->
   <div class="dropdown-menu" id="dropdown-new" role="menu" style="width: auto; min-width: 15em;">
     <div class="dropdown-content">
-      <a class="dropdown-item m-0" style="font-size: 1em;" hx-get="/new_record?record_type=proposal" hx-target="#main-table" hx-indicator="#progress-indicator">
+      <a class="dropdown-item m-0" style="font-size: 1em;" hx-get="/new_record?section=board&panel=outcoming-proposals-drafts"
+        hx-target="#main-aside" hx-indicator="#progress-indicator">
         <i class="iconify mr-1" data-icon="mdi:file-document-plus"></i>
         New proposal
       </a>
       
       <hr class="dropdown-divider p-0 m-0">
       
-      <a class="dropdown-item m-0" style="font-size: 1em;" hx-get="/new_record?record_type=cg_out" hx-target="#main-table" hx-indicator="#progress-indicator">
+      <a class="dropdown-item m-0" style="font-size: 1em;" hx-get="/new_record?section=register&panel=cg-out" hx-target="#main-aside" hx-indicator="#progress-indicator">
         <i class="iconify mr-1" data-icon="mdi:file-document-plus-outline"></i>
         New note to cg
       </a>
 
-      <a class="dropdown-item m-0" style="font-size: 1em;" hx-get="/new_record?record_type=asr_out" hx-target="#main-table" hx-indicator="#progress-indicator">
+      <a class="dropdown-item m-0" style="font-size: 1em;" hx-get="/new_record?section=regsiter&panel=asr-out" hx-target="#main-aside" hx-indicator="#progress-indicator">
         <i class="iconify mr-1" data-icon="mdi:file-document-plus-outline"></i>
         New note to asr
       </a>
 
-      <a class="dropdown-item m-0" style="font-size: 1em;" hx-get="/new_record?record_type=ctr_out" hx-target="#main-table" hx-indicator="#progress-indicator">
+      <a class="dropdown-item m-0" style="font-size: 1em;" hx-get="/new_record?section=register&panel=ctr-out" hx-target="#main-aside" hx-indicator="#progress-indicator">
         <i class="iconify mr-1" data-icon="mdi:file-document-plus-outline"></i>
         New note to ctr
       </a>
 
-      <a class="dropdown-item m-0" style="font-size: 1em;" hx-get="/new_record?record_type=r_out" hx-target="#main-table" hx-indicator="#progress-indicator">
+      <a class="dropdown-item m-0" style="font-size: 1em;" hx-get="/new_record?section=register&panel=r-out" hx-target="#main-aside" hx-indicator="#progress-indicator">
         <i class="iconify mr-1" data-icon="mdi:file-document-plus-outline"></i>
         New note to r
       </a>

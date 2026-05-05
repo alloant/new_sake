@@ -2,11 +2,11 @@ import json
 import io
 import base64
 import asyncio
-from datetime import timedelta
+from datetime import timedelta, date
 
 from pydantic import BaseModel
 
-from fastapi import APIRouter, Request, Depends, status
+from fastapi import APIRouter, Request, Depends, status, Response
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi import UploadFile, File
 from fastapi.responses import RedirectResponse
@@ -22,10 +22,11 @@ from app.core.database import get_db
 from app.core.sso import create_cookie_response
 
 from app.models.mail import Attachment
+from app.models.record import Record
 
 from app.services.drive import upload_bytes_and_convert
 
-from app.crud import get_records, get_mails, get_register_by_alias, get_actor_by_id, get_record_actor, get_record_by_id, add_mail, get_last_uid, get_mail_by_uid, get_actor_by_alias, get_actor_by_ids, add_recordactor, get_tags, get_targets_register
+from app.crud import get_records, get_mails, get_register_by_alias, get_actor_by_id, get_record_actor, get_record_by_id, add_mail, get_last_uid, get_mail_by_uid, get_actor_by_alias, get_actor_by_ids, add_recordactor, get_tags, get_targets_register, get_last_sequence
 
 from app.views.settings import get_settings_form
 from app.views.records import records_view, records_table_view, action_view
@@ -180,16 +181,20 @@ def sidebar_top_fragment(request: Request, new_sidebar = None, myData = None, db
 
 # RECORDS
 @router.get("/records", response_class=HTMLResponse)
-async def records(request: Request, search:str = None, page: int = None, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
+async def records(request: Request, search:str = None, page: int = None, section: str = None, panel: str = None, trigger_event: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(auth.access_token_required)):
     current_actor = get_actor_by_id(db,payload.uid)
     template, rst = await records_view(page, search, section, panel, db, current_actor)
 
-    return templates.TemplateResponse(
+    response = templates.TemplateResponse(
         request=request, 
         name=template, 
         context={'last_search': None, 'section': section, 'panel': panel} | rst
     )
 
+    if trigger_event:
+        response.headers['HX-Trigger'] = trigger_event
+
+    return response
 
 @router.post("/records/table", response_class=HTMLResponse)
 async def records_table(request: Request, page: int = None, last_search = None, section: str = None, panel: str = None, db: Session = Depends(get_db), current_actor_id: str = Depends(get_current_actor_alias_from_cookie)):
@@ -227,10 +232,29 @@ class Loop(BaseModel):
 
 
 @router.get("/new_record", response_class=HTMLResponse)
-async def action(request: Request, section: str = None, panel: str = None, record_type: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
+async def action(request: Request, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
     current_actor = get_actor_by_id(db,payload.uid)
-    print(current_actor,section,panel,record_type)
+    if section == 'board': # Is a proposal
+        register = get_register_by_alias(db=db,alias='prop')
+        last_sequence = get_last_sequence(db=db, register_id=register.id, sender=current_actor)
+        db_record = Record(title="", stage="sketch", state="pending", register_id=register.id, sequence=last_sequence, year=date.today().year, flow='internal_cr', sender_id=current_actor.id)
+        
+        url = f"/records?section=board&panel={panel}&trigger_event=proposal_state_changed"
+    else: # Is a note
+        print(panel.split('-')[0])
+        register = get_register_by_alias(db=db,alias=panel.split('-')[0])
+        print(register)
+        last_sequence = get_last_sequence(db=db, register_id=register.id)
+        print(last_sequence)
+        db_record = Record(title="", stage="draft", state="pending", register_id=register.id, sequence=last_sequence, year=date.today().year, flow='outbound', sender_id=current_actor.id)
+        
+        url = f"/records?section=board&panel=outbox-drafts&trigger_event=record_state_changed"
 
+    db.add(db_record); db.commit(); db.refresh(db_record)
+
+
+
+    return RedirectResponse(url=url, status_code=303)
 
 @router.get("/action", response_class=HTMLResponse)
 async def action(request: Request, record_id: int, recordactor_id: str, action: str, loop_index: int, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
@@ -249,7 +273,7 @@ async def action(request: Request, record_id: int, recordactor_id: str, action: 
             context={'section': 'board', 'panel': 'all', 'sidebar': sidebar, 'search':f'all_off:{record_id}'} | rst
         )
 
-    
+
     template, rst = await action_view(db, record_id, recordactor_id, action, current_actor, section, panel)
 
     response = templates.TemplateResponse(

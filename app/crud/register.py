@@ -1,7 +1,9 @@
-from sqlmodel import Session, select
+from datetime import date
+from sqlmodel import Session, select, func, and_
 
 from app.core.database import engine
 from app.models.register import Register
+from app.models.record import Record
 
 def get_register_by_id(db: Session, register_id: int) -> Register | None:
     return db.get(Register, register_id)
@@ -11,6 +13,14 @@ def get_register_by_alias(db: Session, alias: str) -> Register | None:
 
 def get_registers(db: Session = None) -> list[Register]:
     return db.exec(select(Register)).all()
+
+def get_last_sequence(db: Session, register_id: int, sender: Actor = None):
+    if sender:
+        last = db.exec(select(func.max(Record.sequence)).where(and_(Record.register_id==register_id,Record.year==date.today().year,Record.sender_id==sender.id))).one()
+    else:
+        last = db.exec(select(func.max(Record.sequence)).where(and_(Record.register_id==register_id,Record.year==date.today().year,Record.flow=='outbound'))).one()
+
+    return int(last) + 1
 
 def create_register(db: Session, alias: str, full_name: str) -> Register:
     db_register = Register(alias=alias, full_name=full_name)

@@ -279,7 +279,6 @@ def get_advance_search_filter(db: Session, data: dict):
 
 def get_records(db: Session, actor: Actor, section: str, panel: str, search: str = None, data: dict = None, limit: int = None, offset: int = None, just_number: bool = False) -> list[Record] | int:
     if section == 'cl':
-        print('panel:',panel)
         ctr_alias, flow = panel[:-4].split('-')
         ctr = get_actor_by_alias(db,ctr_alias)
     
