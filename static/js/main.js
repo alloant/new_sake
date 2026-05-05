@@ -60,49 +60,46 @@ function toggleAllTargets(shouldCheck) {
 }
 // End toggle checkboxes /////
 
+/// DROPDOWNS
+//
+// Dropdown Manager using Event Delegation
+document.addEventListener('mouseover', function (event) {
+    // Handling Mouseover (hover)
+    const dropdown = event.target.closest('.dropdown');
+    if (dropdown) {
+        // Optional: if you want hover to open it, add is-active here
+    }
+});
+
+document.addEventListener('mouseout', function (event) {
+    // Handling Mouseleave via delegation
+    const dropdown = event.target.closest('.dropdown');
+    // If we are leaving the dropdown container entirely
+    if (dropdown && !dropdown.contains(event.relatedTarget)) {
+        dropdown.classList.remove('is-active');
+    }
+});
 
 document.addEventListener('click', function (event) {
     const trigger = event.target.closest('.dropdown-trigger');
     const insideMenu = event.target.closest('.dropdown-menu');
+    const dropdown = event.target.closest('.dropdown');
 
     if (trigger) {
-        const dropdown = trigger.closest('.dropdown');
-        
         // Close other dropdowns
         document.querySelectorAll('.dropdown.is-active').forEach(openDropdown => {
             if (openDropdown !== dropdown) {
                 openDropdown.classList.remove('is-active');
             }
         });
-
-        // Toggle current
         dropdown.classList.toggle('is-active');
         event.stopPropagation(); 
-
     } else if (!insideMenu) {
-        // Clicked outside: close all
         closeAllDropdowns();
     }
 });
 
-// NEW: Close menu when mouse leaves the dropdown container
-document.querySelectorAll('.dropdown').forEach(dropdown => {
-    dropdown.addEventListener('mouseleave', () => {
-        dropdown.classList.remove('is-active');
-    });
-});
-
-function closeAllDropdowns() {
-    document.querySelectorAll('.dropdown.is-active').forEach(dropdown => {
-        dropdown.classList.remove('is-active');
-    });
-}
-
-
-
-
-
-
+// END DROPDOWNS
 
 
 // Request permission on page load

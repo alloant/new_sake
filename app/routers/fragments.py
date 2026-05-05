@@ -225,6 +225,13 @@ async def records_hidden_row(request: Request, section: str, panel: str, db: Ses
 class Loop(BaseModel):
     index: int
 
+
+@router.get("/new_record", response_class=HTMLResponse)
+async def action(request: Request, section: str = None, panel: str = None, record_type: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
+    current_actor = get_actor_by_id(db,payload.uid)
+    print(current_actor,section,panel,record_type)
+
+
 @router.get("/action", response_class=HTMLResponse)
 async def action(request: Request, record_id: int, recordactor_id: str, action: str, loop_index: int, section: str = None, panel: str = None, db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
     current_actor = get_actor_by_id(db,payload.uid)

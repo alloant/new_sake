@@ -1,7 +1,20 @@
 <div id="main-aside">
-<div id="table-search" class="is-flex is-justify-content-space-between is-align-items-center px-2 mt-1">
+  <div id="table-search" class="is-flex is-justify-content-space-between is-align-items-center pr-2 pt-1 pb-2" style="background-color: var(--bg-sidebar);">
+    <div class="field has-addons mr-1 mb-0">
+        <div class="control">
+          <button class="button py-1 px-3" hx-get="/new_record?section={{section}}&panel={{panel}}" hx-target="#main-table" hx-indicator="#progress-indicator" hx-include="#advanced-search-form">
+            <span class="icon is-small">
+              <i class="iconify" data-icon="mdi-text-box-plus"></i>
+            </span>
+          </button>
+        </div>
+        <div class="control">
+          {% include 'record/main_new_menu.html' %}
+        </div>
+    </div>
+
     <div class="is-flex-grow-1 mr-2 dropdown is-block">
-      <div class="field">
+      <div class="field mb-0">
         <div class="control has-icons-left has-icons-right">
           <input class="input is-mediumish is-rounded" type="search" placeholder="Search" name="search" id="search" {{ 'value=search' if search else ''}}
             hx-post="/records/table?section={{section}}&panel={{panel}}"
@@ -21,19 +34,16 @@
                 </div>
               </div>
             </div>
-
-
         </div>
       </div> <!-- end field -->
     </div> <!-- end level item -->
-  <div class="">
-    <div id="level_pagination" class="level-item">
+    
+    <div id="level_pagination">
       {% include 'record/pagination.html' %}
     </div>
-  </div> <!-- End level right -->
-</div>
+  </div>
 
-<div id="main-table" class="container-flush p-2">
-  {% include 'record/table.html' %}
-</div>
+  <div id="main-table" class="container-flush p-2">
+    {% include 'record/table.html' %}
+  </div>
 </div>

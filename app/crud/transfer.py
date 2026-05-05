@@ -307,7 +307,7 @@ def transfer_note_user():
                     if record.state == 'done':
                         handled = "done"
                     else:
-                        handled = "pending" if state['read'] == 1 else "unread"
+                        handled = "pending"
                 else:
                     handled = "read" if state['read'] == 1 else "unread"
                 target = state['target']

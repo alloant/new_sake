@@ -313,11 +313,12 @@ class RecordMethod(object):
 
 
     def avatar_circle(self, align, title, avatar, loop_index):
+        style = "" if self.flow != 'internal_cr' else ' style="color: var(--bg-main); background-color: var(--text-main);"'
         if title:
             orientation = 'has-toolip-top' if loop_index > 10 else 'has-tooltip-bottom'
-            return f'<div class="avatar-circle is-flex is-align-items-center is-justify-content-center has-tooltip-multiline {orientation} has-tooltip-text-{align}" data-tooltip="{title}">{avatar}</div>'
+            return f'<div class="avatar-circle is-flex is-align-items-center is-justify-content-center has-tooltip-multiline {orientation} has-tooltip-text-{align}" data-tooltip="{title}" {style}>{avatar}</div>'
         
-        return f'<div class="avatar-circle is-flex is-align-items-center is-justify-content-center">{avatar}</div>'
+        return f'<div class="avatar-circle is-flex is-align-items-center is-justify-content-center" {style}>{avatar}</div>'
 
     def avatar_html(self, loop_index):
         match self.flow:
