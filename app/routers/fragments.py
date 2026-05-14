@@ -274,7 +274,7 @@ async def action(request: Request, record_id: int, recordactor_id: str, action: 
         )
 
 
-    template, rst = await action_view(db, record_id, recordactor_id, action, current_actor, section, panel)
+    template, rst = await action_view(db, payload, record_id, recordactor_id, action, current_actor, section, panel)
 
     response = templates.TemplateResponse(
         request=request, 
@@ -481,6 +481,7 @@ async def records_global_search(request: Request, section: str = None, panel: st
 # The post is only for updload files and thinks like that
 @router.post("/records/{record_id}/upload_files", response_class=HTMLResponse)
 async def records_files(request: Request, record_id: int, files: List[UploadFile] = File(...), db: Session = Depends(get_db), payload: TokenPayload = Depends(get_payload_from_cookie)):
+    print('patata')
     return ""
 
 @router.get("/sccr", response_class=HTMLResponse)

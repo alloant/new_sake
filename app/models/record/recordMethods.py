@@ -76,6 +76,14 @@ def ACTIONS():
 
     return ACTIONS
 
+def ACTIONS_FILES():
+    from fastapi_babel import _
+    ACTIONS = {}
+    ACTIONS['upload_file'] = {"id": "upload_file", "title": _("Upload_file"), "attr": {"hx-get": "/action?action=upload_file", "hx-target": "#row-{record_id}"}, "icon": "mdi-cloud-upload"}
+
+    return ACTIONS
+
+
 class RecordMethod(object):
     @property
     def protocol(self):
@@ -273,6 +281,15 @@ class RecordMethod(object):
             actions[-1].items.append(Action(record_id=self.id,**all_actions['edit_record']))
             actions[-1].items.append(Action(record_id=self.id,**all_actions['delete_record']))
 
+
+        return actions
+
+    def get_actions_files(self, state, current_actor, section, panel, quick_access = False):
+        all_actions = ACTIONS_FILES()
+        actions = []
+        
+        actions.append(ActionGroup(title="Personal",items=[]))
+        actions[-1].items.append(Action(record_id=self.id,**all_actions['upload_file']))
 
         return actions
 

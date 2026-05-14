@@ -2,6 +2,8 @@ import math
 from app.crud import get_record_by_id, get_records, get_record_actor, get_record_actor_by_id, get_actor_registers, get_ctrs, get_all_deps, get_all_alias_deps, get_senders_register, get_targets_register, get_dispatcher_alias, get_tags, get_actor_by_alias
 from app.routers.websocket import broadcast_channels
 
+from app.services.drive import list_folder
+
 def pagination(num_records: int, page: int, limit_records: int):
     num_pages = math.ceil(num_records / limit_records)
     page = 1 if not page else page
@@ -47,7 +49,7 @@ async def records_table_view(db: Session, current_actor: Actor, section: str, pa
 
     return f"record/table.html", {"records": records, "pagination": pagination(num_records,page,limit_records), "title": get_title(section,panel), 'num_records': num_records, "current_actor": current_actor}
 
-async def action_view(db: Session, record_id: int, status_id: int, action: str, current_actor: Actor, section: str, panel: panel):
+async def action_view(db: Session, payload, record_id: int, status_id: int, action: str, current_actor: Actor, section: str, panel: panel):
     record = get_record_by_id(db,record_id)
     if status_id:
         status = get_record_actor_by_id(db, record_actor_id = status_id)
@@ -148,6 +150,9 @@ async def action_view(db: Session, record_id: int, status_id: int, action: str, 
         status.params['dispatcher_signature'] = False
         sock_targets = [f'actor_{alias}' for alias in get_dispatcher_alias(db)]
         await broadcast_channels(channels = sock_targets, actor_alias = current_actor.alias, msg = f'Note {record.protocol} was dispatched by other dr')
+    elif action == 'upload_file':
+        files = await list_folder(payload, '/team-folders/docker')
+        print(files)
 
 
     if action in ['mark_read','mark_unread','sign_record', 'quick_sign', 'quick_unsign', 'start_circulation', 'stop_circulation']:

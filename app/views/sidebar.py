@@ -68,9 +68,9 @@ def FULLMENU(section):
         MenuGroup(
             title="Notes",
             items=[
-                MenuItem(id="all", title=_("All"), link="/?section=board&panel=all", icon="mdi-web", perms=["user"]),
                 MenuItem(id="mustread", title=_("Must read"), link="/?section=board&panel=mustread", icon="mdi-message-star", perms=["user"], show_count=True,hx_trigger=",read_state_changed from:body"),
                 MenuItem(id="unread", title=_("Unread"), link="/?section=board&panel=unread", icon="mdi-message-badge", perms=["user"],show_count=True,hx_trigger=",read_state_changed from:body"),
+                MenuItem(id="all", title=_("All"), link="/?section=board&panel=all", icon="mdi-web", perms=["user"]),
             ],
         ),
 
