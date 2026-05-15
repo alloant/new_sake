@@ -1,0 +1,17 @@
+/* Hide by default */
+.template-items {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+/* Show on hover */
+.template-accordion:hover .template-items {
+  max-height: 300px; /* Adjust based on number of items */
+  border-bottom: 1px solid #ededed;
+}
+
+/* Indent items for visual hierarchy */
+.pl-5 {
+  padding-left: 1.5rem !important;
+}

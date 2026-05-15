@@ -7,7 +7,7 @@ from pathlib import PurePosixPath
 from urllib.parse import urlparse
 
 from synology_api import filestation
-from .synology_drive import drivestation
+from .synology_drivestation import DriveStation
 
 # Configuration
 USER = os.getenv("SYNOLOGY_SERVICE_USER")
@@ -32,7 +32,7 @@ def get_ds():
     global _ds_instance
     if _ds_instance is None:
         print("Initializing DriveStation connection...")
-        _ds_instance = drivestation(IP, PORT, USER, PASS, secure=True, cert_verify=False, dsm_version=7, debug=False)
+        _ds_instance = DriveStation(IP, PORT, USER, PASS, secure=True, cert_verify=False, dsm_version=7, debug=False)
     return _ds_instance
 
 async def upload_bytes_synology(byte_content, target_filename, dest_folder):

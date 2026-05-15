@@ -151,8 +151,11 @@ async def action_view(db: Session, payload, record_id: int, status_id: int, acti
         sock_targets = [f'actor_{alias}' for alias in get_dispatcher_alias(db)]
         await broadcast_channels(channels = sock_targets, actor_alias = current_actor.alias, msg = f'Note {record.protocol} was dispatched by other dr')
     elif action == 'upload_file':
-        files = await list_folder(payload, '/team-folders/docker')
+        files = await list_folder(payload,'/mydrive')
         print(files)
+    elif action.startswith('copy_template'):
+        template = action.split('_')[2]
+        print('template',template)
 
 
     if action in ['mark_read','mark_unread','sign_record', 'quick_sign', 'quick_unsign', 'start_circulation', 'stop_circulation']:

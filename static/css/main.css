@@ -2,3 +2,4 @@
 @import "form.css";      /* 2. Use them in components */
 @import "table.css";      /* 2. Use them in components */
 @import "sidebar.css";    /* 3. Use them in layout */
+@import "menu.css";    /* 3. Use them in layout */
