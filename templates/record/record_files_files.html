@@ -1,8 +1,27 @@
 {% if record.files %}
   {% for file in record.files %}
-    <a href="{{ file.link }}" class="dropdown-item m-0" target="_blank" style="font-size: 1m;">
-      {{ file.html_name | safe }}
+<div class="dropdown-item is-flex is-justify-content-space-between is-align-items-center" style="font-size: 1em;">
+  
+  <!-- Left Side: Filename (Added is-flex-grow-1 to help it occupy left space safely) -->
+  <a href="{{ file.link }}" class="is-truncated m-0 is-flex-grow-1" target="_blank" style="min-width: 0;">
+    {{ file.html_name | safe }}
+  </a>
+    
+  <!-- Right Side: 3 Icons -->
+  <div class="is-flex is-flex-shrink-0 mx-1">
+    <a class="icon mx-0" title="Rename">
+      <i class="iconify" data-icon="mdi:rename-outline"></i>
     </a>
+    <a class="icon has-text-danger mx-0" title="Delete">
+      <i class="iconify" data-icon="mdi:delete-outline"></i>
+    </a>
+    <a class="icon mx-0" title="Sensitive">
+      <i class="iconify" data-icon="mdi:shield-outline"></i>
+    </a>
+  </div>
+
+</div>
+
   {% endfor %}
 {% else %}
   <div class="dropdown-item p-0 m-0" style="font-size: 1em;">No files found</div>
@@ -13,9 +32,9 @@
 {% endif %}
 
 {% for reference in record.references %}
-    <div class="dropdown-item has-text-weight-bold has-text-grey m-0" style="font-size: 1em;">{{ reference.protocol }} {{ reference.title }}</div>
+    <div class="dropdown-item has-text-weight-bold has-text-grey m-0 is-truncated is-light is-small" style="font-size: 1em; with: 17em;">{{ reference.protocol }} {{ reference.title }}</div>
     {% for file in reference.files %}
-      <a class="dropdown-item m-0" target="_blank" href="{{ file.link }}" style="font-size: 1em;">
+      <a class="dropdown-item m-0 is-light is-small py-1" target="_blank" href="{{ file.link }}" style="font-size: 1em;">
         {{ file.html_name | safe }}
       </a>
     {% endfor %}

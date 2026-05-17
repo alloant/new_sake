@@ -79,7 +79,9 @@ def ACTIONS():
 def ACTIONS_FILES():
     from fastapi_babel import _
     ACTIONS = {}
-    ACTIONS['upload_file'] = {"id": "upload_file", "title": _("Upload_file"), "attr": {"hx-get": "/action?action=upload_file", "hx-target": "#row-{record_id}"}, "icon": "mdi-cloud-upload"}
+    ACTIONS['upload_file'] = {"id": "upload_file", "title": _("Upload file"), "attr": {"hx-get": "/action?action=upload_file", "hx-target": "#row-{record_id}"}, "icon": "mdi-cloud-upload"}
+    ACTIONS['copy_file'] = {"id": "copy_file", "title": _("Copy file"), "attr": {"hx-get": "/action?action=copy_file", "hx-target": "#row-{record_id}"}, "icon": "mdi-cloud-upload"}
+    ACTIONS['sync_folder'] = {"id": "sync_folder", "title": _("Upload files folder"), "attr": {"hx-get": "/action?action=sync_folder", "hx-target": "#row-{record_id}"}, "icon": "mdi-cloud-upload"}
 
     return ACTIONS
 
@@ -290,6 +292,8 @@ class RecordMethod(object):
         
         actions.append(ActionGroup(title="Personal",items=[]))
         actions[-1].items.append(Action(record_id=self.id,**all_actions['upload_file']))
+        actions[-1].items.append(Action(record_id=self.id,**all_actions['copy_file']))
+        actions[-1].items.append(Action(record_id=self.id,**all_actions['sync_folder']))
 
         return actions
 

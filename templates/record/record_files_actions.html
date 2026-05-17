@@ -9,7 +9,6 @@
       {% endif %}
     {% endfor %}
     >
-    <i class="iconify mr-1" data-icon="{{ action.icon }}"></i>
     {{ action.title }}
   </a>
 {% endfor %}
@@ -25,11 +24,15 @@
     New from Template...
   </div>
   <div class="template-items">
-    <a class="dropdown-item pl-5" hx-get="/action?action=copy_template_ord&record_id={{ record.id }}&recordactor_id={{ is_true(status,'id') }}&section={{section}}&panel={{panel}}&loop_index={{loop.index}}" hx-target="#row-{{record.id}}">📄 Ord</a>
-    <a class="dropdown-item pl-5">📄 Spreadsheet</a>
-    <a class="dropdown-item pl-5">📄 Proposal</a>
-    <a class="dropdown-item pl-5">📄 Meeting Notes</a>
-    <a class="dropdown-item pl-5">📄 Project Plan</a>
-    <a class="dropdown-item pl-5">📄 Letterhead</a>
+    <a class="dropdown-item pl-5" hx-get="/action?action=copy_template_ord&record_id={{ record.id }}&recordactor_id={{ is_true(status,'id') }}&section={{section}}&panel={{panel}}&loop_index={{loop.index}}" hx-target="#row-{{record.id}}"><i class="iconify has-text-link mr-2" data-icon="mdi:file-word"></i> Ord</a>
+    <a class="dropdown-item pl-5" hx-get="/action?action=copy_template_ord&record_id={{ record.id }}&recordactor_id={{ is_true(status,'id') }}&section={{section}}&panel={{panel}}&loop_index={{loop.index}}" hx-target="#row-{{record.id}}"><i class="iconify has-text-link mr-2" data-icon="mdi:file-word"></i> Not Ord</a>
+    <a class="dropdown-item pl-5" hx-get="/action?action=copy_template_ord&record_id={{ record.id }}&recordactor_id={{ is_true(status,'id') }}&section={{section}}&panel={{panel}}&loop_index={{loop.index}}" hx-target="#row-{{record.id}}"><i class="iconify has-text-link mr-2" data-icon="mdi:file-word"></i> Ext</a>
+    
+    <hr class="dropdown-divider p-0 m-0">
+
+    <a class="dropdown-item pl-5" hx-get="/action?action=copy_template_ord&record_id={{ record.id }}&recordactor_id={{ is_true(status,'id') }}&section={{section}}&panel={{panel}}&loop_index={{loop.index}}" hx-target="#row-{{record.id}}"><i class="iconify has-text-link mr-2" data-icon="mdi:file-word"></i> Untitled</a>
+    <a class="dropdown-item pl-5" hx-get="/action?action=copy_template_ord&record_id={{ record.id }}&recordactor_id={{ is_true(status,'id') }}&section={{section}}&panel={{panel}}&loop_index={{loop.index}}" hx-target="#row-{{record.id}}"><i class="iconify has-text-success mr-2" data-icon="mdi:file-excel"></i> Untitled</a>
+    <a class="dropdown-item pl-5" hx-get="/action?action=copy_template_ord&record_id={{ record.id }}&recordactor_id={{ is_true(status,'id') }}&section={{section}}&panel={{panel}}&loop_index={{loop.index}}" hx-target="#row-{{record.id}}"><i class="iconify has-text-warning mr-2" data-icon="mdi:file-powerpoint"></i> Untitled</a>
+
   </div>
 </div>
