@@ -80,6 +80,13 @@ document.addEventListener('mouseout', function (event) {
     }
 });
 
+// Add this function before or after the dropdown event listeners
+function closeAllDropdowns() {
+    document.querySelectorAll('.dropdown.is-active').forEach(dropdown => {
+        dropdown.classList.remove('is-active');
+    });
+}
+
 document.addEventListener('click', function (event) {
     const trigger = event.target.closest('.dropdown-trigger');
     const insideMenu = event.target.closest('.dropdown-menu');
