@@ -1,0 +1,27 @@
+{% if record.references %}
+  {% for reference in record.references %}
+    <!-- Reference Section Header -->
+    <div class="dropdown-item is-flex is-align-items-center py-1 px-3">
+      <span class="mx-2">
+        {{ reference.stage_icon(status)|safe }}
+      </span>
+      <span class="is-truncated">
+        {{ reference.protocol }} &mdash; {{ reference.title }}
+      </span>
+    </div>
+
+    <!-- Reference File Items -->
+    {% for file in reference.files %}
+      <div class="dropdown-item py-0">
+        <a class="mx-4" 
+          target="_blank" 
+          style="min-width: 0; text-decoration: none;"
+          href="{{ file.link }}">
+          <span class="is-truncated">
+            {{ file.html_name | safe }}
+          </span>
+        </a>
+      </div>
+    {% endfor %}
+  {% endfor %}
+{% endif %}

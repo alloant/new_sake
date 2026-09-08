@@ -2,22 +2,22 @@
   {% if record.unit %}
     {% if record.area != 'aes' %}
       <div class="unit-square">
-        <span class="tag is-unit-top has-text-weight-bold has-text-black" 
+        <span class="tag is-unit-top has-text-weight-semibold has-text-black" 
               style="background-color: {{ record.unit.color }}">
           {{ record.unit.alias }}
         </span>
-        <span class="tag is-unit-bottom has-text-weight-bold has-text-black" 
+        <span class="tag is-unit-bottom has-text-weight-semibold has-text-black" 
               style="background-color: {{ record.area.value }};">
           {{ record.area.name[:3] }}
         </span>
       </div>
     {% else %}
-      <span class="tag unit-square has-text-weight-bold has-text-black"
+      <span class="tag unit-square has-text-weight-semibold has-text-black"
             style="background-color: {{ record.unit.color }};">
         {{ record.unit.alias }}
       </span>
     {% endif %}
   {% else %}
-    <span class="tag unit-square unit-placeholder has-text-weight-bold">-</span>
+    <span class="tag unit-square unit-placeholder has-text-weight-semibold">-</span>
   {% endif %}
 </div>

@@ -34,7 +34,9 @@
   
   --text-active: #000000;
   --text-inactive: #aaaaaa;
+  --text-grey: #555555;
   --text-permanent: #9c0e0e;
+  --text-pending: #f0e68c;
 
   --primary-muted: #648EAF;
   --border-muted: #DDE2E5;
@@ -88,6 +90,7 @@
   --text-active: #ffffff;
   --text-inactive: #aaaaaa;
   --text-permanent: #e34949;
+  --text-pending: #f0e68c;
 
   --primary-muted: #74A1C4;
   --border-muted: #2D373D;
@@ -405,7 +408,7 @@ z-index: 10000 !important;
   overflow: hidden !important;
   vertical-align: middle;
   border-radius: 4px; /* Standard Bulma curve */
-  font-size: 0.85rem !important;
+  font-size: 0.75em !important;
   letter-spacing: -0.05em; /* Squeezes letters for 3-char aliases */
 }
 

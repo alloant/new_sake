@@ -224,6 +224,15 @@ async def records_hidden_row(request: Request, section: str, panel: str, db: Ses
     if num == 0:
         return ''
 
+    return (
+        f'<span class="has-background-dark has-text-white is-inline-flex is-align-items-center is-justify-content-center" '
+        f'style="width: 1.5em; height: 1.5em; border-radius: 50%; font-size: 0.7em; line-height: 1; padding-top: 1px;">{num}</span>'
+    )
+
+    return (
+        f'<span class="tag is-dark is-rounded is-bold p-0 is-inline-flex is-align-items-center is-justify-content-center" '
+        f'style="width: 1.3em; height: 1.3em; font-size: 0.8rem; line-height: 1;">{num}</span>'
+    )
     return f'<span class="tag is-dark is-rounded py-0 px-2" style="font-size: 0.6rem;">{num}</span>'
 
 

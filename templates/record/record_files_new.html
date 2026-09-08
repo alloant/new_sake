@@ -6,7 +6,7 @@
         <a href="{{ record.files[0].link }}" 
           target="_blank" 
           data-tooltip="{{record.files[0].name}}"
-          class="button is-rounded py-0 px-2 has-tooltip-multiline">
+          class="button is-rounded py-0 px-2 has-tooltip-multiline is-ghost">
             {{ record.files[0].html_icon | safe }}
         </a>
       </span>
@@ -15,7 +15,7 @@
         <a href="{{ record.files[0].link }}" 
           target="_blank" 
           data-tooltip="{{record.files[0].name}}"
-          class="button is-rounded py-0 px-2 has-tooltip-multiline">
+          class="button is-rounded py-0 px-2 has-tooltip-multiline is-ghost">
             <span class="icon is-small">
                 <span class="iconify has-text-grey" data-width="1.2em" data-icon="mdi:file-document-multiple"></span>
             </span>
@@ -27,25 +27,50 @@
   {% endif %}
 
   <span class="control">
-    <div class="dropdown {{ 'is-up' if loop.index >= 10 }} is-centered">
-      
+    <div class="dropdown {{ 'is-up' if loop.index >= 10 }} custom-smart-dropdown">
+        
       <div class="dropdown-trigger" aria-haspopup="true" aria-controls="dropdown-{{ record.id }}">
-        <button class="button is-rounded py-0 px-2" aria-haspopup="true" aria-controls="dropdown-menu">
+        <button class="button is-rounded py-0 px-1 is-ghost" aria-haspopup="true" aria-controls="dropdown-menu">
           <span class="icon is-small">
             <i class="iconify" data-icon="mdi:chevron{{'-double' if record.references else ''}}-down"></i>
           </span>
         </button>
       </div>
+      
+      {% if loop.index >= 10 %}
+        <div class="dropdown-menu" id="dropdown-{{ record.id }}" role="menu" style="max-width: 40em; min-width: 18em;">
+          <div class="dropdown-content p-0 m-0">
+            {% include 'record/record_files_templates.html' %}
+            
+            <hr class="dropdown-divider p-0 m-0">
+            {% include 'record/record_files_actions.html' %}
 
-      <div class="dropdown-menu" id="dropdown-{{ record.id }}" role="menu" style="width: 18em; min-width: 18em;">
-        <div class="dropdown-content p-0 m-0">
-          {% include 'record/record_files_files.html' %}
-          <hr class="dropdown-divider p-0 m-0">
-          {% include 'record/record_files_actions.html' %}
+            {% if record.references %}
+              <hr class="dropdown-divider p-0 m-0">
+              {% include 'record/record_files_references.html' %}
+            {% endif %}
+
+            <hr class="dropdown-divider p-0 m-0">
+            {% include 'record/record_files_files.html' %}
+          </div>
         </div>
-      </div>
-    
+      {% else %}
+        <div class="dropdown-menu" id="dropdown-{{ record.id }}" role="menu" style="max-width: 40em; min-width: 18em;">
+          <div class="dropdown-content p-0 m-0">
+            {% include 'record/record_files_files.html' %}
+            {% if record.references %}
+              <hr class="dropdown-divider p-0 m-0">
+              {% include 'record/record_files_references.html' %}
+            {% endif %}
+            <hr class="dropdown-divider p-0 m-0">
+            {% include 'record/record_files_actions.html' %}
+            <hr class="dropdown-divider p-0 m-0">
+            {% include 'record/record_files_templates.html' %}
+          </div>
+        </div>
+      {% endif %}
     </div> <!-- End dropdown -->
   </span>
+
 </div>
 

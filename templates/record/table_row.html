@@ -1,3 +1,4 @@
+
 <div class="column is-narrow has-order-1-mobile">
     {{ record.stage_icon(status)|safe }}
 </div>
@@ -6,10 +7,6 @@
   <span class="has-text-weight-semibold" style="white-space: nowrap;">
     {{ record.protocol_html|safe }}
   </span>
-</div>
-
-<div class="column is-narrow has-order-3-mobile">
-    {% include 'record/table_row_unit.html' %}
 </div>
 
 <div class="column is-narrow has-order-4-mobile">
@@ -32,7 +29,7 @@
   {% endif %}
   
   {% if status and status.due_date %}
-<span class="tag mx-0 is-hidden-mobile {{'is-link' if status.due_date >= today() else 'is-danger'}}" style="font-size: 0.65rem; color: var(--text-main);">{{ status.due_date }}</span>
+    <span class="tag mx-0 is-hidden-mobile {{'is-link' if status.due_date >= today() else 'is-danger'}}" style="font-size: 0.65rem; color: var(--text-main);">{{ status.due_date }}</span>
   {% endif %}
 
   <div class="action-buttons is-hidden-mobile is-rounded">
@@ -51,3 +48,8 @@
 <div class="column is-1 is-hidden-mobile has-text-right" style="white-space: nowrap;">
   {{ record.date_html }}
 </div>
+
+<div class="column is-narrow has-order-3-mobile mr-2">
+  {% include 'record/table_row_unit.html' %}
+</div>
+

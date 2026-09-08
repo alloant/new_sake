@@ -63,6 +63,7 @@ function toggleAllTargets(shouldCheck) {
 /// DROPDOWNS
 //
 // Dropdown Manager using Event Delegation
+/*
 document.addEventListener('mouseover', function (event) {
     // Handling Mouseover (hover)
     const dropdown = event.target.closest('.dropdown');
@@ -105,8 +106,53 @@ document.addEventListener('click', function (event) {
         closeAllDropdowns();
     }
 });
-
+*/
 // END DROPDOWNS
+
+// NEW DROPDOWNS
+// Function to close all open menus and sub-menus
+function closeAllDropdowns() {
+    document.querySelectorAll('.dropdown.is-active').forEach(dropdown => {
+        dropdown.classList.remove('is-active');
+    });
+    document.querySelectorAll('.template-accordion.is-open').forEach(acc => {
+        acc.classList.remove('is-open');
+    });
+}
+
+document.addEventListener('click', function (event) {
+    const trigger = event.target.closest('.dropdown-trigger');
+    const templateTrigger = event.target.closest('.template-trigger');
+    const insideMenu = event.target.closest('.dropdown-menu');
+    const dropdown = event.target.closest('.dropdown');
+
+    // 1. Clicked inside the template sub-menu toggle
+    if (templateTrigger) {
+        const accordion = templateTrigger.closest('.template-accordion');
+        accordion.classList.toggle('is-open');
+        event.stopPropagation();
+        return;
+    }
+
+    // 2. Clicked main dropdown trigger button
+    if (trigger) {
+        document.querySelectorAll('.dropdown.is-active').forEach(openDropdown => {
+            if (openDropdown !== dropdown) {
+                openDropdown.classList.remove('is-active');
+            }
+        });
+        dropdown.classList.toggle('is-active');
+        event.stopPropagation();
+        return;
+    }
+
+    // 3. Clicked completely outside the open dropdown
+    if (!insideMenu) {
+        closeAllDropdowns();
+    }
+});
+// END NEW DROPDOWNS
+
 
 
 // Request permission on page load
@@ -135,3 +181,5 @@ function sendNotification(msg) {
         alert("Notification: " + msg);
     }
 }
+
+

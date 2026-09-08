@@ -225,7 +225,7 @@ div.hero-search, {
     }
 }
 
-.avatar-circle {
+.avatar-circle-old {
     width: 1.2em;
     height: 1.2em;
     border-radius: 50%;
@@ -234,6 +234,43 @@ div.hero-search, {
     border: 1px solid var(--text-avatar);
     color: var(--text-avatar);
     background-color: var(--bg-avatar);
+}
+.avatar-circle {
+    /* 1. Set a fixed target size for the circle */
+    width: 1.5em;              /* or 24px - 28px */
+    height: 1.5em;
+    min-width: 1.5em;          /* Prevents flex items from squishing it */
+    flex-shrink: 0;
+    box-sizing: border-box;
+
+    border-radius: 50%;
+    border: 1px solid var(--text-grey);
+    color: var(--text-avatar);
+    background-color: var(--bg-avatar);
+
+    /* 2. Center using flexbox */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    /* 3. Scaled typography for initials */
+    font-size: 0.9em;           /* Scaled down so two letters fit with breathing room */
+    font-weight: 600;
+    line-height: 1;
+    /*text-transform: uppercase;*/
+    user-select: none;
+
+    /* 4. Letter spacing fix */
+    letter-spacing: -0.04em;
+    /* Counteract the trailing letter-spacing to keep it dead centered: */
+    text-indent: -0.04em; 
+}
+
+/* 5. Ensure SVG/Iconify icons scale nicely to fill the circle */
+.avatar-circle svg,
+.avatar-circle .iconify {
+    font-size: 1rem;
+    display: block;
 }
 
 

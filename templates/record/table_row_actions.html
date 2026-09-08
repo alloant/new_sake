@@ -1,7 +1,7 @@
 {% for actiongroup in record.get_actions(status,current_actor,section,panel,True) %}
   <span class="">
     {% for action in actiongroup.items %}
-      <button class="px-1 is-small has-tooltip-arrow" data-tooltip="{{ action.title }}"
+      <button class="button is-ghost px-1 is-small has-tooltip-arrow" data-tooltip="{{ action.title }}"
         {% for attr in action.attr %}
           {% if attr in ['hx-get','hx-post'] %}
             {{ attr }}="{{ action.attr[attr] }}&record_id={{ record.id }}&recordactor_id={{ is_true(status,'id') }}&section={{section}}&panel={{panel}}&loop_index={{loop.index}}"

@@ -104,7 +104,7 @@ class Record(SQLModel, RecordMethod, table=True):
         },
     )
 
-    def stage_icon(self, status):
+    def stage_icon_old(self, status):
         if self.state == 'done':
             title = 'Archived'
             if self.register.type == 'note':
@@ -160,6 +160,65 @@ class Record(SQLModel, RecordMethod, table=True):
         if self.audience == 'permanent':
             color = 'font-color-permanent'
 
+        if title:
+            return f'<div class="iconify has-tooltip-multiline has-tooltip-arrow has-tooltip-right" data-tooltip="{title}"><i class="iconify" data-width="1em" data-icon="mdi-{icon}" style="color: var(--{color});"></i></div>'
+        
+        return f'<div class="iconify"><i class="iconify" data-width="1em" data-icon="mdi-{icon}" style="color: var(--{color});"></i></div>'
+    
+    def stage_icon(self, status):
+        # The state defines the color
+        print(self.state)
+        if self.state == 'done':
+            title = 'Archived'
+            color = 'text-inactive'
+        elif self.state == 'snooze':
+            title = 'On hold'
+            color = 'text-pending'
+        elif self.state == 'pending':
+            title = 'Pending'
+            color = 'text-pending'
+        else:
+            title = ''
+            color = 'text-active'
+        
+        if self.audience == 'permanent':
+            color = 'font-color-permanent'
+
+        # The state defines the icon
+        match self.stage:
+            case "inbox":
+                icon = 'file-alert'
+            case "despacho":
+                if status and status.params.get('dispatcher_signature'):
+                    title = 'Signed'
+                    color, icon = 'text-inactive', 'briefcase-outline'
+                else:
+                    signatures = []
+                    for actor in self.actors:
+                        if actor.params.get('dispatcher_signature'):
+                            signatures.append(actor.actor.alias)
+                    if signatures:
+                        rst =  ", ".join(signatures)
+                        title = f"Pending (signed by {rst})"
+                        color, icon = 'text-active', 'briefcase-account'
+                    else:
+                        title = "Pending"
+                        color, icon = 'text-active', 'briefcase'
+            case "registered":
+                icon = 'tray-arrow-down'
+            case "draft":
+                color, icon = 'text-active', 'tray-arrow-up'
+            case "outbox":
+                color, icon = 'text-pending', 'tray-arrow-up'
+            case "sent":
+                color, icon = 'text-inactive', 'tray-arrow-up'
+            case "sketch":
+                color, icon = 'text-active', 'clipboard-text-outline'
+            case "shared":
+                color, icon = 'text-pending', 'clipboard-text-outline'
+            case "closed":
+                color, icon = 'text-inactive', 'clipboard-text-outline'
+        print(color,icon) 
         if title:
             return f'<div class="iconify has-tooltip-multiline has-tooltip-arrow has-tooltip-right" data-tooltip="{title}"><i class="iconify" data-width="1em" data-icon="mdi-{icon}" style="color: var(--{color});"></i></div>'
         

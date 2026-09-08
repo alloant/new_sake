@@ -1,72 +1,193 @@
+# Japanese translations for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-03-10 18:55+0530\n"
-"PO-Revision-Date: 2026-03-10 18:55+0530\n"
+"POT-Creation-Date: 2026-07-16 13:16+0530\n"
+"PO-Revision-Date: 2026-07-16 13:16+0530\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: ja <LL@li.org>\n"
 "Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.18.0\n"
 
+#: app/models/record/recordMethods.py:48
+msgid "Sign note"
+msgstr ""
+
+#: app/models/record/recordMethods.py:49
+msgid "Quick sign"
+msgstr ""
+
+#: app/models/record/recordMethods.py:50
+msgid "Unsign"
+msgstr ""
+
+#: app/models/record/recordMethods.py:53
 msgid "Mark as read"
-msgstr "既読としてマークする"
+msgstr ""
 
+#: app/models/record/recordMethods.py:54
+msgid "Mark as unread"
+msgstr ""
+
+#: app/models/record/recordMethods.py:55
+msgid "Hold"
+msgstr ""
+
+#: app/models/record/recordMethods.py:56
+msgid "Unhold"
+msgstr ""
+
+#: app/models/record/recordMethods.py:57
+msgid "Archive"
+msgstr ""
+
+#: app/models/record/recordMethods.py:58
+msgid "Restore"
+msgstr ""
+
+#: app/models/record/recordMethods.py:60
+msgid "Info about the note"
+msgstr ""
+
+#: app/models/record/recordMethods.py:61
+msgid "List all notes related with this entry"
+msgstr ""
+
+#: app/models/record/recordMethods.py:62
+msgid "Edit"
+msgstr ""
+
+#: app/models/record/recordMethods.py:63
+msgid "Personal tags"
+msgstr ""
+
+#: app/models/record/recordMethods.py:64
+msgid "Edit targets"
+msgstr ""
+
+#: app/models/record/recordMethods.py:65
+msgid "Delete"
+msgstr ""
+
+#: app/models/record/recordMethods.py:69
+msgid "Assign"
+msgstr ""
+
+#: app/models/record/recordMethods.py:73
+msgid "Start circulation"
+msgstr ""
+
+#: app/models/record/recordMethods.py:74
+msgid "Stop circulation"
+msgstr ""
+
+#: app/models/record/recordMethods.py:75
+msgid "Sign and pass"
+msgstr ""
+
+#: app/models/record/recordMethods.py:82
+msgid "Upload file"
+msgstr ""
+
+#: app/models/record/recordMethods.py:83
+msgid "Copy file"
+msgstr ""
+
+#: app/models/record/recordMethods.py:84
+msgid "Upload files folder"
+msgstr ""
+
+#: app/views/sidebar.py:20 app/views/sidebar.py:158
 msgid "Dashboard"
-msgstr "ダッシュボード"
+msgstr ""
 
+#: app/views/sidebar.py:21
 msgid "Registers"
-msgstr "レジスター"
+msgstr ""
 
+#: app/views/sidebar.py:22
 msgid "Secretary"
-msgstr "秘書"
+msgstr ""
 
-msgid "Pages"
-msgstr "ページ"
+#: app/views/sidebar.py:23
+msgid "Cl work"
+msgstr ""
 
+#: app/views/sidebar.py:64
 msgid "Despacho"
-msgstr "デスパチョ"
+msgstr ""
 
+#: app/views/sidebar.py:71
+msgid "Must read"
+msgstr ""
+
+#: app/views/sidebar.py:72
+msgid "Unread"
+msgstr ""
+
+#: app/views/sidebar.py:73
+msgid "All"
+msgstr ""
+
+#: app/views/sidebar.py:80 app/views/sidebar.py:117 app/views/sidebar.py:123
 msgid "Inbox"
-msgstr "受信箱"
+msgstr ""
 
-msgid "Snooze"
-msgstr "スヌーズ"
+#: app/views/sidebar.py:81 app/views/sidebar.py:106
+msgid "On hold"
+msgstr ""
 
+#: app/views/sidebar.py:82 app/views/sidebar.py:107
 msgid "Archived"
-msgstr "アーカイブ済み"
+msgstr ""
 
+#: app/views/sidebar.py:89 app/views/sidebar.py:103
 msgid "Drafts"
-msgstr "下書き"
+msgstr ""
 
+#: app/views/sidebar.py:90
 msgid "Sent"
-msgstr "送信済み"
+msgstr ""
 
+#: app/views/sidebar.py:96
 msgid "To sign"
-msgstr "署名するには"
+msgstr ""
 
+#: app/views/sidebar.py:97
 msgid "Signed"
-msgstr "署名済み"
+msgstr ""
 
+#: app/views/sidebar.py:104
 msgid "Circulating"
-msgstr "循環"
+msgstr ""
 
+#: app/views/sidebar.py:105
 msgid "Aproved"
-msgstr "承認済み"
+msgstr ""
 
-msgid "Import mail"
-msgstr "メールをインポートする"
+#: app/views/sidebar.py:116
+msgid "New mail"
+msgstr ""
 
+#: app/views/sidebar.py:124
 msgid "Outbox"
-msgstr "送信ボックス"
+msgstr ""
 
+#: app/views/sidebar.py:130
 msgid "Sensitive"
-msgstr "センシティブ"
+msgstr ""
 
-msgid "Import"
-msgstr "輸入"
+#: app/views/sidebar.py:138 app/views/sidebar.py:140 app/views/sidebar.py:144
+#: app/views/sidebar.py:146
+msgid "Documentation"
+msgstr ""
+

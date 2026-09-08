@@ -60,7 +60,7 @@ class File(SQLModel, table=True):
                 <span class="iconify has-text-{self.icon[0]}" data-icon="mdi-{self.icon[1]}"></span>
             </span>
             <span>
-                { self.short_name }
+                { self.name }
             </span>
               """
         return rst

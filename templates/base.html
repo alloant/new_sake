@@ -41,7 +41,7 @@
             </div>
         </nav>
 
-        <div id="body" class="columns is-gapless is-mobile" style="position: relative;">
+        <div id="body" class="columns mb-0 is-gapless is-mobile" style="position: relative;">
             <aside class="column is-narrow is-main-sidebar" id="main-sidebar">
                 <div id="sidebar" class="sidebar is-flex is-flex-direction-column is-justify-content-space-between">
                     {% include 'sidebar/main.html' %}
@@ -59,9 +59,8 @@
             </main>
             <progress id="progress-indicator" class="progress htmx-indicator is-small" max="90" style="position: absolute; bottom:0%"></progress>
         </div>
+
         {% include 'sidepanel.html' %}
-        <footer>
-        </footer>
         {% include 'modal.html' %}
         <script src="{{ url_for('static', path='js/main.js') }}"></script>
         <div id="sidebar-overlay" class="sidebar-overlay"></div>

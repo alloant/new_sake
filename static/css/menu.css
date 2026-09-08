@@ -16,8 +16,53 @@
   padding-left: 1.5rem !important;
 }
 
+.p-1-5 {
+  padding: 0.375rem !important; /* Halfway between p-1 (0.25rem) and p-2 (0.5rem) */
+}
+
+/* Truncation utility */
 .is-truncated {
-  white-space: nowrap;      /* Prevents text from wrapping to a new line */
-  overflow: hidden;         /* Hides the text that goes past the container boundary */
-  text-overflow: ellipsis;  /* Adds the '...' at the cutoff point */
+  display: block;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* File link styling */
+.file-link {
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.file-link:hover {
+  text-decoration: underline;
+}
+
+/* Dropdown alignment and sizing */
+.custom-smart-dropdown .dropdown-menu {
+  right: -5rem !important;
+  left: auto !important;
+  /* Allows the menu to stretch to fit the longest text up to 28rem */
+  width: auto;
+  min-width: 16rem;
+  max-width: 28rem;
+}
+
+/* Prevent viewport overflow on narrow displays */
+@media screen and (max-width: 768px) {
+  .custom-smart-dropdown .dropdown-menu {
+    right: -1rem !important;
+    max-width: calc(100vw - 2rem);
+  }
+}
+
+/* Action icons hover transitions */
+.file-actions .hover-action:hover {
+  color: var(--bulma-link, #485fc7) !important;
+}
+
+.file-actions .hover-action-danger:hover {
+  color: var(--bulma-danger, #f14668) !important;
 }

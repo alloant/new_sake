@@ -13,7 +13,8 @@
         <div class="dropdown-content p-2" style="width: auto;">
           {% for actiongroup in record.get_actions(status,current_actor,section,panel) %}
             {% for action in actiongroup.items %}
-                <a class="dropdown-item m-0 {{ action.extra_class }}"
+                
+              <a class="dropdown-item m-0 is-flex is-align-items-center {{ action.extra_class }}"
                 {% for attr in action.attr %}
                   {% if attr in ['hx-get','hx-post'] %}
                     {{ attr }}="{{ action.attr[attr] }}&record_id={{ record.id }}&recordactor_id={{ is_true(status,'id') }}&section={{section}}&panel={{panel}}&loop_index={{loop.index}}"
@@ -21,10 +22,13 @@
                     {{ attr }}="{{ action.attr[attr] }}"
                   {% endif %}
                 {% endfor %}
-                  style="font-size: 1.1em;">
-                <i class="iconify mr-1" data-icon="{{ action.icon }}"></i>
-                {{ action.title }}
+                style="font-size: 1.1em;">
+                <span class="icon mr-3">
+                  <i class="iconify" data-icon="{{ action.icon }}"></i>
+                </span>
+                <span>{{ action.title }}</span>
               </a>
+
             {% endfor %}
             {% if not loop.last %}
             <hr class="dropdown-divider p-0 m-0">

@@ -1,7 +1,7 @@
 <aside class="menu p-2">
 {% set url_part = "sccr" if section == "sccr" else "records" %}
 {% for group in sidebar['panel'] %}
-  <div class="level is-mobile p-0 m-0">
+  <div class="level is-mobile mb-0 mt-2">
     <div class="level-left">
       <p class="menu-label has-text-weight-bold mb-0">{{ group['title'] }}</p>
     </div>
@@ -20,27 +20,26 @@
 
   <ul class="menu-list">
   {% for item in group.items %}
-    <li>
-      <a  class="menu-link is-inline-flex is-justify-content-space-between is-align-items-center {{item.active}}"
+    <li class="">
+      <a class="p-1-5 menu-link is-inline-flex is-justify-content-space-between is-align-items-center {{item.active}}"
         hx-get="/{{url_part}}?section={{section}}&panel={{item.id}}" 
         hx-target="#main-aside"
         hx-disinherit="*"
         hx-push-url="/?section={{section}}&panel={{item.id}}"
         hx-on:click="updateSidebarActive(this)">
-      <span>
-        <i class="iconify" data-icon="{{ item.icon }}"></i>
-        {{_(item.title)}}
-      </span>
-      {% if item.show_count %}
-        <div  hx-get="/{{url_part}}/number?section={{section}}&panel={{item.id}}"
-          hx-trigger="intersect once{{item.hx_trigger}}"
-          hx-disinherit="*"
-          hx-target="this"
-          hx-indicator="#progress-indicator">
-        </div>
-      {% endif %}
-
-    </a>
+        <span>
+          <i class="iconify" data-icon="{{ item.icon }}"></i>
+          {{_(item.title)}}
+        </span>
+        {% if item.show_count %}
+          <div  hx-get="/{{url_part}}/number?section={{section}}&panel={{item.id}}"
+            hx-trigger="intersect once{{item.hx_trigger}}"
+            hx-disinherit="*"
+            hx-target="this"
+            hx-indicator="#progress-indicator">
+          </div>
+        {% endif %}
+      </a>
     </li>
   {% endfor %}
 
